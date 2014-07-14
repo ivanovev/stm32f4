@@ -1,0 +1,17 @@
+
+#PROJ = led uart usb hcsr i2c adc pwm mdio
+PROJ = $(shell ls -d */ | grep -v util | sed "s:/::")
+.PHONY: clean $(PROJ)
+
+BUILDS = $(shell find . -maxdepth 2 -name build)
+
+dflt:
+	@echo make $(PROJ)
+
+$(PROJ):
+	@echo $(CFLAGS)
+	@make -C $@
+
+clean: $(BUILDS)
+	rm -rf $^
+
