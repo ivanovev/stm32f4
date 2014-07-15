@@ -8,6 +8,7 @@ int main(void)
 {
     HAL_Init();
     SystemClock_Config();
+    led_init();
     usb_init();
     io_recv_str_ptr = VCP_read;
     io_send_str_ptr = VCP_write;

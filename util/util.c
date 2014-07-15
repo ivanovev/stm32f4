@@ -55,10 +55,10 @@ uint8_t itoa(int32_t i, char *b)
     return ret;
 }
 
-static char to_upper(char myChar)
+char to_upper(char myChar)
 {
-        if(myChar>91) myChar-=32;
-        return myChar;
+    if(myChar>91) myChar-=32;
+    return myChar;
 }
 
 uint32_t htoi(char *myArray)
@@ -284,8 +284,8 @@ char *mystrchr(const char *s, int c)
 
 char* mystrncat(char *dest, const char *src, uint32_t n)
 {
-    size_t dest_len = strlen(dest);
-    size_t i;
+    uint32_t dest_len = mystrnlen(dest, IO_BUF_SZ);
+    uint32_t i;
 
     for (i = 0 ; i < n && src[i] != '\0' ; i++)
         dest[dest_len + i] = src[i];
@@ -317,6 +317,20 @@ void io_send_str3(const char *str, uint8_t newline)
     if(newline)
         io_newline();
     io_send_str2(str);
+}
+
+void io_send_int(int n)
+{
+    char buf[10];
+    itoa(n, buf);
+    io_send_str2(buf);
+}
+
+void io_send_int2(const char *str, int n)
+{
+    io_send_str3(str, 1);
+    io_send_str2(": ");
+    io_send_int(n);
 }
 
 void io_newline(void)

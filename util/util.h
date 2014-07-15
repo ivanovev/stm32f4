@@ -16,6 +16,7 @@
 uint32_t    mr(uint32_t addr);
 uint32_t    mw(uint32_t addr, uint32_t value);
 
+char        to_upper(char myChar);
 int         atoi(const char *p);
 uint8_t     itoa(int32_t i, char *b);
 uint32_t    htoi(char *myArray);
