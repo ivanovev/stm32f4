@@ -46,6 +46,7 @@ void USBD_static_free(void *p)
 {
 }
 
+#if 0
 #ifdef HAL_UART_MODULE_ENABLED
 void uart_print_request(USBD_HandleTypeDef *pdev)
 {
@@ -72,6 +73,7 @@ void uart_print_request(USBD_HandleTypeDef *pdev)
     uart_send_str(" ", 0);
     uart_send_hex(pdev->request.wIndex, 2);
 }
+#endif
 #endif
 
 /*******************************************************************************

@@ -1,6 +1,6 @@
 
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef __QUEUE_H__
+#define __QUEUE_H__
 
 #include "util/util.h"
 

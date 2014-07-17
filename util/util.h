@@ -2,7 +2,7 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
-#include "main.h"
+#include "stdint.h"
 
 #if 0
 #ifndef MIN

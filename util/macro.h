@@ -1,4 +1,7 @@
 
+#ifndef __MACRO_H__
+#define __MACRO_H__
+
 #if 1
 #define JOIN_(A,B) A ## B
 #define JOIN(A,B) JOIN_(A, B)
@@ -52,3 +55,4 @@
 
 #endif
 
+#endif

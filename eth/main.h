@@ -6,7 +6,8 @@
 #include "stm32f4xx_hal.h"
 #include "util/macro.h"
 #include "util/util.h"
-#include "util/queue.h"
+#include "eth/eth.h"
+#include "eth/mdio.h"
 
 #endif
 

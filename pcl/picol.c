@@ -135,6 +135,11 @@ int picolSetResult(picolInterp *i, char *s) {
     mysnprintf(i->result, MAXSTR, "%s", s);
     return PICOL_OK;
 }
+int picolSetFmtResult(picolInterp* i, char* fmt, int result) {
+    char buf[32];
+    mysnprintf(buf,sizeof(buf),fmt,result);
+    return picolSetResult(i,buf);
+}
 int picolErr(picolInterp *i, char* str) {
     picolSetResult(i,str);
     return PICOL_ERR;

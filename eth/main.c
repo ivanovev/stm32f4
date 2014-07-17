@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include "pcl/pcl.h"
 #include "gpio/led.h"
 #ifdef HAL_PCD_MODULE_ENABLED
 #include "usb/cdc/usb.h"
@@ -27,6 +28,7 @@ int main(void)
 #endif
 #endif
     pcl_init();
+    eth_init();
     char buf[IO_BUF_SZ];
     uint32_t sz;
     for (;;)

@@ -41,6 +41,11 @@
 #define picolEval(_i,_t)  picolEval2(_i,_t,1)
 #define picolSubst(_i,_t) picolEval2(_i,_t,0)
 
+#define picolSetBoolResult(i,x) picolSetFmtResult(i,"%d",!!x)
+#define picolSetIntResult(i,x)  picolSetFmtResult(i,"%d",x)
+#define picolSetHex2Result(i,x)  picolSetFmtResult(i,"%.2x",x)
+#define picolSetHexResult(i,x)  picolSetFmtResult(i,"%x",x)
+
 enum {PICOL_OK, PICOL_ERR, PICOL_RETURN, PICOL_BREAK, PICOL_CONTINUE};
 enum {PT_ESC,PT_STR,PT_CMD,PT_VAR,PT_SEP,PT_EOL,PT_EOF, PT_XPND};
         
@@ -101,8 +106,9 @@ typedef struct picolList {
 picolInterp*    picolCreateInterp(void);
 int             picolEval2(picolInterp *i, char *t, int mode);
 int             picolErr(picolInterp *i, char* str);
-int             picolSetResult(picolInterp *i, char *s);
 int             picolRegisterCmd(picolInterp *i, char *name, picol_Func f);
+int             picolSetResult(picolInterp *i, char *s);
+int             picolSetFmtResult(picolInterp* i, char* fmt, int result);
 
 #endif
 

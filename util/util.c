@@ -1,5 +1,5 @@
 
-#include "util.h"
+#include "util/util.h"
 #include "stdarg.h"
 
 io_send_func io_send_str_ptr = 0;
@@ -205,6 +205,7 @@ uint32_t mysnprintf(char *buf, uint32_t sz, const char *fmt, ...)
     va_start(args, fmt);
     const char *w;
     uint32_t i = 0;
+    int8_t hexsz = 4;
     char c;
 
     w = fmt;
@@ -218,6 +219,13 @@ uint32_t mysnprintf(char *buf, uint32_t sz, const char *fmt, ...)
         {
             if ((c = *w++) != 0)
             {
+                if (c == '.')
+                {
+                    hexsz = *w++ - '0';
+                    if((hexsz <= 0) || (4 < hexsz))
+                        hexsz = 4;
+                    c = *w++;
+                }
                 if (c == '%')
                 {
                     buf[i++] = c;
@@ -248,8 +256,9 @@ uint32_t mysnprintf(char *buf, uint32_t sz, const char *fmt, ...)
                     else
                     {
                         if((sz - i) > 10)
-                            i += itoh(v, &(buf[i]), 4);
+                            i += itoh(v, &(buf[i]), hexsz);
                     }
+                    hexsz = 4;
                 }
                 else if (c == 's')
                 {
