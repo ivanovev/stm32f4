@@ -3,6 +3,7 @@
 #include "gpio/gpio.h"
 #include "uart/uart.h"
 #ifdef HAL_ETH_MODULE_ENABLED
+#include "eth/mdio.h"
 #include "eth/eth.h"
 #endif
 
@@ -105,6 +106,16 @@ COMMAND(mdio) {
     }
     return picolSetHex2Result(i,value);
 }
+
+COMMAND(eth) {
+    ARITY(argc >= 2, "eth subcmd ...");
+    if(SUBCMD1("reset")) {
+        eth_reset();
+    }
+    else
+        return PICOL_ERR;
+    return PICOL_OK;
+}
 #endif
 
 void register_stm32f4_cmds(picolInterp *i)
@@ -128,6 +139,7 @@ void register_stm32f4_cmds(picolInterp *i)
 #endif
 #ifdef HAL_ETH_MODULE_ENABLED
     picolRegisterCmd(i, "mdio", picol_mdio);
+    picolRegisterCmd(i, "eth", picol_eth);
 #endif
 }
 

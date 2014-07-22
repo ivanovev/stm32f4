@@ -17,10 +17,12 @@ int main(void)
         if(btn_status())
             led_toggle();
 #else
+#if 0
         if(btn_status())
             led_on();
         else
             led_off();
+#endif
 #endif
     }
 }

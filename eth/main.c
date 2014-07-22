@@ -29,10 +29,9 @@ int main(void)
 #endif
     pcl_init();
     eth_init();
-    char buf[IO_BUF_SZ];
-    uint32_t sz;
     for (;;)
     {
+#if 0
         sz = io_recv_str(buf);
         if(sz)
         {
@@ -45,6 +44,9 @@ int main(void)
             else
                 io_prompt(0);
         }
+#else
+        eth_io();
+#endif
     }
 }
 

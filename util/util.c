@@ -342,6 +342,34 @@ void io_send_int2(const char *str, int n)
     io_send_int(n);
 }
 
+void io_send_hex(unsigned int h, uint8_t bytes)
+{
+    char buf[15];
+    itoh(h, buf, bytes);
+    io_send_str2(buf);
+}
+
+void io_send_hex2(const char *str, uint32_t h)
+{
+    io_send_str3(str, 1);
+    io_send_str2(": ");
+    io_send_hex(h, 4);
+}
+
+void io_send_hex4(const char *str, const uint8_t *bytes, uint32_t n)
+{
+    uint32_t i;
+    io_send_str3(str, 1);
+    io_send_str2("(");
+    io_send_int(n);
+    io_send_str2("): ");
+    for(i = 0; i < n; i++)
+    {
+        io_send_hex(bytes[i], 1);
+        io_send_str2(" ");
+    }
+}
+
 void io_newline(void)
 {
     io_send_str2("\n\r");
