@@ -8,6 +8,7 @@ CC=$(TRGT)gcc
 AS=$(TRGT)as
 LD=$(TRGT)ld
 OBJCOPY=$(TRGT)objcopy
+READELF=$(TRGT)readelf
 GDB=$(TRGT)gdb
 
 C_SRCS += $(HAL_DIR)/stm32f4xx_hal.c
@@ -95,6 +96,7 @@ $(BUILDDIR) $(OBJDIR):
 %.elf: $(OBJS)
 	@echo elf, ldscript: $(LDSCRIPT)
 	@$(CC) $^ $(LDFLAGS) -o $@ 
+	@$(READELF) -s $@ > $(@:.elf=.symtab)
 	@echo "BOARD = $(BOARD)"
 
 %.hex: %.elf
