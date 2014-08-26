@@ -1,11 +1,14 @@
 
 #BOARD='HYSTM32'
-BOARD='E407'
+BOARD='MY1'
 ifeq ($(BOARD), 'HYSTM32')
     CFLAGS += -DBOARD_HYSTM32
 endif
 ifeq ($(BOARD), 'E407')
     CFLAGS += -DBOARD_E407
+endif
+ifeq ($(BOARD), 'MY1')
+    CFLAGS += -DBOARD_MY1
 endif
 #CFLAGS += -DSTM32F407xx
 

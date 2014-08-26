@@ -9,10 +9,11 @@ int main(void)
     HAL_Init();
     SystemClock_Config();
     led_init();
-    btn_init();
+    //btn_init();
     led_toggle();
     for (;;) {
         HAL_Delay(1000);
+        led_toggle();
 #if 0
         if(btn_status())
             led_toggle();

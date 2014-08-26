@@ -12,6 +12,11 @@
 #define LED_PIN 13
 #endif
 
+#ifdef BOARD_MY1
+#define LED_GPIO D
+#define LED_PIN 11
+#endif
+
 void led_init(void);
 void led_on(void);
 void led_off(void);

@@ -106,6 +106,9 @@
 #ifdef BOARD_E407
 #define HSE_VALUE    ((uint32_t)12000000) 
 #endif
+#ifdef BOARD_MY1
+#define HSE_VALUE    ((uint32_t)25000000) 
+#endif
 #endif /* HSE_VALUE */
 
 #if !defined  (HSE_STARTUP_TIMEOUT)
