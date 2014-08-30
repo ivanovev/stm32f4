@@ -5,14 +5,6 @@
 #include "main.h"
 
 #define LOCAL_IP_ADDR 0xC0A80001
-#if 0
-#define LOCAL_MAC_ADDR0 0x00
-#define LOCAL_MAC_ADDR1 0x01
-#define LOCAL_MAC_ADDR2 0x02
-#define LOCAL_MAC_ADDR3 0x03
-#define LOCAL_MAC_ADDR4 0x04
-#define LOCAL_MAC_ADDR5 0x05
-#endif
 
 #define ARP_FRAME_TYPE  0x0608
 
@@ -42,10 +34,31 @@ typedef struct
     uint8_t ttl;
     uint8_t proto;
     uint16_t header_cksum;
+
     uint32_t src_ip_addr;
     uint32_t dst_ip_addr;
 } preamble2;
 
+typedef struct
+{
+    uint8_t dst[6];
+    uint8_t src[6];
+    uint16_t type;
+
+    uint8_t ver_ihl;
+    uint8_t serv_type;
+    uint16_t total_len;
+    uint16_t id;
+    uint16_t frag_offset;
+    uint8_t ttl;
+    uint8_t proto;
+    uint16_t header_cksum;
+
+    uint32_t src_ip_addr;
+    uint32_t dst_ip_addr;
+    uint16_t src_port;
+    uint16_t dst_port;
+} preamble3;
 
 #define MAC_HEADER_SIZE sizeof(preamble1)
 //#define ARP_HEADER_SIZE 28
@@ -92,10 +105,8 @@ typedef struct {
 } ICMP_FRAME;
 
 typedef struct {
-    preamble2 p;
+    preamble3 p;
 
-    uint16_t src_port;
-    uint16_t dst_port;
     uint16_t len;
     uint16_t cksum;
 
@@ -153,6 +164,7 @@ uint16_t    myip_handle_arp_frame(ETH_FRAME *frm, uint16_t sz);
 uint16_t    myip_handle_ip_frame(ETH_FRAME *frm, uint16_t sz);
 uint16_t    myip_handle_icmp_frame(ETH_FRAME *frm, uint16_t sz);
 uint16_t    myip_handle_udp_frame(ETH_FRAME *frm, uint16_t sz);
+void        myip_swap_addr(preamble3 *p);
 
 #endif
 

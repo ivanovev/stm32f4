@@ -18,6 +18,13 @@
 #define UART_TX_PIN 0
 #define UART_RX_PIN 1
 #endif
+#ifdef BOARD_MY1
+#define UARTn 3
+#define UART_TX_GPIO D
+#define UART_RX_GPIO D
+#define UART_TX_PIN 8
+#define UART_RX_PIN 9
+#endif
 
 #define UART_BAUDRATE 115200
 #define UART_RX_ENABLE 1

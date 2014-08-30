@@ -29,6 +29,10 @@ int main(void)
 #endif
     pcl_init();
     eth_init();
+#if 0
+    uint32_t sz;
+    char buf[IO_BUF_SZ];
+#endif
     for (;;)
     {
 #if 0

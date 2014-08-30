@@ -7,8 +7,6 @@
 #include "stdint.h"
 #include "util/macro.h"
 #include "util/util.h"
-#include "eth/eth.h"
-#include "eth/mdio.h"
 
 #endif
 

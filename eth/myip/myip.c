@@ -1,5 +1,6 @@
 
-#include "main.h"
+#include "myip.h"
+#include "mytcp.h"
 
 ARP_ENTRY arp_table[ARP_TABLE_SZ];
 UDP_ENTRY udp_con_table[UDP_TABLE_SZ];
@@ -22,6 +23,7 @@ void myip_init(void)
     }
     myip_add_udp_con(1234, dbg_con_handler);
     ip_counter = 0;
+    myip_tcp_init();
 }
 
 uint16_t dbg_con_handler(UDP_FRAME *ufrm, uint16_t sz)
@@ -118,6 +120,10 @@ uint16_t myip_handle_ip_frame(ETH_FRAME *frm, uint16_t sz)
             sz = myip_handle_udp_frame(frm, sz);
             break;
 
+        case TCP_PROTO:
+            sz = myip_handle_tcp_frame(frm, sz);
+            break;
+
         default:
             break;
     }
@@ -127,7 +133,7 @@ uint16_t myip_handle_ip_frame(ETH_FRAME *frm, uint16_t sz)
 uint16_t myip_handle_icmp_frame(ETH_FRAME *frm, uint16_t sz)
 {
     ICMP_FRAME* ifrm = (ICMP_FRAME*)frm;
-    io_send_str3("myip_handle_icmp_frame", 1);
+    //io_send_str3("myip_handle_icmp_frame", 1);
 
     switch (ifrm->type) {
         case ICMP_ECHO:
@@ -153,16 +159,28 @@ uint16_t myip_handle_icmp_frame(ETH_FRAME *frm, uint16_t sz)
     return sz;
 }
 
+void myip_swap_addr(preamble3 *p)
+{
+    mymemcpy(p->dst, p->src, 6);
+    mymemcpy(p->src, local_mac_addr, 6);
+
+    p->dst_ip_addr = p->src_ip_addr;
+    p->src_ip_addr = HTONS_32(local_ip_addr);
+    uint16_t dst_port = p->dst_port;
+    p->dst_port = p->src_port;
+    p->src_port = dst_port;
+}
+
 uint16_t myip_handle_udp_frame(ETH_FRAME *frm, uint16_t sz)
 {
     UDP_FRAME* ufrm = (UDP_FRAME*)frm;
     io_send_str3("myip_handle_udp_frame", 1);
 
     uint8_t i = 0;
-    io_send_hex2("dst_port", HTONS_16(ufrm->dst_port));
+    io_send_hex2("dst_port", HTONS_16(ufrm->p.dst_port));
     for(i = 0; i < UDP_TABLE_SZ; i++)
     {
-        if(udp_con_table[i].port == HTONS_16(ufrm->dst_port))
+        if(udp_con_table[i].port == HTONS_16(ufrm->p.dst_port))
             break;
     }
     io_send_hex2("i", i);
@@ -178,6 +196,7 @@ uint16_t myip_handle_udp_frame(ETH_FRAME *frm, uint16_t sz)
 #endif
         if(sz)
         {
+#if 0
             mymemcpy(ufrm->p.dst, ufrm->p.src, 6);
             mymemcpy(ufrm->p.src, local_mac_addr, 6);
 
@@ -185,6 +204,9 @@ uint16_t myip_handle_udp_frame(ETH_FRAME *frm, uint16_t sz)
             ufrm->p.src_ip_addr = HTONS_32(local_ip_addr);
             ufrm->dst_port = ufrm->src_port;
             ufrm->src_port = HTONS_16(udp_con_table[i].port);
+#else
+            myip_swap_addr(&(ufrm->p));
+#endif
         }
     }
     return sz;

@@ -11,7 +11,9 @@ int main(void)
     HAL_Init();
     SystemClock_Config();
     led_init();
+#ifdef btn_init
     btn_init();
+#endif
     uart_init();
     io_recv_str_ptr = uart_recv_str;
     io_send_str_ptr = uart_send_str;

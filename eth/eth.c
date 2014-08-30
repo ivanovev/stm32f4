@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include "eth.h"
 
 #pragma message "PHY_ADDRESS: " STR(PHY_ADDRESS)
 
@@ -58,7 +59,7 @@ uint16_t eth_input(ETH_FRAME *frm)
     __IO ETH_DMADescTypeDef *dmarxdesc = heth.RxFrameInfos.FSRxDesc;
 
     /* Set Own bit in Rx descriptors: gives the buffers back to DMA */
-    io_send_int2("seg_count", (heth.RxFrameInfos).SegCount);
+    //io_send_int2("seg_count", (heth.RxFrameInfos).SegCount);
     for(i = 0; i< (heth.RxFrameInfos).SegCount; i++)
     {
         dmarxdesc->Status = ETH_DMARXDESC_OWN;
@@ -94,9 +95,9 @@ void eth_io(void)
     if(!sz)
         return;
     //MAC_FRAME *frm = myip_get_mac_frame(buf, sz);
-    io_send_hex4("src", frm.e.p.src, 6);
-    io_send_hex4("dst", frm.e.p.dst, 6);
-    io_send_hex4("type", (uint8_t*)(&frm.e.p.type), 2);
+    //io_send_hex4("src", frm.e.p.src, 6);
+    //io_send_hex4("dst", frm.e.p.dst, 6);
+    //io_send_hex4("type", (uint8_t*)(&frm.e.p.type), 2);
     switch(frm.e.p.type)
     {
         case ARP_FRAME_TYPE:

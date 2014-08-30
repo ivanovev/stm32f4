@@ -26,6 +26,7 @@ int main(void)
     io_send_str_ptr = uart_send_str;
 #endif
 #endif
+    uart_send_str3("pcl_test", 1);
     pcl_init();
     char buf[IO_BUF_SZ];
     uint32_t sz;

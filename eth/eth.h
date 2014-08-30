@@ -2,14 +2,10 @@
 #ifndef __ETH_H__
 #define __ETH_H__
 
-#include "main.h"
-#include "eth/myip/myip.h"
+#include "myip.h"
 
-#define ETH_RESET_GPIO G
-#define ETH_RESET_PIN 6
 #define ETH_REFCLK_GPIO A
 #define ETH_REFCLK_PIN 1
-
 #define ETH_MDC_GPIO C
 #define ETH_MDC_PIN 1
 #define ETH_MDIO_GPIO A
@@ -22,12 +18,29 @@
 #define ETH_RXD1_GPIO C
 #define ETH_RXD1_PIN 5
 
+#ifdef BOARD_E407
+#define ETH_RESET_GPIO G
+#define ETH_RESET_PIN 6
+
 #define ETH_TXEN_GPIO G
 #define ETH_TXEN_PIN 11
 #define ETH_TXD0_GPIO G
 #define ETH_TXD0_PIN 13
 #define ETH_TXD1_GPIO G
 #define ETH_TXD1_PIN 14
+#endif
+
+#ifdef BOARD_MY1
+#define ETH_RESET_GPIO C
+#define ETH_RESET_PIN 2
+
+#define ETH_TXEN_GPIO B
+#define ETH_TXEN_PIN 11
+#define ETH_TXD0_GPIO B
+#define ETH_TXD0_PIN 12
+#define ETH_TXD1_GPIO B
+#define ETH_TXD1_PIN 13
+#endif
 
 void        eth_init(void);
 void        eth_reset(void);
