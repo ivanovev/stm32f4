@@ -29,6 +29,19 @@ void myip_update_seqn_ackn(TCP_FRAME *tfrm)
     tfrm->seqn = HTONS_32(tmp2);
 }
 
+uint16_t myip_get_data(TCP_FRAME *tfrm, uint16_t sz, uint8_t **ptr)
+{
+    uint32_t tmp1, tmp2;
+    tmp1 = tfrm->offset >> 4;
+    tmp2 = &tfrm->p.src_port;
+    tmp2 += tmp1*4;
+    *ptr = tmp2;
+    tmp1 = tfrm;
+    tmp1 += sz;
+    tmp1 -= tmp2;
+    return (uint16_t)tmp1;
+}
+
 uint16_t myip_handle_tcp_frame(ETH_FRAME *frm, uint16_t sz)
 {
     TCP_FRAME *tfrm = (TCP_FRAME*)frm;
@@ -50,13 +63,7 @@ uint16_t myip_handle_tcp_frame(ETH_FRAME *frm, uint16_t sz)
             break;
         case TCP_PSH:
             io_send_str3("TCP_PSH", 1);
-            tmp1 = tfrm->offset >> 4;
-            tmp2 = &tfrm->p.src_port;
-            tmp2 += tmp1*4;
-            ptr = tmp2;
-            tmp1 = tfrm;
-            tmp1 += sz;
-            tmp1 -= tmp2;
+            tmp1 = myip_get_data(tfrm, sz, &ptr);
             io_newline();
             io_send_str(ptr, tmp1);
             myip_swap_addr(&(tfrm->p));

@@ -1,7 +1,7 @@
 
 #include "main.h"
 #include "gpio/gpio.h"
-#include "uart/uart.h"
+#include "util/util.h"
 #ifdef HAL_ETH_MODULE_ENABLED
 #include "eth/mdio.h"
 #include "eth/eth.h"
@@ -78,6 +78,7 @@ COMMAND(gpio) {
     return picolSetHexResult(i,value);
 }
 
+#ifdef HAL_UART_MODULE_ENABLED
 COMMAND(uart) {
     USART_TypeDef *uartx = get_uartx(argv[0]);
     ARITY(uartx && (argc >= 2), "uartx str");
@@ -94,6 +95,7 @@ COMMAND(uart) {
         return PICOL_ERR;
     return picolSetHexResult(i,value);
 }
+#endif
 
 #ifdef HAL_ETH_MODULE_ENABLED
 COMMAND(mdio) {
@@ -129,7 +131,9 @@ void register_stm32f4_cmds(picolInterp *i)
     picolRegisterCmd(i, "gpiof", picol_gpio);
     picolRegisterCmd(i, "gpiog", picol_gpio);
     picolRegisterCmd(i, "gpioh", picol_gpio);
+#endif
 
+#ifdef HAL_UART_MODULE_ENABLED
     picolRegisterCmd(i, "uart1", picol_uart);
     picolRegisterCmd(i, "uart2", picol_uart);
     picolRegisterCmd(i, "uart3", picol_uart);
