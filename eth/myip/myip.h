@@ -60,9 +60,6 @@ typedef struct
     uint16_t dst_port;
 } preamble3;
 
-#define MAC_HEADER_SIZE sizeof(preamble1)
-//#define ARP_HEADER_SIZE 28
-
 typedef union
 {
     uint8_t packet[ETH_MAX_PACKET_SIZE];
@@ -120,11 +117,18 @@ typedef struct {
     con_handler con_handler_ptr;
 } UDP_ENTRY;
 
-#define UDP_HEADER_SIZE     0x8
 
+#define IPH_SZ    20
+#define UDPH_SZ    8
+#define TCPH_SZ   20
+#define IPUDPH_SZ (UIP_UDPH_LEN + UIP_IPH_LEN)
+#define IPTCPH_SZ (UIP_TCPH_LEN + UIP_IPH_LEN)
+
+#if 0
 #define UDP_CON_CLOSED      0x0
 #define UDP_CON_LISTEN      0x1
 #define UDP_CON_ESTABLISHED 0x2
+#endif
 
 typedef struct
 {
@@ -156,6 +160,7 @@ typedef struct
 #define ICMP_ECHO_REPLY     0x0
 
 #define UDP_PROTO           0x11
+#define TCP_PROTO          0x06
 
 void        myip_init(void);
 void        myip_update_arp_table(uint32_t ip_addr, uint8_t *mac_addr);

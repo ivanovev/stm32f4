@@ -106,9 +106,11 @@ uint16_t myip_handle_ip_frame(ETH_FRAME *frm, uint16_t sz)
 
     myip_update_arp_table(HTONS_32((uint32_t)ipfrm->p.src_ip_addr), ipfrm->p.src);
 
+#if 0
     uint16_t total_len = HTONS_16(ipfrm->p.total_len);
     if (total_len + MAC_HEADER_SIZE < sz)
         sz = total_len + MAC_HEADER_SIZE;
+#endif
 
     switch (ipfrm->p.proto)
     {

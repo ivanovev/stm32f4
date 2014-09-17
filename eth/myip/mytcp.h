@@ -4,11 +4,11 @@
 
 #include "myip.h"
 
-#define TCP_PROTO          0x06
-
+#if 1
 #define TCP_CON_CLOSED      0x0
 #define TCP_CON_LISTEN      0x1
 #define TCP_CON_ESTABLISHED 0x2
+#endif
 
 #pragma pack(1)
 typedef struct {
