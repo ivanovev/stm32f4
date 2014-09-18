@@ -82,6 +82,7 @@ uint16_t eth_input(ETH_FRAME *frm)
 
 void eth_output(ETH_FRAME *frm, uint16_t sz)
 {
+    io_send_int2("send_sz", sz);
     __IO ETH_DMADescTypeDef *DmaTxDesc = heth.TxDesc;
     uint8_t *buf = (uint8_t *)(heth.TxDesc->Buffer1Addr);
     mymemcpy(buf, frm->packet, sz);
@@ -91,9 +92,8 @@ void eth_output(ETH_FRAME *frm, uint16_t sz)
 void eth_io(void)
 {
     static ETH_FRAME frm;
+    frm.e.p.type = 0;
     uint16_t sz = eth_input(&frm);
-    if(!sz)
-        return;
     //MAC_FRAME *frm = myip_get_mac_frame(buf, sz);
     //io_send_hex4("src", frm.e.p.src, 6);
     //io_send_hex4("dst", frm.e.p.dst, 6);
@@ -107,7 +107,7 @@ void eth_io(void)
             sz = myip_handle_ip_frame(&frm, sz);
             break;
         default:
-            sz = 0;
+            sz = myip_handle_tcp_frame(&frm, sz);
             break;
     }
     if(sz)

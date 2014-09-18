@@ -118,11 +118,12 @@ typedef struct {
 } UDP_ENTRY;
 
 
+#define MACH_SZ   14
 #define IPH_SZ    20
 #define UDPH_SZ    8
 #define TCPH_SZ   20
-#define IPUDPH_SZ (UIP_UDPH_LEN + UIP_IPH_LEN)
-#define IPTCPH_SZ (UIP_TCPH_LEN + UIP_IPH_LEN)
+#define MACIPUDPH_SZ (MACH_SZ + UDPH_SZ + IPH_SZ)
+#define MACIPTCPH_SZ (MACH_SZ + TCPH_SZ + IPH_SZ)
 
 #if 0
 #define UDP_CON_CLOSED      0x0

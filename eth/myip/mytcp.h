@@ -24,7 +24,7 @@ typedef struct {
     uint16_t cksum;
     uint16_t urg;
 
-    uint8_t *data;
+    uint8_t data[];
 } TCP_FRAME;
 
 typedef struct {
