@@ -1,5 +1,5 @@
 
-#include "main.h"
+#include "pcl_misc.h"
 
 COMMAND(inthex) {
     char buf[MAXSTR] = "";

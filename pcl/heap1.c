@@ -1,5 +1,7 @@
 
-#include "main.h"
+#include <main.h>
+#include "heap1.h"
+#include "picol.h"
 
 #if 0
 #pragma message "BYTE_ALIGN:" STR(BYTE_ALIGN)

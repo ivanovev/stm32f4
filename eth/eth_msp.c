@@ -1,5 +1,5 @@
 
-#include "main.h"
+#include <main.h>
 #include "eth/eth.h"
 #include "eth/mdio.h"
 #include "uart/uart.h"
@@ -45,6 +45,8 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
     GPIO_INIT(ETH_TXD1_GPIO, ETH_TXD1_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
 
     __ETH_CLK_ENABLE();
+#ifdef HAL_UART_MODULE_ENABLED
     uart_send_str3("HAL_ETH_MspInit", 1);
+#endif
 }
 

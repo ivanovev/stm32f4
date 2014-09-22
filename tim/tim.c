@@ -1,11 +1,10 @@
 
-#include "main.h"
-#include "tim.h"
+#include <main.h>
 
 #define TIMx    JOIN(TIM, TIMn)
 
 #pragma message "TIM: TIM" STR(TIMn)
-#pragma message "TIM: TIM_INTERVAL = " STR(TIMx_INTERVAL)
+#pragma message "TIM: TIM_INTERVAL[ms] = " STR(TIMx_INTERVAL)
 
 TIM_HandleTypeDef TimHandle;
 extern void Error_Handler(void);

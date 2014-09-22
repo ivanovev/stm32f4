@@ -1,17 +1,9 @@
 
-#include "main.h"
-#include "gpio/led.h"
-#include "tim.h"
-
-extern void SystemClock_Config(void);
-extern uint32_t SystemCoreClock;
+#include <main.h>
 
 int main(void)
 {
-    HAL_Init();
-    SystemClock_Config();
-    led_init();
-    tim_init();
+    myinit();
     for (;;) {
         HAL_Delay(1000);
         //led_toggle();

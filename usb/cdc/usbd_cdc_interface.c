@@ -26,7 +26,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include <main.h>
 #include "usbd_cdc_interface.h"
 #include "tim/tim.h"
 #include "util/queue.h"
@@ -214,15 +214,19 @@ static int8_t CDC_Itf_Receive(uint8_t* buf, uint32_t *len)
     return (USBD_OK);
 }
 
-uint32_t VCP_read(char *buf)
+uint16_t VCP_read(char *buf)
 {
     return dequeue(&qcdci, (uint8_t*)buf, 1);
 }
 
-void VCP_write(const char *buf, uint32_t size)
+void VCP_write(const char *buf, uint16_t size)
 {
-    uint32_t i;
+#if 0
+    uint16_t i;
     for(i = 0; i < size; i++)
         enqueue(&qcdco, buf[i]);
+#else
+    enqueue_str(&qcdco, buf, size);
+#endif
 }
 

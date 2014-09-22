@@ -1,5 +1,5 @@
 
-#include "main.h"
+#include <main.h>
 
 #ifdef BTN_PIN
 #pragma message "BTN: GPIO" STR(BTN_GPIO) " PIN" STR(BTN_PIN)

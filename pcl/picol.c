@@ -1,5 +1,6 @@
 
-#include "main.h"
+#include "picol.h"
+#include "heap1.h"
 
 #ifndef __arm__
 static void ___print_token(picolParser *p)

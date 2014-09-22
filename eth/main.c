@@ -1,56 +1,22 @@
 
-#include "main.h"
-#include "pcl/pcl.h"
-#include "gpio/led.h"
-#ifdef HAL_PCD_MODULE_ENABLED
-#include "usb/cdc/usb.h"
-#endif
-#ifdef HAL_UART_MODULE_ENABLED
-#include "uart/uart.h"
-#endif
-
-extern void SystemClock_Config(void);
+#include <main.h>
+#include "eth/eth.h"
+#include "eth/myip/mytelnetd.h"
 
 int main(void)
 {
-    HAL_Init();
-    SystemClock_Config();
-    led_init();
-#ifdef HAL_PCD_MODULE_ENABLED
-    usb_init();
-    io_recv_str_ptr = VCP_read;
-    io_send_str_ptr = VCP_write;
-#else
-#ifdef HAL_UART_MODULE_ENABLED
-    uart_init();
-    io_recv_str_ptr = uart_recv_str;
-    io_send_str_ptr = uart_send_str;
-#endif
-#endif
-    pcl_init();
-    eth_init();
-#if 0
-    uint32_t sz;
-    char buf[IO_BUF_SZ];
-#endif
+    myinit();
+    io_recv_str_ptr = telnetd_recv_str;
+    io_send_str_ptr = telnetd_send_str;
     for (;;)
     {
-#if 0
-        sz = io_recv_str(buf);
-        if(sz)
-        {
-            if(buf[0] != '\n')
-            {
-                pcl_exec(buf);
-                io_send_str3(buf, 0);
-                io_prompt(1);
-            }
-            else
-                io_prompt(0);
-        }
-#else
-        eth_io();
-#endif
+        //eth_io();
+        pcl_io();
     }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    eth_io();
 }
 

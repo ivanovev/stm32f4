@@ -2,15 +2,9 @@
 #ifndef __MYIP_H__
 #define __MYIP_H__
 
-#include "main.h"
+#include <main.h>
 
 #define LOCAL_IP_ADDR 0xC0A80001
-
-#define ARP_FRAME_TYPE  0x0608
-
-#define IP_FRAME_TYPE   0x0008
-
-#define ICMP_ECHO       0x8
 
 #pragma pack(1)
 typedef struct
@@ -27,10 +21,10 @@ typedef struct
     uint16_t type;
 
     uint8_t ver_ihl;
-    uint8_t serv_type;
+    uint8_t dscp_ecn;
     uint16_t total_len;
     uint16_t id;
-    uint16_t frag_offset;
+    uint16_t frag;
     uint8_t ttl;
     uint8_t proto;
     uint16_t header_cksum;
@@ -46,10 +40,10 @@ typedef struct
     uint16_t type;
 
     uint8_t ver_ihl;
-    uint8_t serv_type;
+    uint8_t dscp_ecn;
     uint16_t total_len;
     uint16_t id;
-    uint16_t frag_offset;
+    uint16_t frag;
     uint8_t ttl;
     uint8_t proto;
     uint16_t header_cksum;
@@ -118,18 +112,13 @@ typedef struct {
 } UDP_ENTRY;
 
 
-#define MACH_SZ   14
+//#define MACH_SZ   14
+#define MACH_SZ   ETH_HEADER
 #define IPH_SZ    20
 #define UDPH_SZ    8
 #define TCPH_SZ   20
 #define MACIPUDPH_SZ (MACH_SZ + UDPH_SZ + IPH_SZ)
 #define MACIPTCPH_SZ (MACH_SZ + TCPH_SZ + IPH_SZ)
-
-#if 0
-#define UDP_CON_CLOSED      0x0
-#define UDP_CON_LISTEN      0x1
-#define UDP_CON_ESTABLISHED 0x2
-#endif
 
 typedef struct
 {
@@ -140,6 +129,9 @@ typedef struct
 
 #define ARP_TABLE_SZ        10
 #define UDP_TABLE_SZ        10
+
+#define ARP_FRAME_TYPE  0x0608
+#define IP_FRAME_TYPE   0x0008
 
 #define ARP_HTYPE           0x0100
 #define ARP_PTYPE           0x0008
@@ -158,6 +150,7 @@ typedef struct
 #define FRAG_FLAG           0x0020
 
 #define ICMP_PROTO          0x01
+#define ICMP_ECHO           0x8
 #define ICMP_ECHO_REPLY     0x0
 
 #define UDP_PROTO           0x11

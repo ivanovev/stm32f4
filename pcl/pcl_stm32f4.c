@@ -1,5 +1,5 @@
 
-#include "main.h"
+#include "pcl_stm32f4.h"
 #include "gpio/gpio.h"
 #include "util/util.h"
 #ifdef HAL_ETH_MODULE_ENABLED
@@ -29,6 +29,7 @@ static GPIO_TypeDef *get_gpiox(char *a)
     return 0;
 }
 
+#ifdef HAL_UART_MODULE_ENABLED
 static USART_TypeDef *get_uartx(char *a)
 {
     char x = a[4];
@@ -46,6 +47,7 @@ static USART_TypeDef *get_uartx(char *a)
         return USART6;
     return 0;
 }
+#endif
 
 COMMAND(gpio) {
     GPIO_TypeDef *gpiox = get_gpiox(argv[0]);

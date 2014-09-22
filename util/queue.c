@@ -2,19 +2,25 @@
 #include "stdint.h"
 #include "queue.h"
 
-int enqueue(struct Queue *q, uint8_t data)
+void enqueue(struct Queue *q, uint8_t data)
 {
     q->q[q->head] = data;
     q->head = ((q->head + 1) == IO_BUF_SZ) ? 0 : q->head + 1;
-    return 1;
 }
 
-int dequeue(struct Queue *q, uint8_t *buf, uint8_t newline)
+void enqueue_str(struct Queue *q, uint8_t *data, uint16_t sz)
+{
+    uint16_t i;
+    for(i = 0; i < sz; i++)
+        enqueue(q, data[i]);
+}
+
+uint16_t dequeue(struct Queue *q, uint8_t *buf, uint8_t newline)
 {
     if(q->head == q->tail)
         return 0;
-    int len = 0;
-    uint32_t qptr = q->tail;
+    uint16_t len = 0;
+    uint16_t qptr = q->tail;
     while(1)
     {   
         qptr = (q->tail + len) % IO_BUF_SZ;

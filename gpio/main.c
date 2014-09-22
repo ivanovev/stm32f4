@@ -1,14 +1,9 @@
 
-#include "main.h"
-
-extern void SystemClock_Config(void);
-extern uint32_t SystemCoreClock;
+#include <main.h>
 
 int main(void)
 {
-    HAL_Init();
-    SystemClock_Config();
-    led_init();
+    myinit();
     //btn_init();
     led_toggle();
     for (;;) {

@@ -98,19 +98,13 @@ uint16_t myip_handle_ip_frame(ETH_FRAME *frm, uint16_t sz)
 {
     IP_FRAME* ipfrm = (IP_FRAME*)frm;
 
-    if ((ipfrm->p.ver_ihl != IP_VER_IHL) || ((ipfrm->p.frag_offset & FRAG_MASK) != 0))
+    if ((ipfrm->p.ver_ihl != IP_VER_IHL) || ((ipfrm->p.frag & FRAG_MASK) != 0))
         return 0;
 
     if (HTONS_32(ipfrm->p.dst_ip_addr) != local_ip_addr)
         return 0;
 
     myip_update_arp_table(HTONS_32((uint32_t)ipfrm->p.src_ip_addr), ipfrm->p.src);
-
-#if 0
-    uint16_t total_len = HTONS_16(ipfrm->p.total_len);
-    if (total_len + MAC_HEADER_SIZE < sz)
-        sz = total_len + MAC_HEADER_SIZE;
-#endif
 
     switch (ipfrm->p.proto)
     {

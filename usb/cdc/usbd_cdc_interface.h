@@ -34,8 +34,8 @@
 #include "stdint.h"
 
 extern USBD_CDC_ItfTypeDef  USBD_CDC_fops;
-uint32_t VCP_read(char *buf);
-void VCP_write(const char *buf, uint32_t sz);
+uint16_t VCP_read(char *buf);
+void VCP_write(const char *buf, uint16_t sz);
 extern volatile char g_VCPInitialized;
 
 /* Exported macro ------------------------------------------------------------*/

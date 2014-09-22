@@ -6,6 +6,7 @@
 #include "stm32f4xx_hal.h"
 #include "util/macro.h"
 #include "util/util.h"
+#include "util/myinit.h"
 #include "led.h"
 #include "btn.h"
 

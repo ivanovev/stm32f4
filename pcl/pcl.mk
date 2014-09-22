@@ -1,4 +1,5 @@
 
+CFLAGS += -DMY_PCL
 C_SRCS += $(ROOT_DIR)/pcl/picol.c
 C_SRCS += $(ROOT_DIR)/pcl/heap1.c
 C_SRCS += $(ROOT_DIR)/pcl/pcl.c

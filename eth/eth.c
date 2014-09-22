@@ -1,6 +1,7 @@
 
-#include "main.h"
+#include <main.h>
 #include "eth.h"
+#include "eth/myip/mytcp.h"
 
 #pragma message "PHY_ADDRESS: " STR(PHY_ADDRESS)
 
@@ -32,7 +33,9 @@ void eth_init(void)
 
     if (HAL_ETH_Init(&heth) == HAL_OK)
     {
-        io_send_str3("HAL_ETH_Init = ok", 1);
+#ifdef HAL_UART_MODULE_ENABLED
+        uart_send_str3("HAL_ETH_Init = ok", 1);
+#endif
     }
     /* Initialize Tx Descriptors list: Chain Mode */
     HAL_ETH_DMATxDescListInit(&heth, DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);
@@ -82,8 +85,8 @@ uint16_t eth_input(ETH_FRAME *frm)
 
 void eth_output(ETH_FRAME *frm, uint16_t sz)
 {
-    io_send_int2("send_sz", sz);
-    __IO ETH_DMADescTypeDef *DmaTxDesc = heth.TxDesc;
+    //io_send_int2("send_sz", sz);
+    //__IO ETH_DMADescTypeDef *DmaTxDesc = heth.TxDesc;
     uint8_t *buf = (uint8_t *)(heth.TxDesc->Buffer1Addr);
     mymemcpy(buf, frm->packet, sz);
     HAL_ETH_TransmitFrame(&heth, sz);
@@ -107,7 +110,8 @@ void eth_io(void)
             sz = myip_handle_ip_frame(&frm, sz);
             break;
         default:
-            sz = myip_handle_tcp_frame(&frm, sz);
+            sz = myip_handle_tcp_conn(&frm, sz);
+            //sz = 0;
             break;
     }
     if(sz)

@@ -1,7 +1,7 @@
 
 # Binaries will be generated with this name (.elf, .bin, .hex, etc)
-PROJ_NAME = $(shell basename `pwd`)
-PWD = $(shell pwd)
+# PROJ = $(shell basename `pwd`)
+# PWD = $(shell pwd)
 
 TRGT=arm-none-eabi-
 CC=$(TRGT)gcc
@@ -20,6 +20,7 @@ C_SRCS += $(UTIL_DIR)/system_clock.c
 C_SRCS += $(UTIL_DIR)/systick_it.c
 C_SRCS += $(UTIL_DIR)/queue.c
 C_SRCS += $(UTIL_DIR)/util.c
+C_SRCS += $(UTIL_DIR)/myinit.c
 #C_SRCS += $(UTIL_DIR)/startup_stm32f4xx.c
 #C_SRCS += $(UTIL_DIR)/syscalls.c
 
@@ -45,7 +46,7 @@ CFLAGS += -mlittle-endian
 CFLAGS += -mfloat-abi=soft
 #CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 CFLAGS += -funsigned-char
-CFLAGS += -I.
+CFLAGS += -I$(PWD)
 CFLAGS += -DSTM32F407xx
 IINCDIR = $(patsubst %,-I%,$(INCDIR))
 CFLAGS += $(IINCDIR)
@@ -63,7 +64,7 @@ LDFLAGS += $(MTHUMB)
 #LDFLAGS += -nostartfiles
 LDFLAGS += -nostdlib
 LDFLAGS += -Wl,-T$(LDSCRIPT)
-LDFLAGS += -Wl,-Map=build/$(PROJ_NAME).map
+LDFLAGS += -Wl,-Map=build/$(PROJ).map
 LDFLAGS += -Wl,--gc-sections
 #LDFLAGS += -dead-strip
 
@@ -71,7 +72,7 @@ LDFLAGS += -Wl,--gc-sections
 STLINK=~/stlink.git
 
 BUILDDIR = $(PWD)/build
-OUTFILES = $(BUILDDIR)/$(PROJ_NAME).elf $(BUILDDIR)/$(PROJ_NAME).hex $(BUILDDIR)/$(PROJ_NAME).bin
+OUTFILES = $(BUILDDIR)/$(PROJ).elf $(BUILDDIR)/$(PROJ).hex $(BUILDDIR)/$(PROJ).bin
 
 OBJDIR = $(BUILDDIR)/obj
 C_OBJS  = $(addprefix $(OBJDIR)/, $(notdir $(C_SRCS:.c=.o)))
@@ -105,7 +106,7 @@ $(BUILDDIR) $(OBJDIR):
 %.bin: %.elf
 	@echo bin
 	@$(OBJCOPY) --keep-file-symbols -O binary $< $@
-	@wc -c build/$(PROJ_NAME).bin
+	@wc -c build/$(PROJ).bin
 
 $(C_OBJS) : $(OBJDIR)/%.o : %.c Makefile *.h
 	@echo $<
@@ -121,7 +122,7 @@ clean:
 
 # Flash the STM32F4
 burn:
-	$(STLINK)/st-flash write $(PROJ_NAME).bin 0x8000000
+	$(STLINK)/st-flash write $(PROJ).bin 0x8000000
 
 echo:
 	@echo $(OBJDIR)
@@ -134,5 +135,5 @@ echo:
 	@echo $(PWD)
 
 debug:
-	$(GDB) -ex "target remote localhost:3333; monitor reset halt; load" build/$(PROJ_NAME).elf
+	$(GDB) -ex "target remote localhost:3333; monitor reset halt; load" build/$(PROJ).elf
 

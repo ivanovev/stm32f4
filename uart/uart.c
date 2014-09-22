@@ -1,6 +1,5 @@
 
-#include "uart.h"
-#include "gpio/led.h"
+#include "uart/uart.h"
 
 #pragma message "UART: UART" STR(UARTn)
 #pragma message "UART_BAUDRATE: " STR(UART_BAUDRATE)
@@ -9,7 +8,7 @@ UART_HandleTypeDef huart;
 Queue quart;
 uint8_t uart_rx_buf[IO_BUF_SZ];
 
-uint32_t uart_recv_str(char *buf)
+uint16_t uart_recv_str(char *buf)
 {
     return dequeue(&quart, (uint8_t*)buf, 1);
 }
@@ -52,7 +51,7 @@ void uart_init(void)
 #endif
 }
 
-void uart_send_str(const char *str, uint32_t len)
+void uart_send_str(const char *str, uint16_t len)
 {
     HAL_UART_Transmit(&huart, (uint8_t*)str, len, 100);
 }

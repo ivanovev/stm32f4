@@ -1,5 +1,5 @@
 
-CFLAGS += -DHAL_ETH_MODULE_ENABLED
+CFLAGS += -DHAL_ETH_MODULE_ENABLED -DMY_ETH
 C_SRCS += $(ROOT_DIR)/eth/eth.c
 C_SRCS += $(ROOT_DIR)/eth/eth_it.c
 C_SRCS += $(ROOT_DIR)/eth/eth_msp.c

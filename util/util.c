@@ -277,9 +277,25 @@ uint32_t mysnprintf(char *buf, uint32_t sz, const char *fmt, ...)
     return i;
 }
 
-inline int myisspace(char c)
+inline uint8_t myisspace(char c)
 {
-    return (c == ' ' || c == '\t' || c == '\n' || c == '\12');
+    return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\12');
+}
+
+inline uint8_t myisnewline(char c)
+{
+    return (c == '\n' || c == '\r');
+}
+
+uint8_t myisempty(char *str)
+{
+    if(str[0] == 0)
+        return 1;
+    if(str[0] == '\n')
+        return 1;
+    if(str[0] == '\r')
+        return 1;
+    return 0;
 }
 
 char *mystrchr(const char *s, int c)
@@ -303,14 +319,14 @@ char* mystrncat(char *dest, const char *src, uint32_t n)
     return dest;
 }
 
-uint32_t io_recv_str(char *buf)
+uint16_t io_recv_str(char *buf)
 {
     if(io_recv_str_ptr)
         return io_recv_str_ptr(buf);
     return 0;
 }
 
-void io_send_str(const char *str, uint32_t n)
+void io_send_str(const char *str, uint16_t n)
 {
     if(io_send_str_ptr)
         io_send_str_ptr(str, n);
@@ -326,6 +342,18 @@ void io_send_str3(const char *str, uint8_t newline)
     if(newline)
         io_newline();
     io_send_str2(str);
+}
+
+void io_send_str4(const char *str)
+{
+    uint16_t i;
+    for(i = mystrnlen(str, IO_BUF_SZ) - 1; i > 0; i--)
+    {
+        if(!myisnewline(str[i]))
+            break;
+    }
+    if(i || !myisnewline(str[0]))
+        io_send_str(str, i + 1);
 }
 
 void io_send_int(int n)
@@ -372,7 +400,7 @@ void io_send_hex4(const char *str, const uint8_t *bytes, uint32_t n)
 
 void io_newline(void)
 {
-    io_send_str2("\n\r");
+    io_send_str("\n\r", 2);
 }
 
 void io_prompt(uint8_t newline)
@@ -380,5 +408,21 @@ void io_prompt(uint8_t newline)
     if(newline)
         io_newline();
     io_send_str("#> ", 3);
+}
+
+void io_echo(void)
+{
+    char buf[IO_BUF_SZ];
+    uint16_t sz = io_recv_str(buf);
+    if(sz)
+    {
+        if(!myisnewline(buf[0]))
+        {
+            io_send_str4(buf);
+            io_prompt(1);
+        }
+        else
+            io_prompt(0);
+    }
 }
 

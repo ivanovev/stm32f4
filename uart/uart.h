@@ -2,7 +2,7 @@
 #ifndef __UART_H__
 #define __UART_H__
 
-#include "main.h"
+#include <main.h>
 
 #ifdef BOARD_E407
 #define UARTn 6
@@ -52,8 +52,8 @@
 #endif
 
 void uart_init(void);
-uint32_t uart_recv_str(char *buf);
-void uart_send_str(const char *str, uint32_t len);
+uint16_t uart_recv_str(char *buf);
+void uart_send_str(const char *str, uint16_t len);
 
 volatile uint32_t* uart_get_reg_ptr(USART_TypeDef *uartx, const char *reg);
 uint32_t    uart_get_reg(USART_TypeDef *uartx, const char *reg);

@@ -17,6 +17,10 @@ HAL_DIR=$(CUBE_DIR)/Drivers/STM32F4xx_HAL_Driver
 CMSIS_DIR=$(CUBE_DIR)/Drivers/CMSIS/Device/ST/STM32F4xx
 USBD_DIR=$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library
 
+# Binaries will be generated with this name (.elf, .bin, .hex, etc)
+PWD = $(shell pwd)
+PROJ = $(shell basename $(PWD))
+
 ROOT_DIR = ..
 UTIL_DIR = $(ROOT_DIR)/util
 

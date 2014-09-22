@@ -4,6 +4,7 @@
 
 #include "stm32f4xx_hal.h"
 #include "util/macro.h"
+#include "util/myinit.h"
 
 #define TIMn                3
 #define TIMx_INTERVAL       5
