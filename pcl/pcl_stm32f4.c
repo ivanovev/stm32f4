@@ -2,9 +2,15 @@
 #include "pcl_stm32f4.h"
 #include "gpio/gpio.h"
 #include "util/util.h"
-#ifdef HAL_ETH_MODULE_ENABLED
+
+#ifdef MY_ETH
 #include "eth/mdio.h"
 #include "eth/eth.h"
+#include "eth/myip/mydatad.h"
+#endif
+
+#ifdef MY_FLASH
+#include "flash/flash.h"
 #endif
 
 static GPIO_TypeDef *get_gpiox(char *a)
@@ -48,6 +54,43 @@ static USART_TypeDef *get_uartx(char *a)
     return 0;
 }
 #endif
+
+#ifdef MY_FLASH
+COMMAND(flash) {
+    ARITY(argc >= 2, "flash mr|mw addr ...");
+    uint32_t *ptr = (uint32_t*)str2int(argv[2]);
+    if(SUBCMD1("mr"))
+        return picolSetHexResult(i, *ptr);
+    if(SUBCMD1("mw"))
+    {
+        *ptr = str2int(argv[2]);
+        return picolSetResult(i, argv[2]);
+    }
+    if(SUBCMD1("fsz1"))
+    {
+        return picolSetIntResult(i, flash_fsz1());
+    }
+    if(SUBCMD1("fsz2"))
+    {
+        return picolSetIntResult(i, flash_fsz2());
+    }
+#ifdef MY_ETH
+    if(SUBCMD1("tx"))
+    {
+        uint32_t sz = str2int(argv[2]);
+        myip_datad_io_flash_tx(sz);
+        return picolSetResult(i, argv[2]);
+    }
+#endif
+}
+#endif
+
+COMMAND(mw) {
+    ARITY(argc >= 3, "mw addr data");
+    uint32_t *ptr = str2int(argv[1]);
+    *ptr = str2int(argv[2]);
+    return picolSetResult(i, argv[2]);
+}
 
 COMMAND(gpio) {
     GPIO_TypeDef *gpiox = get_gpiox(argv[0]);
@@ -124,6 +167,7 @@ COMMAND(eth) {
 
 void register_stm32f4_cmds(picolInterp *i)
 {
+    picolRegisterCmd(i, "flash", picol_flash);
 #if 1
     picolRegisterCmd(i, "gpioa", picol_gpio);
     picolRegisterCmd(i, "gpiob", picol_gpio);

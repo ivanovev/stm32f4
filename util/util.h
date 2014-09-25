@@ -36,7 +36,7 @@ uint8_t     myisempty(char *str);
 char*       mystrchr(const char *s, int c);
 char*       mystrncat(char *dest, const char *src, uint32_t n);
 
-#define IO_BUF_SZ 128
+#define IO_BUF_SZ 512
 
 typedef uint16_t (*io_recv_func)(char *buf);
 extern io_recv_func io_recv_str_ptr;

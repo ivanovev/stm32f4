@@ -25,7 +25,7 @@ void pcl_io(void)
     uint16_t sz = io_recv_str(buf);
     if(sz)
     {
-        if(!myisnewline(buf[0]))
+        if(!myisempty(buf[0]))
         {
             pcl_exec(buf);
             io_send_str4(buf);

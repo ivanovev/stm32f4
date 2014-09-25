@@ -4,12 +4,12 @@
 
 #include "myip.h"
 
-#if 1
 #define TCP_CON_CLOSED      0x0
 #define TCP_CON_LISTEN      0x1
 #define TCP_CON_ESTABLISHED 0x2
 #define TCP_CON_CLOSE       0x3
-#endif
+
+#define TCP_TABLE_SZ        5
 
 #pragma pack(1)
 typedef struct {
@@ -29,6 +29,7 @@ typedef struct {
 } TCP_FRAME;
 
 typedef struct {
+    uint8_t state;
     uint8_t remote_mac_addr[6];
     uint32_t remote_ip_addr;
     uint16_t remote_port;
@@ -36,13 +37,11 @@ typedef struct {
 
     uint32_t seqn;
     uint32_t ackn;
-
-    uint8_t state;
 } TCP_CON;
 
 void        myip_tcp_init(void);
-uint16_t    myip_handle_tcp_frame(ETH_FRAME *frm, uint16_t sz);
-uint16_t    myip_handle_tcp_conn(ETH_FRAME *frm, uint16_t sz);
+uint16_t    myip_tcp_frame_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index);
+uint16_t    myip_tcp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index);
 
 #endif
 

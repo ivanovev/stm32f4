@@ -97,23 +97,7 @@ void eth_io(void)
     static ETH_FRAME frm;
     frm.e.p.type = 0;
     uint16_t sz = eth_input(&frm);
-    //MAC_FRAME *frm = myip_get_mac_frame(buf, sz);
-    //io_send_hex4("src", frm.e.p.src, 6);
-    //io_send_hex4("dst", frm.e.p.dst, 6);
-    //io_send_hex4("type", (uint8_t*)(&frm.e.p.type), 2);
-    switch(frm.e.p.type)
-    {
-        case ARP_FRAME_TYPE:
-            sz = myip_handle_arp_frame(&frm, sz);
-            break;
-        case IP_FRAME_TYPE:
-            sz = myip_handle_ip_frame(&frm, sz);
-            break;
-        default:
-            sz = myip_handle_tcp_conn(&frm, sz);
-            //sz = 0;
-            break;
-    }
+    sz = myip_eth_frame_handler(&frm, sz);
     if(sz)
         eth_output(&frm, sz);
 }

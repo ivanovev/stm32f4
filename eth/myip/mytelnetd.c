@@ -1,5 +1,6 @@
 
 #include "mytelnetd.h"
+#include "uart/uart.h"
 
 #define STATE_NORMAL 0
 #define STATE_IAC    1

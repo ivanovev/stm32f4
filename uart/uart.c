@@ -1,5 +1,6 @@
 
 #include "uart/uart.h"
+#include "util/queue.h"
 
 #pragma message "UART: UART" STR(UARTn)
 #pragma message "UART_BAUDRATE: " STR(UART_BAUDRATE)

@@ -1,6 +1,7 @@
 
 #include "mytcp.h"
 #include "mytelnetd.h"
+#include "uart/uart.h"
 
 #define TCP_FIN 0x01
 #define TCP_SYN 0x02
@@ -20,9 +21,10 @@
 
 extern uint8_t local_mac_addr[];
 extern uint32_t local_ip_addr;
-static uint8_t seqnum = 0xA; // my initial tcp sequence number
+extern CON_ENTRY con_table[CON_TABLE_SZ];
 
 TCP_CON tcp_con;
+static uint8_t seqnum = 0xA; // my initial tcp sequence number
 
 void myip_tcp_init(void)
 {
@@ -32,14 +34,23 @@ void myip_tcp_init(void)
     myip_telnetd_init();
 }
 
-uint16_t myip_get_data(TCP_FRAME *tfrm, uint16_t sz, uint8_t **ptr)
+uint16_t myip_tcp_data(TCP_FRAME *tfrm, uint16_t sz, uint8_t **ptr)
 {
     uint32_t tmp1, tmp2;
-    tmp1 = tfrm->offset >> 4;
     tmp2 = (uint32_t)&tfrm->p.src_port;
-    tmp2 += tmp1*4;
-    *ptr = (uint8_t*)tmp2;
-    return HTONS_16(tfrm->p.total_len) - IPH_SZ - TCPH_SZ;
+    if(sz)
+    {
+        tmp1 = tfrm->offset >> 4;
+        tmp2 += tmp1*4;
+        *ptr = (uint8_t*)tmp2;
+        return HTONS_16(tfrm->p.total_len) - IPH_SZ - TCPH_SZ;
+    }
+    else
+    {
+        tmp2 += TCPH_SZ;
+        *ptr = (uint8_t*)tmp2;
+        return ETH_MAX_PACKET_SIZE - IPH_SZ - TCPH_SZ;
+    }
 }
 
 void myip_get_addr(TCP_FRAME *tfrm, TCP_CON *con)
@@ -52,7 +63,7 @@ void myip_get_addr(TCP_FRAME *tfrm, TCP_CON *con)
     tcp_con.ackn = HTONS_32(tfrm->seqn) + 1;
 }
 
-void myip_update_addr(TCP_FRAME *tfrm, TCP_CON *con)
+void myip_update_frame(TCP_FRAME *tfrm, TCP_CON *con)
 {
     tfrm->p.src_ip_addr = HTONS_32(local_ip_addr);
     tfrm->p.src_port = HTONS_16(tcp_con.local_port);
@@ -74,15 +85,31 @@ void myip_update_addr(TCP_FRAME *tfrm, TCP_CON *con)
     tfrm->cksum = 0;
 }
 
-uint16_t myip_handle_tcp_conn(ETH_FRAME *frm, uint16_t sz)
+uint16_t myip_tcp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
 {
     TCP_FRAME *tfrm = (TCP_FRAME*)frm;
+    if (con_index >= CON_TABLE_SZ)
+        return 0;
+    if(sz)
+    {
+        if(tfrm->p.proto != TCP_PROTO)
+            return 0;
+        if(con_table[con_index].proto != TCP_PROTO)
+            return 0;
+        if(con_table[con_index].port != HTONS_16(tfrm->p.dst_port))
+            return 0;
+        if(tfrm->flags == TCP_ACK)
+            return 0;
+        return myip_tcp_frame_handler(frm, sz, con_index);
+    }
     if(tcp_con.state != TCP_CON_CLOSED)
     {
-        sz = myip_telnetd_io(tfrm->data, sz);
+        uint8_t *ptr;
+        myip_tcp_data(tfrm, sz, &ptr);
+        sz = con_table[con_index].con_handler_ptr(ptr, 0);
         if(sz > 0)
         {
-            myip_update_addr(tfrm, &tcp_con);
+            myip_update_frame(tfrm, &tcp_con);
             tcp_con.seqn += sz;
             tfrm->flags = TCP_PSH | TCP_ACK;
             tfrm->p.total_len = HTONS_16(IPH_SZ + TCPH_SZ + sz);
@@ -92,10 +119,12 @@ uint16_t myip_handle_tcp_conn(ETH_FRAME *frm, uint16_t sz)
     return 0;
 }
 
-uint16_t myip_handle_tcp_frame(ETH_FRAME *frm, uint16_t sz)
+uint16_t myip_tcp_frame_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
 {
     TCP_FRAME *tfrm = (TCP_FRAME*)frm;
     uint8_t *ptr;
+    if(!sz)
+        return 0;
     if(tcp_con.state != TCP_CON_CLOSED)
     {
         if(HTONS_32(tfrm->p.src_ip_addr) != tcp_con.remote_ip_addr)
@@ -103,17 +132,13 @@ uint16_t myip_handle_tcp_frame(ETH_FRAME *frm, uint16_t sz)
         if(HTONS_16(tfrm->p.src_port) != tcp_con.remote_port)
             return 0;
     }
-    if(tfrm->flags == TCP_ACK)
-    {
-        return 0;
-    }
     switch(tfrm->flags & TCP_CTL & ~TCP_ACK)
     {
         case TCP_SYN:
             //uart_send_str3("TCP_SYN", 1);
             tcp_con.state = TCP_CON_LISTEN;
             myip_get_addr(tfrm, &tcp_con);
-            myip_update_addr(tfrm, &tcp_con);
+            myip_update_frame(tfrm, &tcp_con);
             myip_telnetd_init();
 
             tcp_con.seqn += 1;
@@ -131,10 +156,10 @@ uint16_t myip_handle_tcp_frame(ETH_FRAME *frm, uint16_t sz)
             break;
         case TCP_PSH:
             //uart_send_str3("TCP_PSH", 1);
-            sz = myip_get_data(tfrm, sz, &ptr);
+            sz = myip_tcp_data(tfrm, sz, &ptr);
             tcp_con.ackn += sz;
-            sz = myip_telnetd_io(ptr, sz);
-            myip_update_addr(tfrm, &tcp_con);
+            sz = con_table[con_index].con_handler_ptr(ptr, sz);
+            myip_update_frame(tfrm, &tcp_con);
             tcp_con.seqn += sz;
 
             if(tcp_con.state == TCP_CON_CLOSE)
@@ -154,7 +179,7 @@ uint16_t myip_handle_tcp_frame(ETH_FRAME *frm, uint16_t sz)
             myip_get_addr(tfrm, &tcp_con);
             tcp_con.ackn = HTONS_32(tfrm->seqn) + 1;
             tcp_con.seqn = HTONS_32(tfrm->ackn);
-            myip_update_addr(tfrm, &tcp_con);
+            myip_update_frame(tfrm, &tcp_con);
             tfrm->flags = TCP_FIN | TCP_ACK;
             tcp_con.state = TCP_CON_CLOSED;
             myip_tcp_init();
