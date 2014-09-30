@@ -36,3 +36,17 @@ uint32_t flash_fsz2(void)
     return flash_fsz(USER_FLASH_MID_ADDR, USER_FLASH_END_ADDR);
 }
 
+#if 1
+uint8_t flash_write(uint32_t addr, uint32_t data)
+{
+    if((USER_FLASH_START_ADDR <= addr) && (addr <= (USER_FLASH_END_ADDR - 4)))
+    {
+        if(HAL_FLASH_Program(TYPEPROGRAM_WORD, addr & 0xFFFFFFFC, data) != HAL_OK)
+            return 1;
+    }
+    else
+        return 1;
+    return 0;
+}
+#endif
+

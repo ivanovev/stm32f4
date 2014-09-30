@@ -10,7 +10,6 @@
 typedef struct {
     Queue qi;
     Queue qo;
-    uint8_t state;
 } TELNETD_STATE;
 
 void        myip_telnetd_init(void);

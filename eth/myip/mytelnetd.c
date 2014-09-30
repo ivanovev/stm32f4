@@ -23,7 +23,6 @@ uint8_t buf[IO_BUF_SZ];
 
 void myip_telnetd_init(void)
 {
-    tds.state = STATE_CLOSE;
     tds.qi.head = 0;
     tds.qi.tail = 0;
     tds.qo.head = 0;

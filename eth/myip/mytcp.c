@@ -88,6 +88,7 @@ void myip_update_frame(TCP_FRAME *tfrm, TCP_CON *con)
 uint16_t myip_tcp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
 {
     TCP_FRAME *tfrm = (TCP_FRAME*)frm;
+    //uart_send_int2("myip_tcp_con_handler", sz);
     if (con_index >= CON_TABLE_SZ)
         return 0;
     if(sz)
@@ -104,6 +105,8 @@ uint16_t myip_tcp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
     }
     if(tcp_con.state != TCP_CON_CLOSED)
     {
+        if(con_table[con_index].port != tcp_con.local_port)
+            return 0;
         uint8_t *ptr;
         myip_tcp_data(tfrm, sz, &ptr);
         sz = con_table[con_index].con_handler_ptr(ptr, 0);
@@ -132,6 +135,8 @@ uint16_t myip_tcp_frame_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
         if(HTONS_16(tfrm->p.src_port) != tcp_con.remote_port)
             return 0;
     }
+    if(tfrm->flags == TCP_ACK)
+        return 0;
     switch(tfrm->flags & TCP_CTL & ~TCP_ACK)
     {
         case TCP_SYN:
@@ -160,11 +165,14 @@ uint16_t myip_tcp_frame_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
             tcp_con.ackn += sz;
             sz = con_table[con_index].con_handler_ptr(ptr, sz);
             myip_update_frame(tfrm, &tcp_con);
+            //uart_send_int2("TCP_PSH.sz", sz);
             tcp_con.seqn += sz;
 
             if(tcp_con.state == TCP_CON_CLOSE)
             {
+                //uart_send_str3("TCP_CON_CLOSE", 1);
                 tfrm->flags = TCP_FIN | TCP_ACK;
+                //tfrm->flags = TCP_ACK;
                 tcp_con.seqn += 1;
             }
             else if(sz > 0)
@@ -176,6 +184,7 @@ uint16_t myip_tcp_frame_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
             return MACH_SZ + IPH_SZ + TCPH_SZ + sz;
         case TCP_FIN:
             //uart_send_str3("TCP_FIN", 1);
+            //uart_send_int2("con_state", tcp_con.state);
             myip_get_addr(tfrm, &tcp_con);
             tcp_con.ackn = HTONS_32(tfrm->seqn) + 1;
             tcp_con.seqn = HTONS_32(tfrm->ackn);

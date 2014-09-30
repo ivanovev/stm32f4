@@ -153,8 +153,11 @@ uint16_t myip_eth_frame_handler(ETH_FRAME *frm, uint16_t sz)
         i = 0;
     if(i >= CON_TABLE_SZ)
         i = 0;
+    if(!con_table[i].con_handler_ptr)
+        i = 0;
     for(; i < CON_TABLE_SZ; i++)
     {
+        //uart_send_int2("myip_eth_frame_handler.i", i);
         if(!con_table[i].con_handler_ptr)
             break;
         if(con_table[i].proto == UDP_PROTO)

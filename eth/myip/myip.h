@@ -156,9 +156,9 @@ typedef struct
 #define UDP_PROTO           0x11
 #define TCP_PROTO          0x06
 
-#define UDP_PORT_DBG      1234
-#define TCP_PORT_TELNET     23
-#define TCP_PORT_DATA     8888
+#define UDP_PORT_DBG    1234
+#define TCP_PORT_TELNET 23
+#define TCP_PORT_DATA   8888
 
 void        myip_init(void);
 void        myip_update_arp_table(uint32_t ip_addr, uint8_t *mac_addr);
