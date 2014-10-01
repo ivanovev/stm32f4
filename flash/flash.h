@@ -29,6 +29,8 @@
 uint32_t    flash_fsz1(void);
 uint32_t    flash_fsz2(void);
 uint8_t     flash_write(uint32_t addr, uint32_t data);
+uint8_t     flash_write_data(uint8_t *data, uint16_t sz, uint32_t addr);
+uint32_t    flash_erase2(void);
 
 #endif /* __FLASH_H__ */
 

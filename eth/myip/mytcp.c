@@ -18,6 +18,7 @@
 #define TCP_OPT_MSS_LEN 4
 
 #define TCP_MSS ETH_MAX_PACKET_SIZE
+//#define TCP_MSS (MACH_SZ + IPH_SZ + TCPH_SZ + 512)
 
 extern uint8_t local_mac_addr[];
 extern uint32_t local_ip_addr;
@@ -91,7 +92,10 @@ uint16_t myip_tcp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
     //uart_send_int2("myip_tcp_con_handler", sz);
     if (con_index >= CON_TABLE_SZ)
         return 0;
-    if(sz)
+    uint8_t flags = 0;
+    uint8_t *ptr;
+    uint16_t sz1 = 0, sz2 = 0;
+    if(sz > 0)
     {
         if(tfrm->p.proto != TCP_PROTO)
             return 0;
@@ -99,29 +103,93 @@ uint16_t myip_tcp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
             return 0;
         if(con_table[con_index].port != HTONS_16(tfrm->p.dst_port))
             return 0;
-        if(tfrm->flags == TCP_ACK)
-            return 0;
-        return myip_tcp_frame_handler(frm, sz, con_index);
-    }
-    if(tcp_con.state != TCP_CON_CLOSED)
-    {
-        if(con_table[con_index].port != tcp_con.local_port)
-            return 0;
-        uint8_t *ptr;
-        myip_tcp_data(tfrm, sz, &ptr);
-        sz = con_table[con_index].con_handler_ptr(ptr, 0);
-        if(sz > 0)
+        if(tcp_con.state != TCP_CON_CLOSED)
         {
-            myip_update_frame(tfrm, &tcp_con);
-            tcp_con.seqn += sz;
-            tfrm->flags = TCP_PSH | TCP_ACK;
-            tfrm->p.total_len = HTONS_16(IPH_SZ + TCPH_SZ + sz);
-            return MACH_SZ + IPH_SZ + TCPH_SZ + sz;
+            if(tcp_con.remote_ip_addr != HTONS_32(tfrm->p.src_ip_addr))
+                return 0;
+            if(tcp_con.remote_port != HTONS_16(tfrm->p.src_port))
+                return 0;
         }
+        flags = tfrm->flags & TCP_CTL & ~TCP_ACK;
+        //return myip_tcp_frame_handler(frm, sz, con_index);
+    }
+    if(flags == TCP_SYN)
+    {
+        if(tcp_con.state != TCP_CON_CLOSED)
+            return 0;
+        tcp_con.state = TCP_CON_LISTEN;
+        myip_get_addr(tfrm, &tcp_con);
+        myip_update_frame(tfrm, &tcp_con);
+        myip_telnetd_init();
+
+        tcp_con.seqn += 1;
+        tfrm->flags |= TCP_ACK;
+        tfrm->data[0] = TCP_OPT_MSS;
+        tfrm->data[1] = TCP_OPT_MSS_LEN;
+        tfrm->data[2] = TCP_MSS / 256;
+        tfrm->data[3] = TCP_MSS & 255;
+        tfrm->offset = ((TCPH_SZ + TCP_OPT_MSS_LEN) / 4) << 4;
+        tfrm->p.total_len = HTONS_16(IPH_SZ + TCPH_SZ + TCP_OPT_MSS_LEN);
+
+        return MACH_SZ + IPH_SZ + TCPH_SZ + TCP_OPT_MSS_LEN;
+    }
+    if(flags == TCP_FIN)
+    {
+        //if(tcp_con.state == TCP_CON_CLOSED)
+            //return 0;
+        //uart_send_str3("TCP_FIN", 1);
+        //uart_send_int2("con_state", tcp_con.state);
+        myip_get_addr(tfrm, &tcp_con);
+        tcp_con.ackn = HTONS_32(tfrm->seqn) + 1;
+        tcp_con.seqn = HTONS_32(tfrm->ackn);
+        myip_update_frame(tfrm, &tcp_con);
+        tfrm->flags = TCP_FIN | TCP_ACK;
+        tcp_con.state = TCP_CON_CLOSED;
+        myip_tcp_init();
+        return sz;
+    }
+    if(flags & TCP_FIN)
+    {
+        tcp_con.state = TCP_CON_CLOSE;
+        tcp_con.ackn += 1;
+    }
+    //if(sz)
+        //uart_send_int2("myip_tcp_con_handler.psh_sz", sz);
+    if(tcp_con.state == TCP_CON_CLOSED)
+        return 0;
+    if(con_table[con_index].port != tcp_con.local_port)
+        return 0;
+    sz1 = myip_tcp_data(tfrm, sz, &ptr);
+    if((sz > 0) && (sz1 == 0) && (tfrm->flags == TCP_ACK))
+        return 0;
+    sz2 = con_table[con_index].con_handler_ptr(ptr, sz ? sz1 : 0);
+    if(sz || sz2)
+    {
+        if(sz)
+            tcp_con.ackn += sz1;
+        myip_update_frame(tfrm, &tcp_con);
+        if(tcp_con.state == TCP_CON_CLOSE)
+        {
+            tfrm->flags = TCP_FIN | TCP_ACK;
+            //tcp_con.seqn += 1;
+            tcp_con.state = TCP_CON_CLOSED;
+            myip_tcp_init();
+        }
+        else
+        {
+            if(sz2 > 0)
+                tfrm->flags = TCP_PSH | TCP_ACK;
+            else
+                tfrm->flags = TCP_ACK;
+            tcp_con.seqn += sz2;
+        }
+        tfrm->p.total_len = HTONS_16(IPH_SZ + TCPH_SZ + sz2);
+        return MACH_SZ + IPH_SZ + TCPH_SZ + sz2;
     }
     return 0;
 }
 
+#if 0
 uint16_t myip_tcp_frame_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
 {
     TCP_FRAME *tfrm = (TCP_FRAME*)frm;
@@ -135,8 +203,11 @@ uint16_t myip_tcp_frame_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
         if(HTONS_16(tfrm->p.src_port) != tcp_con.remote_port)
             return 0;
     }
+    uart_send_int2("myip_tcp_frame_handler.sz", sz);
     if(tfrm->flags == TCP_ACK)
+    {
         return 0;
+    }
     switch(tfrm->flags & TCP_CTL & ~TCP_ACK)
     {
         case TCP_SYN:
@@ -198,4 +269,5 @@ uint16_t myip_tcp_frame_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
     }
     return 0;
 }
+#endif
 

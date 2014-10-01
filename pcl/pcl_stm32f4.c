@@ -64,6 +64,7 @@ static USART_TypeDef *get_uartx(char *a)
 COMMAND(flash) {
     ARITY(argc >= 2, "flash mr|mw addr ...");
     uint32_t *ptr = (uint32_t*)str2int(argv[2]);
+    uint32_t sz;
 #if 1
     if(SUBCMD1("unlock"))
         return picolSetHexResult(i, HAL_FLASH_Unlock());
@@ -81,15 +82,25 @@ COMMAND(flash) {
 #ifdef MY_ETH
     if(SUBCMD1("tx1"))
     {
-        uint32_t sz = str2int(argv[2]);
+        sz = flash_fsz1();
         myip_datad_io_flash_tx(sz, 0);
-        return picolSetResult(i, argv[2]);
+        return picolSetIntResult(i, sz);
+    }
+    if(SUBCMD1("tx2"))
+    {
+        sz = flash_fsz2();
+        myip_datad_io_flash_tx(sz, USER_FLASH_SZ/2);
+        return picolSetIntResult(i, sz);
     }
     if(SUBCMD1("rx2"))
     {
         uint32_t sz = str2int(argv[2]);
-        myip_datad_io_flash_rx(sz + USER_FLASH_SZ/2, sz);
+        myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2);
         return picolSetResult(i, argv[2]);
+    }
+    if(SUBCMD1("erase2"))
+    {
+        return picolSetIntResult(i, flash_erase2());
     }
 #endif
     return PICOL_ERR;
@@ -142,7 +153,7 @@ COMMAND(uart) {
     ARITY((argc >= 3), "uart 1|2|3 str");
     USART_TypeDef *uartx = get_uartx(argv[1]);
     ARITY(uartx, "uart 1|2|3 str");
-    int32_t value;
+    int32_t value = 0;
     volatile uint32_t *reg_ptr = uart_get_reg_ptr(uartx, argv[2]);
     if(reg_ptr)
     {
@@ -160,7 +171,7 @@ COMMAND(uart) {
 #ifdef MY_ETH
 COMMAND(mdio) {
     ARITY(argc >= 2, "mdio ...");
-    uint32_t reg, value;
+    uint32_t reg, value = 0;
     reg = str2int(argv[1]);
     if(argc == 2)
     {

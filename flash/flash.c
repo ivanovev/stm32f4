@@ -50,3 +50,36 @@ uint8_t flash_write(uint32_t addr, uint32_t data)
 }
 #endif
 
+uint32_t flash_erase2(void)
+{
+    uint32_t SectorError = 0;
+    FLASH_EraseInitTypeDef flash_erase_init;
+    flash_erase_init.TypeErase = TYPEERASE_SECTORS;
+    flash_erase_init.Sector = FLASH_SECTOR_8;
+    flash_erase_init.NbSectors = FLASH_SECTOR_11 - FLASH_SECTOR_8 + 1;
+    flash_erase_init.VoltageRange = VOLTAGE_RANGE_3;
+
+    if(HAL_FLASHEx_Erase(&flash_erase_init, &SectorError) != HAL_OK)
+        return SectorError;
+
+    return 0;
+}
+
+uint8_t flash_write_data(uint8_t *data, uint16_t sz, uint32_t addr)
+{
+    if(addr & 3)
+        return 0;
+    uint16_t i, j;
+    for(i = 0; i < sz; i += 4)
+    {
+        if((sz - i) <= 4)
+        {
+            for(j = sz; j % 4; j++)
+                data[j] = 0xFF;
+        }
+        if(flash_write(addr + i, (uint32_t)data[i]))
+            return 1;
+    }
+    return 0;
+}
+

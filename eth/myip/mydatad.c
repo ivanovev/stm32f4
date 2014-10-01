@@ -34,13 +34,11 @@ uint16_t myip_datad_io(uint8_t *data, uint16_t sz)
     }
     if((dds.state == DATAD_FLASH_RX) && sz)
     {
-        uart_send_int2("myip_datad_io.sz", sz);
-        uint16_t i;
-        for(i = 0; i < sz; i += 4)
-            flash_write(dds.start + i, (uint32_t)data[i]);
+        flash_write_data(data, sz, dds.start);
         dds.start += sz;
         if(dds.start >= dds.end)
         {
+            uart_send_hex2("myip_datad_io.end_ok", dds.start);
             dds.state = DATAD_IDLE;
             HAL_FLASH_Lock();
         }
@@ -62,6 +60,8 @@ uint16_t myip_datad_io_flash_rx(uint32_t sz, uint32_t offset)
     dds.start = USER_FLASH_START_ADDR + offset;
     dds.end = dds.start + sz;
     dds.state = DATAD_FLASH_RX;
+    uart_send_hex2("myip_datad_io.start", dds.start);
+    uart_send_hex2("myip_datad_io.end", dds.end);
     return sz;
 }
 
