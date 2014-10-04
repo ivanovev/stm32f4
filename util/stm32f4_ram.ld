@@ -113,13 +113,14 @@ SECTIONS
   /* Initialized data sections goes into RAM, load LMA copy after code */
   .data : AT ( _sidata )
   {
-    . = ALIGN(4);
-    _sdata = .;        /* create a global symbol at data start */
-    *(.data)           /* .data sections */
-    *(.data*)          /* .data* sections */
-
-    . = ALIGN(4);
-    _edata = .;        /* define a global symbol at data end */
+      . = ALIGN(4);
+      _sdata = .;        /* create a global symbol at data start */
+      *(.data)           /* .data sections */
+      *(.data*)          /* .data* sections */
+      . = ALIGN(4);
+      *(.ramtext)
+      . = ALIGN(4);
+      _edata = .;        /* define a global symbol at data end */
   } >RAM
 
   /* Uninitialized data section */
@@ -141,12 +142,12 @@ SECTIONS
   /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :
   {
-    . = ALIGN(4);
-    PROVIDE ( end = . );
-    PROVIDE ( _end = . );
-    . = . + _Min_Heap_Size;
-    . = . + _Min_Stack_Size;
-    . = ALIGN(4);
+      . = ALIGN(4);
+      PROVIDE ( end = . );
+      PROVIDE ( _end = . );
+      . = . + _Min_Heap_Size;
+      . = . + _Min_Stack_Size;
+      . = ALIGN(4);
   } >CCMRAM
 
   /* MEMORY_bank1 section, code must be located here explicitly            */

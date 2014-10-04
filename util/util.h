@@ -60,5 +60,7 @@ void io_newline(void);
 void io_prompt(uint8_t newline);
 void io_echo(void);
 
+uint32_t version(char *buf, uint32_t len);
+
 #endif /* __UTIL_H__ */
 

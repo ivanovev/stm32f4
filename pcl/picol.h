@@ -39,6 +39,8 @@
 
 #define SUBCMD0(x)         (EQ(argv[0],x))
 #define SUBCMD1(x)         (EQ(argv[1],x))
+#define SUBCMD2(x)         (EQ(argv[2],x))
+#define SUBCMD3(x)         (EQ(argv[3],x))
 
 #define picolEval(_i,_t)  picolEval2(_i,_t,1)
 #define picolSubst(_i,_t) picolEval2(_i,_t,0)

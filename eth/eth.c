@@ -92,13 +92,17 @@ void eth_output(ETH_FRAME *frm, uint16_t sz)
     HAL_ETH_TransmitFrame(&heth, sz);
 }
 
-void eth_io(void)
+uint8_t eth_io(void)
 {
     static ETH_FRAME frm;
     frm.e.p.type = 0;
     uint16_t sz = eth_input(&frm);
     sz = myip_eth_frame_handler(&frm, sz);
     if(sz)
+    {
         eth_output(&frm, sz);
+        return 1;
+    }
+    return 0;
 }
 

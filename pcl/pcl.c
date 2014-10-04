@@ -2,6 +2,7 @@
 #include "pcl.h"
 #include "pcl_misc.h"
 #include "pcl_stm32f4.h"
+#include "pcl_sys.h"
 
 static struct picolInterp *pcl_interp = 0;
 
@@ -10,6 +11,7 @@ void pcl_init(void)
     pcl_interp = picolCreateInterp();
     register_misc_cmds(pcl_interp);
     register_stm32f4_cmds(pcl_interp);
+    register_sys_cmds(pcl_interp);
 }
 
 uint16_t pcl_exec(char *buf)

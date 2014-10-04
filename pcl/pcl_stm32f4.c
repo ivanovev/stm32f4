@@ -75,32 +75,42 @@ COMMAND(flash) {
     if(SUBCMD1("mw"))
         return picolSetIntResult(i, flash_write((uint32_t)ptr, str2int(argv[3])));
 #endif
+    if(SUBCMD1("fsz0"))
+        return picolSetIntResult(i, flash_fsz0());
     if(SUBCMD1("fsz1"))
         return picolSetIntResult(i, flash_fsz1());
-    if(SUBCMD1("fsz2"))
-        return picolSetIntResult(i, flash_fsz2());
 #ifdef MY_ETH
-    if(SUBCMD1("tx1"))
+    if(SUBCMD1("tx0"))
     {
-        sz = flash_fsz1();
+        sz = flash_fsz0();
         myip_datad_io_flash_tx(sz, 0);
         return picolSetIntResult(i, sz);
     }
-    if(SUBCMD1("tx2"))
+    if(SUBCMD1("tx1"))
     {
-        sz = flash_fsz2();
+        sz = flash_fsz1();
         myip_datad_io_flash_tx(sz, USER_FLASH_SZ/2);
         return picolSetIntResult(i, sz);
     }
-    if(SUBCMD1("rx2"))
+    if(SUBCMD1("rx1"))
     {
         uint32_t sz = str2int(argv[2]);
-        myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2);
+        flash_erase1();
+        if(SUBCMD3("fw"))
+            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, 2);
+        else if(SUBCMD3("pcl"))
+            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, 3);
+        else
+            return PICOL_ERR;
         return picolSetResult(i, argv[2]);
     }
-    if(SUBCMD1("erase2"))
+    if(SUBCMD1("erase1"))
     {
-        return picolSetIntResult(i, flash_erase2());
+        return picolSetIntResult(i, flash_erase1());
+    }
+    if(SUBCMD1("crc1"))
+    {
+        return picolSetHexResult(i, flash_crc1());
     }
 #endif
     return PICOL_ERR;

@@ -29,8 +29,8 @@ C_SRCS += $(UTIL_DIR)/myinit.c
 A_SRCS += $(UTIL_DIR)/startup_stm32f407xx.s
 
 INCDIR += $(HAL_DIR)/Inc
-INCDIR += $(HAL_DIR)/../CMSIS/Device/ST/STM32F4xx/Include
-INCDIR += $(HAL_DIR)/../CMSIS/Include
+INCDIR += $(CMSIS_DIR)/Device/ST/STM32F4xx/Include
+INCDIR += $(CMSIS_DIR)/Include
 INCDIR += $(ROOT_DIR)
 INCDIR += $(UTIL_DIR)
 

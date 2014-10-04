@@ -26,11 +26,12 @@
 #define ADDR_FLASH_SECTOR_10    ((uint32_t)0x080C0000) /* Base @ of Sector 10, 128 Kbytes */
 #define ADDR_FLASH_SECTOR_11    ((uint32_t)0x080E0000) /* Base @ of Sector 11, 128 Kbytes */
 
+uint32_t    flash_fsz0(void);
 uint32_t    flash_fsz1(void);
-uint32_t    flash_fsz2(void);
-uint8_t     flash_write(uint32_t addr, uint32_t data);
-uint8_t     flash_write_data(uint8_t *data, uint16_t sz, uint32_t addr);
-uint32_t    flash_erase2(void);
+uint32_t    flash_write(uint32_t addr, uint32_t data);
+uint32_t    flash_write_array(uint32_t addr, uint8_t *data, uint16_t sz);
+uint32_t    flash_erase1(void);
+uint32_t    flash_crc1(void);
 
 #endif /* __FLASH_H__ */
 

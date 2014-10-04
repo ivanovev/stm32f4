@@ -8,6 +8,7 @@
 #define DATAD_FLASH_RX 2
 
 DATAD_STATE dds;
+extern volatile uint8_t reset;
 
 void myip_datad_init(void)
 {
@@ -20,6 +21,7 @@ uint16_t myip_datad_io(uint8_t *data, uint16_t sz)
 {
     if(dds.state == DATAD_IDLE)
         return 0;
+    uint16_t i, j;
     uint32_t chunk_sz = 512;
     if(dds.state == DATAD_FLASH_TX)
     {
@@ -34,13 +36,19 @@ uint16_t myip_datad_io(uint8_t *data, uint16_t sz)
     }
     if((dds.state == DATAD_FLASH_RX) && sz)
     {
-        flash_write_data(data, sz, dds.start);
+        flash_write_array(dds.start, data, sz);
         dds.start += sz;
         if(dds.start >= dds.end)
         {
             uart_send_hex2("myip_datad_io.end_ok", dds.start);
             dds.state = DATAD_IDLE;
-            HAL_FLASH_Lock();
+            if(dds.reset)
+            {
+                uart_send_hex2("myip_datad_io.reset", dds.reset);
+                reset = dds.reset;
+            }
+            else
+                HAL_FLASH_Lock();
         }
     }
     return 0;
@@ -54,12 +62,13 @@ uint16_t myip_datad_io_flash_tx(uint32_t sz, uint32_t offset)
     return sz;
 }
 
-uint16_t myip_datad_io_flash_rx(uint32_t sz, uint32_t offset)
+uint16_t myip_datad_io_flash_rx(uint32_t sz, uint32_t offset, uint8_t reset)
 {
     HAL_FLASH_Unlock();
     dds.start = USER_FLASH_START_ADDR + offset;
     dds.end = dds.start + sz;
     dds.state = DATAD_FLASH_RX;
+    dds.reset = reset;
     uart_send_hex2("myip_datad_io.start", dds.start);
     uart_send_hex2("myip_datad_io.end", dds.end);
     return sz;

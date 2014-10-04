@@ -32,11 +32,6 @@ void myip_telnetd_init(void)
 
 uint16_t myip_telnetd_io(uint8_t *data, uint16_t sz)
 {
-    if(!mystrncmp((char*)data, "exit", 4))
-    {
-        tcp_con.state = TCP_CON_CLOSE;
-        return 0;
-    }
     uint16_t i;
     for(i = 0; i < sz; i++)
     {
