@@ -37,12 +37,24 @@ void eth_init(void)
         uart_send_str3("HAL_ETH_Init = ok", 1);
 #endif
     }
+    else
+    {
+#ifdef MY_UART
+        uart_send_str3("HAL_ETH_Init = err", 1);
+#endif
+    }
     /* Initialize Tx Descriptors list: Chain Mode */
     HAL_ETH_DMATxDescListInit(&heth, DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);
     /* Initialize Rx Descriptors list: Chain Mode  */
     HAL_ETH_DMARxDescListInit(&heth, DMARxDscrTab, &Rx_Buff[0][0], ETH_RXBUFNB);
     HAL_ETH_Start(&heth);
- }
+}
+
+void eth_deinit(void)
+{
+    HAL_ETH_Stop(&heth);
+    HAL_ETH_DeInit(&heth);
+}
 
 void eth_reset(void)
 {

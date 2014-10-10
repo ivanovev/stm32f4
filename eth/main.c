@@ -4,6 +4,7 @@
 #include "eth/myip/mytcp.h"
 #include "eth/myip/mytelnetd.h"
 #include "core_cm4.h"
+#include "flash/flash.h"
 
 volatile uint8_t reset = 0;
 
@@ -19,20 +20,15 @@ int main(void)
         if(reset && myip_tcp_con_closed())
             break;
     }
+    mydeinit();
+#ifdef MY_UART
     uart_send_int2("reset", reset);
-    if(reset == 1)
+#endif
+    if(reset == RESET_FWUPG)
     {
-        NVIC_SystemReset();
+        flash_copy10();
     }
-    if(reset == 2)
-    {
-        uart_send_int2("copy10", flash_copy10());
-        NVIC_SystemReset();
-    }
-    for(;;)
-    {
-        pcl_io();
-    }
+    NVIC_SystemReset();
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)

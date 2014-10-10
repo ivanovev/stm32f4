@@ -7,3 +7,6 @@ include $(ROOT_DIR)/uart/uart.mk
 include pcl.mk
 include $(UTIL_DIR)/util2.mk
 
+test: $(BUILDDIR)
+	gcc -w -g -I.. -I. -o $(BUILDDIR)/test picol.c heap1.c pcl_misc.c ../util/util.c -Wl,-Map=$(BUILDDIR)/test.map
+

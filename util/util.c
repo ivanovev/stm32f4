@@ -287,6 +287,11 @@ inline uint8_t myisnewline(char c)
     return (c == '\n' || c == '\r');
 }
 
+inline uint8_t myisalnum(char c)
+{
+    return ((('a' <= c) || (c <= 'z')) || (('A' <= c) || (c <= 'Z')) || (('0' <= c) || (c <= '9')));
+}
+
 uint8_t myisempty(char *str)
 {
     if(str[0] == 0)
@@ -317,6 +322,18 @@ char* mystrncat(char *dest, const char *src, uint32_t n)
     dest[dest_len + i] = '\0';
 
     return dest;
+}
+
+uint8_t* mymemchr(const uint8_t *s, uint8_t c, uint32_t n)
+{
+    if (n != 0) {
+        const uint8_t *p = s;
+        do {
+            if (*p++ == c)
+                return ((uint8_t*)(p - 1));
+        } while (--n != 0);
+    }
+    return 0;
 }
 
 uint16_t io_recv_str(char *buf)

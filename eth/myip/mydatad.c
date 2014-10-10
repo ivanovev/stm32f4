@@ -21,7 +21,6 @@ uint16_t myip_datad_io(uint8_t *data, uint16_t sz)
 {
     if(dds.state == DATAD_IDLE)
         return 0;
-    uint16_t i, j;
     uint32_t chunk_sz = 512;
     if(dds.state == DATAD_FLASH_TX)
     {
@@ -40,11 +39,13 @@ uint16_t myip_datad_io(uint8_t *data, uint16_t sz)
         dds.start += sz;
         if(dds.start >= dds.end)
         {
-            uart_send_hex2("myip_datad_io.end_ok", dds.start);
+            uint8_t eof[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+            flash_write_array(dds.start, eof, sizeof(eof));
+            //uart_send_hex2("myip_datad_io.end_ok", dds.start);
             dds.state = DATAD_IDLE;
             if(dds.reset)
             {
-                uart_send_hex2("myip_datad_io.reset", dds.reset);
+                //uart_send_hex2("myip_datad_io.reset", dds.reset);
                 reset = dds.reset;
             }
             else
@@ -69,8 +70,8 @@ uint16_t myip_datad_io_flash_rx(uint32_t sz, uint32_t offset, uint8_t reset)
     dds.end = dds.start + sz;
     dds.state = DATAD_FLASH_RX;
     dds.reset = reset;
-    uart_send_hex2("myip_datad_io.start", dds.start);
-    uart_send_hex2("myip_datad_io.end", dds.end);
+    //uart_send_hex2("myip_datad_io.start", dds.start);
+    //uart_send_hex2("myip_datad_io.end", dds.end);
     return sz;
 }
 

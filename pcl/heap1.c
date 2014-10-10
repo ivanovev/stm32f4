@@ -18,7 +18,7 @@ unsigned char myheap1[HEAPSZ];
 #define _estack &myheap1[HEAPSZ]
 #endif
 
-void* malloc1(size_t sz)
+void* mymalloc(size_t sz)
 {
     void *ptr = 0;
     static size_t aligned_heap = 0;
@@ -35,15 +35,26 @@ void* malloc1(size_t sz)
     return ptr;
 }
 
-char* strdup1(char *str)
+char* mystrdup(char *str)
 {
     size_t len = mystrnlen(str, MAXSTR);
-    char *ptr = malloc1(len + 1);
+    char *ptr = mymalloc(len + 1);
     if(ptr)
     {
         mystrncpy(ptr, str, MAXSTR);
         return ptr;
     }
     return 0;
+}
+
+void* mycalloc(size_t nmemb, size_t sz)
+{
+    sz *= nmemb;
+    uint8_t *ptr = (uint8_t*)mymalloc(sz);
+    if(!ptr)
+        return 0;
+    while(--sz)
+        ptr[sz] = 0;
+    return (void*)ptr;
 }
 

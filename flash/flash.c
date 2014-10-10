@@ -1,10 +1,23 @@
 
+#pragma long_calls
+
 #include <main.h>
 #include "flash.h"
 
 #ifndef HAL_FLASH_TIMEOUT_VALUE
 #define HAL_FLASH_TIMEOUT_VALUE   ((uint32_t)50000)/* 50 s */
 #endif
+
+void flash_erase_img1(void)
+{
+    uint32_t sz1 = flash_fsz1();
+    if(!sz1)
+        return;
+    uint32_t crc1 = flash_crc1(0);
+    uint32_t crc0 = flash_crc0(0);
+    if(crc1 == crc0)
+        flash_erase1();
+}
 
 static uint32_t flash_fsz(uint32_t *start, uint32_t *end)
 {
@@ -13,7 +26,9 @@ static uint32_t flash_fsz(uint32_t *start, uint32_t *end)
         start_addr = (uint32_t)start;
     if((end - start) <= 4)
     {
-        uint8_t *ptr8 = (uint8_t*)end;
+        //uart_send_hex2("start", start);
+        //uart_send_hex2("end", end);
+        uint8_t *ptr8 = (uint8_t*)end + 1;
         while(--ptr8 > start)
         {
             if(*(ptr8-1) != 0xFF)
@@ -49,8 +64,8 @@ uint32_t flash_write(uint32_t addr, uint32_t data)
         //if(HAL_FLASH_Program(TYPEPROGRAM_WORD, addr & 0xFFFFFFFC, data) != HAL_OK)
         if(status != HAL_OK)
         {
-            uart_send_hex2("flash_write.error", status);
-            uart_send_hex2("flash_write.addr", addr);
+            //uart_send_hex2("flash_write.error", status);
+            //uart_send_hex2("flash_write.addr", addr);
             return 1;
         }
     }
@@ -79,23 +94,19 @@ uint32_t flash_erase1(void)
     else
         flash_erase_init.NbSectors = 4;
     flash_erase_init.VoltageRange = VOLTAGE_RANGE_3;
-    uart_send_int2("flash_erase_init.NbSectors", flash_erase_init.NbSectors);
 
     if(HAL_FLASHEx_Erase(&flash_erase_init, &SectorError) != HAL_OK)
         return SectorError;
-    uart_send_int2("flash_erase_init.erased", 0);
     if(FLASH_WaitForLastOperation((uint32_t)HAL_FLASH_TIMEOUT_VALUE) != HAL_OK)
         return 1;
-    uart_send_int2("flash_erase_init.lock", 0);
     HAL_FLASH_Lock();
-    uart_send_int2("flash_erase_init.ok", 0);
 
     return 0;
 }
 
 uint32_t flash_write_array(uint32_t addr, uint8_t *data, uint16_t sz)
 {
-    uart_send_hex2("flash_write_array.sz", sz);
+    //uart_send_hex2("flash_write_array.sz", sz);
 #if 0
     if(addr & 3)
     {
@@ -103,9 +114,9 @@ uint32_t flash_write_array(uint32_t addr, uint8_t *data, uint16_t sz)
         return 0;
     }
 #endif
-    uint16_t i, j;
-    uint32_t *ptr, dataw;
+    uint16_t i;
 #if 0
+    uint32_t *ptr, dataw;
     for(i = 0; i < sz; i += 4)
     {
         ptr = (uint32_t*)&data[i];
@@ -191,27 +202,75 @@ uint32_t flash_crc(uint8_t *buf, uint32_t sz)
     return ui32;//now the output is compatible with windows/winzip/winrar
 };
 
-uint32_t flash_crc1()
+uint32_t flash_crc0(uint32_t sz)
 {
-    uint32_t sz = flash_fsz1();
+    if(!sz)
+        sz = flash_fsz0();
     if(!sz)
         return 0;
-    return flash_crc(USER_FLASH_MID_ADDR, sz);
+    return flash_crc((uint8_t*)USER_FLASH_START_ADDR, sz);
 }
 
-__attribute__ ((long_call, section (".ramtext"))) uint32_t flash_copy10(void)
+uint32_t flash_crc1(uint32_t sz)
 {
-    uint32_t *ptr0, *ptr1, i;
+    if(!sz)
+        sz = flash_fsz1();
+    if(!sz)
+        return 0;
+    return flash_crc((uint8_t*)USER_FLASH_MID_ADDR, sz);
+}
+
+#define SECTOR_MASK               ((uint32_t)0xFFFFFF07)
+
+__attribute__ ((long_call, section (".ramtext"))) uint32_t sram_flash_copy10(void)
+{
+    uint32_t addr0, addr1, i, data;
+    uint32_t *led = (uint32_t*)0x40020C14;
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP    | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR |\
+                                     FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR| FLASH_FLAG_PGSERR);
+    for(i = FLASH_SECTOR_0; i < FLASH_SECTOR_8; i++)
+    {
+        while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+        FLASH->CR &= CR_PSIZE_MASK;
+        FLASH->CR |= FLASH_PSIZE_WORD;
+        FLASH->CR &= SECTOR_MASK;
+        FLASH->CR |= FLASH_CR_SER | (i << POSITION_VAL(FLASH_CR_SNB));
+        FLASH->CR |= FLASH_CR_STRT;
+        while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+        *led = 0x0800;
+        FLASH->CR &= (~FLASH_CR_SER);
+        FLASH->CR &= SECTOR_MASK;
+    }
     for(i = 0; i < USER_FLASH_SZ/2; i += 4)
     {
-        ptr1 = (uint32_t*)(USER_FLASH_MID_ADDR + i);
-        ptr0 = (uint32_t*)(USER_FLASH_START_ADDR + i);
+        addr1 = (uint32_t)(USER_FLASH_MID_ADDR + i);
+        addr0 = (uint32_t)(USER_FLASH_START_ADDR + i);
+        data = *(volatile uint32_t*)addr1;
+        while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
         FLASH->CR &= CR_PSIZE_MASK;
         FLASH->CR |= FLASH_PSIZE_WORD;
         FLASH->CR |= FLASH_CR_PG;
-        *ptr0 = *ptr1;
-        while(FLASH->SR & FLASH_FLAG_BSY);
+        *(volatile uint32_t*)addr0 = data;
+        while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+        FLASH->CR &= (~FLASH_CR_PG);
     }
+#if 1
+    // RESET
+    __DSB();
+    SCB->AIRCR  = ((0x5FA << SCB_AIRCR_VECTKEY_Pos)      |
+            (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |
+            SCB_AIRCR_SYSRESETREQ_Msk);
+    __DSB();
+    while(1);
+#endif
     return 123;
+}
+
+void flash_copy10(void)
+{
+#ifdef MY_UART
+    uart_send_hex2("sram_flash_copy10", (uint32_t)sram_flash_copy10);
+#endif
+    sram_flash_copy10();
 }
 

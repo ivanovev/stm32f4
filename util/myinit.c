@@ -6,6 +6,7 @@ extern uint32_t SystemCoreClock;
 
 void myinit(void)
 {
+#pragma message "myinit()"
 #pragma message "HAL_Init()"
 #pragma message "SystemClock_Config()"
     HAL_Init();
@@ -20,14 +21,19 @@ void myinit(void)
 #endif
 #endif
 
-#ifdef MY_PCL
-#pragma message "pcl_init()"
-    pcl_init();
-#endif
-
 #ifdef MY_UART
 #pragma message "uart_init()"
     uart_init();
+#endif
+
+#ifdef MY_FLASH
+#pragma message "flash_erase_img1()"
+    flash_erase_img1();
+#endif
+
+#ifdef MY_PCL
+#pragma message "pcl_init()"
+    pcl_init();
 #endif
 
 #ifdef MY_ETH
@@ -43,6 +49,21 @@ void myinit(void)
 #ifdef MY_TIM
 #pragma message "tim_init()"
     tim_init();
+#endif
+
+}
+
+void mydeinit(void)
+{
+#pragma message "mydeinit()"
+#ifdef MY_TIM
+#pragma message "tim_deinit()"
+    tim_deinit();
+#endif
+
+#ifdef MY_ETH
+#pragma message "eth_deinit()"
+    eth_deinit();
 #endif
 
 }

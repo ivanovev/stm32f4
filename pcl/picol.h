@@ -16,6 +16,7 @@
                         mystrncat(dst,src,MAXSTR);}
 
 #define ARITY(x,s)     if (!(x)) return picolErr(i, s);
+#define COLONED(_p)     (*(_p) == ':' && *(_p+1) == ':') /* global indicator */
 
 #define COMMAND(c)      int picol_##c(picolInterp* i, int argc, char** argv)
 #define EQ(a,b)         ((*a)==(*b) && !mystrncmp(a,b,IO_BUF_SZ))
@@ -33,6 +34,9 @@
 #define LAPPEND_X(dst,src) {int needbraces = (strchr(src,' ')!=NULL)||mystrnlen(src,MAXSTR)==0; \
                 if(*dst!='\0') mystrncat(dst," ",MAXSTR); if(needbraces) mystrncat(dst,"{",MAXSTR); \
                 mystrncat(dst,src,MAXSTR); if(needbraces) mystrncat(dst,"}",MAXSTR);}
+
+#define GET_VAR(_v,_n) _v = picolGetVar(i,_n); \
+                        if(!_v) return picolErr1(i,"can't read \"%s\": no such variable", _n);
 
 #define PARSED(_t)        {p->end = p->p-1; p->type = _t;}
 #define RETURN_PARSED(_t) {PARSED(_t);return PICOL_OK;}
@@ -76,6 +80,7 @@ typedef int (*picol_Func)(struct picolInterp *i, int argc, char **argv);
 typedef struct picolCmd {
   char            *name;
   picol_Func       func;
+  void            *privdata;
   struct picolCmd *next;
 } picolCmd;
 
@@ -87,7 +92,7 @@ typedef struct picolCallFrame {
 
 typedef struct picolInterp {
   int             level;              /* Level of nesting */
-  picolCallFrame callframe;
+  picolCallFrame *callframe;
   picolCmd       *commands;
   char           *current;        /* currently executed command */
   char           result[MAXSTR];
@@ -110,7 +115,7 @@ typedef struct picolList {
 picolInterp*    picolCreateInterp(void);
 int             picolEval2(picolInterp *i, char *t, int mode);
 int             picolErr(picolInterp *i, char* str);
-int             picolRegisterCmd(picolInterp *i, char *name, picol_Func f);
+int             picolRegisterCmd(picolInterp *i, char *name, picol_Func f, void *pd);
 int             picolSetResult(picolInterp *i, char *s);
 int             picolSetFmtResult(picolInterp* i, char* fmt, int result);
 

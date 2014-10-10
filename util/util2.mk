@@ -54,8 +54,8 @@ CFLAGS += $(IINCDIR)
 
 LDSCRIPT_RAM = $(UTIL_DIR)/stm32f4_ram.ld
 LDSCRIPT_FLASH = $(UTIL_DIR)/stm32f4_flash.ld
-LDSCRIPT = $(LDSCRIPT_RAM)
-#LDSCRIPT = $(LDSCRIPT_FLASH)
+#LDSCRIPT = $(LDSCRIPT_RAM)
+LDSCRIPT = $(LDSCRIPT_FLASH)
 ifeq ($(LDSCRIPT), $(LDSCRIPT_RAM))
     CFLAGS += -DVECT_TAB_SRAM
 endif
@@ -85,7 +85,7 @@ VPATH     = $(sort $(dir $(C_SRCS)) $(dir $(A_SRCS)))
 
 .PHONY: proj clean echo debug
 
-all: proj
+all: proj touch_util_c
 
 proj: $(OUTFILES)
 
@@ -116,6 +116,9 @@ $(C_OBJS) : $(OBJDIR)/%.o : %.c Makefile *.h
 $(A_OBJS) : $(OBJDIR)/%.o : %.s Makefile
 	@echo $<
 	@$(CC) -c -o $@ $< ${CFLAGS}
+
+touch_util_c:
+	touch $(UTIL_DIR)/util.c
 
 clean:
 	@echo $(CFLAGS)

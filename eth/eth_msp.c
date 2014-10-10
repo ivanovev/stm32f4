@@ -4,6 +4,8 @@
 #include "eth/mdio.h"
 #include "uart/uart.h"
 
+extern void eth_reset(void);
+
 #pragma message "ETH_MDC_GPIO: GPIO" STR(ETH_MDC_GPIO) " PIN" STR(ETH_MDC_PIN)
 #pragma message "ETH_MDIO_GPIO: GPIO" STR(ETH_MDIO_GPIO) " PIN" STR(ETH_MDIO_PIN)
 #pragma message "ETH_RESET_GPIO: GPIO" STR(ETH_RESET_GPIO) " PIN" STR(ETH_RESET_PIN)
@@ -45,8 +47,17 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
     GPIO_INIT(ETH_TXD1_GPIO, ETH_TXD1_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
 
     __ETH_CLK_ENABLE();
-#ifdef HAL_UART_MODULE_ENABLED
+#ifdef MY_UART
     uart_send_str3("HAL_ETH_MspInit", 1);
 #endif
+    eth_reset();
+}
+
+void HAL_ETH_MspDeInit(ETH_HandleTypeDef *heth)
+{
+#ifdef MY_UART
+    uart_send_str3("HAL_ETH_MspDeInit", 1);
+#endif
+    __ETH_CLK_DISABLE();
 }
 

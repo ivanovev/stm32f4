@@ -64,7 +64,7 @@ static USART_TypeDef *get_uartx(char *a)
 COMMAND(flash) {
     ARITY(argc >= 2, "flash mr|mw addr ...");
     uint32_t *ptr = (uint32_t*)str2int(argv[2]);
-    uint32_t sz;
+    uint32_t sz = 0;
 #if 1
     if(SUBCMD1("unlock"))
         return picolSetHexResult(i, HAL_FLASH_Unlock());
@@ -74,11 +74,29 @@ COMMAND(flash) {
         return picolSetHexResult(i, *ptr);
     if(SUBCMD1("mw"))
         return picolSetIntResult(i, flash_write((uint32_t)ptr, str2int(argv[3])));
-#endif
     if(SUBCMD1("fsz0"))
+    {
         return picolSetIntResult(i, flash_fsz0());
+    }
     if(SUBCMD1("fsz1"))
         return picolSetIntResult(i, flash_fsz1());
+    if(SUBCMD1("crc0"))
+    {
+        if(argc >= 3)
+            sz = str2int(argv[2]);
+        return picolSetHexResult(i, flash_crc0(sz));
+    }
+    if(SUBCMD1("crc1"))
+    {
+        if(argc >= 3)
+            sz = str2int(argv[2]);
+        return picolSetHexResult(i, flash_crc1(sz));
+    }
+    if(SUBCMD1("erase1"))
+        return picolSetIntResult(i, flash_erase1());
+    if(SUBCMD1("pclupd"))
+        return picolSetHexResult(i, pcl_load());
+#endif
 #ifdef MY_ETH
     if(SUBCMD1("tx0"))
     {
@@ -97,20 +115,12 @@ COMMAND(flash) {
         uint32_t sz = str2int(argv[2]);
         flash_erase1();
         if(SUBCMD3("fw"))
-            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, 2);
+            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, RESET_FWUPG);
         else if(SUBCMD3("pcl"))
-            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, 3);
+            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, RESET_PCLUPD);
         else
             return PICOL_ERR;
         return picolSetResult(i, argv[2]);
-    }
-    if(SUBCMD1("erase1"))
-    {
-        return picolSetIntResult(i, flash_erase1());
-    }
-    if(SUBCMD1("crc1"))
-    {
-        return picolSetHexResult(i, flash_crc1());
     }
 #endif
     return PICOL_ERR;
@@ -204,17 +214,17 @@ COMMAND(eth) {
 void register_stm32f4_cmds(picolInterp *i)
 {
 #ifdef MY_GPIO
-    picolRegisterCmd(i, "gpio", picol_gpio);
+    picolRegisterCmd(i, "gpio", picol_gpio, 0);
 #endif
 #ifdef MY_FLASH
-    picolRegisterCmd(i, "flash", picol_flash);
+    picolRegisterCmd(i, "flash", picol_flash, 0);
 #endif
 #ifdef MY_UART
-    picolRegisterCmd(i, "uart", picol_uart);
+    picolRegisterCmd(i, "uart", picol_uart, 0);
 #endif
 #ifdef MY_ETH
-    picolRegisterCmd(i, "mdio", picol_mdio);
-    picolRegisterCmd(i, "eth", picol_eth);
+    picolRegisterCmd(i, "mdio", picol_mdio, 0);
+    picolRegisterCmd(i, "eth", picol_eth, 0);
 #endif
 }
 

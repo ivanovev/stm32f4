@@ -32,9 +32,11 @@ char*       mystrncpy(char *dest, const char *src, uint32_t n);
 uint32_t    mysnprintf(char *str, uint32_t sz, const char *fmt, ...);
 inline uint8_t myisspace(char c);
 inline uint8_t myisnewline(char c);
+inline uint8_t myisalnum(char c);
 uint8_t     myisempty(char *str);
 char*       mystrchr(const char *s, int c);
 char*       mystrncat(char *dest, const char *src, uint32_t n);
+uint8_t*    mymemchr(const uint8_t *s, uint8_t c, uint32_t n);
 
 #define IO_BUF_SZ 512
 

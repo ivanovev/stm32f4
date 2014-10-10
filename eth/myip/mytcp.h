@@ -34,9 +34,11 @@ typedef struct {
     uint32_t remote_ip_addr;
     uint16_t remote_port;
     uint16_t local_port;
+    uint16_t id;
 
     uint32_t seqn;
     uint32_t ackn;
+    uint32_t rxseqn0;
 } TCP_CON;
 
 void        myip_tcp_init(void);

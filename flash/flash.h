@@ -31,7 +31,10 @@ uint32_t    flash_fsz1(void);
 uint32_t    flash_write(uint32_t addr, uint32_t data);
 uint32_t    flash_write_array(uint32_t addr, uint8_t *data, uint16_t sz);
 uint32_t    flash_erase1(void);
-uint32_t    flash_crc1(void);
+uint32_t    flash_crc0(uint32_t sz);
+uint32_t    flash_crc1(uint32_t sz);
+void        flash_copy10(void);
+void        flash_erase_img1(void);
 
 #endif /* __FLASH_H__ */
 
