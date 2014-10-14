@@ -19,7 +19,7 @@ int main(void)
     io_send_str_ptr = VCP_write;
 #endif
 
-    io_send_str3("pcl_test", 1);
+    dbg_send_str3("pcl_test", 1);
     for (;;)
     {
         pcl_io();

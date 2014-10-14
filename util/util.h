@@ -62,6 +62,46 @@ void io_newline(void);
 void io_prompt(uint8_t newline);
 void io_echo(void);
 
+#ifdef __arm__
+#ifdef MY_UART
+#define dbg_send_str(a,b) uart_send_str(a,b)
+#define dbg_send_str2(a) uart_send_str2(a)
+#define dbg_send_str3(a,b) uart_send_str3(a,b)
+#define dbg_send_str4(a) uart_send_str4(a)
+#define dbg_send_int(a) uart_send_int(a)
+#define dbg_send_int2(a,b) uart_send_int2(a,b)
+#define dbg_send_hex(a) uart_send_hex(a)
+#define dbg_send_hex2(a,b) uart_send_hex2(a,b)
+#define dbg_send_hex3(a,b,c) uart_send_hex3(a,b,c)
+#define dbg_send_hex4(a,b,c) uart_send_hex4(a,b,c)
+#else
+#define dbg_send_str(a,b) (void)
+#define dbg_send_str2(a) (void)
+#define dbg_send_str3(a,b) (void)
+#define dbg_send_str4(a) (void)
+#define dbg_send_int(a) (void)
+#define dbg_send_int2(a,b) (void)
+#define dbg_send_hex(a) (void)
+#define dbg_send_hex2(a,b) (void)
+#define dbg_send_hex3(a,b,c) (void)
+#define dbg_send_hex4(a,b,c) (void)
+#endif
+#else
+#define dbg_send_str(a,b) printf("%s",a)
+#define dbg_send_str2(a) printf("%s",a)
+#define dbg_send_str3(a,b) printf(b ? "\n\r%s" : "%s",a)
+#define dbg_send_str4(a) printf("\n\r%s",a)
+#define dbg_send_int(a) printf("%d",a)
+#define dbg_send_int2(a,b) printf("\n\r%s = %d",a,b)
+#define dbg_send_hex(a) printf("0x%8X",a)
+#define dbg_send_hex2(a,b) printf("\n\r%s = 0x%8X",a,b)
+#define dbg_send_hex3(a,b,c) (void)
+#define dbg_send_hex4(a,b,c) (void)
+#endif
+#ifdef dbg_send_str
+#define dbg_newline() dbg_send_str("\n\r", 2)
+#endif
+
 uint32_t version(char *buf, uint32_t len);
 
 #endif /* __UTIL_H__ */

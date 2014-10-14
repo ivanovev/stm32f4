@@ -275,13 +275,11 @@ int picolEval2(picolInterp *i, char *t, int mode) { /*----------- EVAL! */
     picolInitParser(&p, t);
     while(1) {
         picolGetToken(i, &p);
+        //___print_token(&p);
         if (p.type == PT_EOF)
             break;
         len = p.end - p.start + 1;
-        if(!len)
-            break;
         mystrncpy(tmp, p.start, len);
-        //___print_token(&p);
         //___print_list(&args);
         if (p.type == PT_SEP) {
             continue;
@@ -322,35 +320,49 @@ int picolEval2(picolInterp *i, char *t, int mode) { /*----------- EVAL! */
             args.size = 0;
             continue;
         }
-        else if(p.end >= p.start)
+        else
             picolListAppend(&args, tmp, buf);
     }
 err:
     return rc;
 }
-int picolCallProc(picolInterp *i, int argc, char **argv, void *pd) {
-    char **x=pd, *alist=x[0], *body=x[1], *p=strdup(alist), *tofree;
+int picolCallProc(picolInterp *i, int argc, char **argv) {
+    if(i->level>MAXRECURSION)
+        return picolErr(i,"too many nested evaluations (infinite loop?)");
+    picolCmd *c = picolGetCmd(i,argv[0]);
+    if(!c)
+        return PICOL_ERR;
+    void *pd = c->privdata;
+    if(!pd)
+        return PICOL_ERR;
+    char **x=pd;
+    printf("pd = %d\n\r", pd);
+    dbg_send_int2("argc1", argc);
+    char *alist=x[0], *body=x[1];
     char buf[MAXSTR];
-    picolCallFrame *cf = calloc(1,sizeof(*cf));
+    picolCallFrame *cf = mycalloc(1,sizeof(*cf));
     int a = 0, done = 0, errcode = PICOL_OK;
 #ifndef __arm__
     if(!cf) {printf("could not allocate callframe\n"); exit(1);}
 #else
     extern void print1(char *str);
-    if(!cf) {print1("could not allocate callframe\n"); exit(1);}
+    if(!cf) {dbg_send_str3("could not allocate callframe", 1); return PICOL_ERR;}
 #endif
     cf->parent   = i->callframe;
     i->callframe = cf;
-    if(i->level>MAXRECURSION) return picolErr(i,"too many nested evaluations (infinite loop?)");
     i->level++;
-    tofree = p;
+    char *p = mystrdup(alist);
+    dbg_send_int2("arglen", mystrnlen(alist, MAXSTR));
+    dbg_send_int2("argc2", argc);
     while(1) {
+        dbg_send_int2("argci", argc);
         char *start = p;
         while(*p != ' ' && *p != '\0') p++;
         if (*p != '\0' && p == start) { p++; continue; }
         if (p == start) break;
         if (*p == '\0') done=1; else *p = '\0';
         if(EQ(start,"args") && done) {
+            dbg_send_hex2("eq", p - alist);
             //picolSetVar(i,start,picolList(buf,argc-a-1,argv+a+1));
             a = argc-1;
             break;
@@ -360,7 +372,8 @@ int picolCallProc(picolInterp *i, int argc, char **argv, void *pd) {
         p++;
         if (done) break;
     }
-    free(tofree);
+    dbg_send_int2("argc3", argc);
+    dbg_newline();
     if (a != argc-1) goto arityerr;
     //cf->command = strdup(picolList(buf,argc,argv));
     errcode     = picolEval(i,body);
@@ -400,6 +413,7 @@ COMMAND(set) {
 }
 COMMAND(proc) {
     printf("new proc %s\n\r", argv[1]);
+    printf("new proc %d\n\r", argc);
     char **procdata = NULL;
     picolCmd* c = picolGetCmd(i,argv[1]);
     ARITY(argc == 4, "proc name args body");
@@ -411,8 +425,8 @@ COMMAND(proc) {
             c->func = picolCallProc; /* may override C-coded cmds */
         }
     }
-    procdata[0] = strdup(argv[2]); /* arguments list */
-    procdata[1] = strdup(argv[3]); /* procedure body */
+    procdata[0] = mystrdup(argv[2]); /* arguments list */
+    procdata[1] = mystrdup(argv[3]); /* procedure body */
     if(!c) picolRegisterCmd(i,argv[1],picolCallProc,procdata);
     return PICOL_OK;
 }
@@ -432,17 +446,31 @@ COMMAND(test) {
 COMMAND(info) {
     char buf[MAXSTR] = "";
     picolCmd *c = i->commands;
-    ARITY(argc == 2 || argc == 3, "info commands|globals|vars");
+    ARITY(argc == 2 || argc == 3, "info args|body|commands|procs|globals|vars");
     int procs = SUBCMD1("procs");
-    if(SUBCMD1("commands") || procs) {
+    if(SUBCMD1("commands") || procs)
+    {
         for(; c; c = c->next)
         {
+            printf("name procs privdata %s %d %d\n", c->name, procs, c->privdata);
             if(!procs || c->privdata)
                 LAPPEND(buf,c->name);
         }
         return picolSetResult(i, buf);
     }
-    if(SUBCMD1("vars") || SUBCMD1("globals")) {
+    else if (SUBCMD1("args") || SUBCMD1("body"))
+    {
+        if(argc==2) return picolErr1(i,"usage: info %s procname", argv[1]);
+        for( ; c; c = c->next) {
+            if(EQ(c->name,argv[2])) {
+                char **pd = c->privdata;
+                if(pd) return picolSetResult(i,pd[(EQ(argv[1],"args")?0 : 1)]);
+                else   return picolErr1(i,"\"%s\" isn't a procedure", c->name);
+            }
+        }
+    }
+    if(SUBCMD1("vars") || SUBCMD1("globals"))
+    {
         picolCallFrame *cf = i->callframe;
         picolVar       *v;
         if(SUBCMD1("globals")) {while(cf->parent) cf = cf->parent;}
@@ -451,7 +479,7 @@ COMMAND(info) {
         }
         return picolSetResult(i, buf);
     }
-    if(SUBCMD1("procs")) {
+    if(SUBCMD1("body")) {
     }
     return PICOL_ERR;
 }
@@ -482,8 +510,7 @@ int main(int argc, char **argv) {
         printf("picol> "); fflush(stdout);
         if (fgets(buf,sizeof(buf),stdin) == NULL) return 0;
         rc = picolEval(i, buf);
-        if (i->result[0] != '\0' || rc != PICOL_OK)
-            printf("[%d] %s\n", rc, i->result);
+        printf("[%d] %s\n", rc, i->result);
     }
 }
 #endif
