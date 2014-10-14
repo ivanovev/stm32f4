@@ -13,7 +13,6 @@ COMMAND(version) {
     version(buf, MAXSTR);
     return picolSetResult(i, buf);
 }
-
 #ifdef MY_ETH
 COMMAND(exit) {
     tcp_con.state = TCP_CON_CLOSE;

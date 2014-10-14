@@ -86,7 +86,7 @@ typedef struct picolCmd {
 
 typedef struct picolCallFrame {
   picolVar              *vars;
-  char                  *command;
+  //char                  *command;
   struct picolCallFrame *parent; /* parent is NULL at top level */
 } picolCallFrame;
 

@@ -17,21 +17,20 @@ unsigned char myheap1[HEAPSZ];
 #define _ebss &myheap1[0]
 #define _estack &myheap1[HEAPSZ]
 #endif
+static size_t aligned_heap = (size_t)(_ebss);
 
 void* mymalloc(size_t sz)
 {
     void *ptr = 0;
-    static size_t aligned_heap = 0;
-    if(aligned_heap == 0)
-        aligned_heap = (size_t)(_ebss);
     if(aligned_heap & BYTE_ALIGN_MASK)
         aligned_heap = (aligned_heap | BYTE_ALIGN_MASK) + 1;
-
     if((aligned_heap + sz) < (size_t)(_estack))
     {
         ptr = (void*)aligned_heap;
         aligned_heap += sz;
     }
+    if(aligned_heap & BYTE_ALIGN_MASK)
+        aligned_heap = (aligned_heap | BYTE_ALIGN_MASK) + 1;
     return ptr;
 }
 
@@ -53,8 +52,19 @@ void* mycalloc(size_t nmemb, size_t sz)
     uint8_t *ptr = (uint8_t*)mymalloc(sz);
     if(!ptr)
         return 0;
-    while(--sz)
+    sz--;
+    while(sz--)
         ptr[sz] = 0;
     return (void*)ptr;
+}
+
+void myfree(void *ptr)
+{
+    aligned_heap = (size_t)(ptr);
+}
+
+size_t mymemory(void)
+{
+    return (size_t)(_estack) - aligned_heap;
 }
 

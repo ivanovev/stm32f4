@@ -341,7 +341,7 @@ int picolCallProc(picolInterp *i, int argc, char **argv) {
     char *alist=x[0], *body=x[1];
     char buf[MAXSTR];
     picolCallFrame *cf = mycalloc(1,sizeof(*cf));
-    int a = 0, done = 0, errcode = PICOL_OK;
+    int a = 0, done = 0, errcode = PICOL_ERR;
 #ifndef __arm__
     if(!cf) {printf("could not allocate callframe\n"); exit(1);}
 #else
@@ -367,24 +367,22 @@ int picolCallProc(picolInterp *i, int argc, char **argv) {
             a = argc-1;
             break;
         }
-        if (++a > argc-1) goto arityerr;
+        if (++a > argc-1)
+            break;
         picolSetVar(i,start,argv[a]);
         p++;
         if (done) break;
     }
     dbg_send_int2("argc3", argc);
     dbg_newline();
-    if (a != argc-1) goto arityerr;
-    //cf->command = strdup(picolList(buf,argc,argv));
-    errcode     = picolEval(i,body);
-    if (errcode == PICOL_RETURN) errcode = PICOL_OK;
-    //picolDropCallFrame(i); /* remove the called proc callframe */
+    if (a == argc-1)
+        errcode = picolEval(i,body);
+    else
+        errcode = picolErr1(i,"wrong # args for '%s'",argv[0]);
+    i->callframe = cf->parent;
+    myfree(cf);
     i->level--;
     return errcode;
-arityerr:
-    //picolDropCallFrame(i); /* remove the called proc callframe */
-    i->level--;
-    return picolErr1(i,"wrong # args for '%s'",argv[0]);
 }
 int picolRegisterCmd(picolInterp *i, char *name, picol_Func f, void *pd) {
     picolCmd *c = picolGetCmd(i,name);
@@ -484,6 +482,11 @@ COMMAND(info) {
     return PICOL_ERR;
 }
 
+COMMAND(memory) {
+    return picolSetIntResult(i, mymemory());
+}
+
+
 picolInterp* picolCreateInterp(void) {
     picolInterp* i = mymalloc(sizeof(picolInterp));
     picolInitInterp(i);
@@ -492,6 +495,7 @@ picolInterp* picolCreateInterp(void) {
     picolRegisterCmd(i, "puts", picol_puts, 0);
     picolRegisterCmd(i, "test", picol_test, 0);
     picolRegisterCmd(i, "info", picol_info, 0);
+    picolRegisterCmd(i, "memory", picol_memory, 0);
     return i;
 }
 
@@ -502,7 +506,8 @@ int main(int argc, char **argv) {
     picolInterp *i = picolCreateInterp();
     register_misc_cmds(i);
     printf("interpsz: %X\n", sizeof(picolInterp));
-    printf("proc test1 {} {puts 123}\n");
+    printf("proc test1 {a} {puts $a}\n");
+    printf("test1 345\n");
     char buf[MAXSTR] = "";
     int rc;
     while(1)

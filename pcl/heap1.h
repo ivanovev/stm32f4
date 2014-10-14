@@ -22,4 +22,6 @@ typedef long unsigned int   size_t;
 void* mymalloc(size_t sz);
 char* mystrdup(char *str);
 void* mycalloc(size_t nmemb, size_t size);
+void myfree(void *ptr);
+size_t mymemory(void);
 
