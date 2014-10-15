@@ -443,7 +443,3 @@ void io_echo(void)
     }
 }
 
-uint32_t version(char *buf, uint32_t len)
-{
-    return mysnprintf(buf, len, "%s %s", __DATE__, __TIME__);
-}

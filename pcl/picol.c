@@ -428,6 +428,11 @@ COMMAND(proc) {
     if(!c) picolRegisterCmd(i,argv[1],picolCallProc,procdata);
     return PICOL_OK;
 }
+COMMAND(return) {
+    ARITY(argc == 1 || argc == 2, "return [result]");
+    picolSetResult(i, (argc == 2) ? argv[1] : "");
+    return PICOL_OK;
+}
 COMMAND(puts) {
 #ifndef __arm__
     printf("%s\n", argv[1]);
@@ -477,7 +482,18 @@ COMMAND(info) {
         }
         return picolSetResult(i, buf);
     }
-    if(SUBCMD1("body")) {
+    if(SUBCMD1("ram"))
+    {
+        return picolSetIntResult(i, mymemory());
+    }
+    if(SUBCMD1("version"))
+    {
+#ifdef __DATE__
+#ifdef __TIME__
+        mysnprintf(buf, sizeof(buf), "%s %s", __DATE__, __TIME__);
+#endif
+#endif
+        return picolSetResult(i, buf);
     }
     return PICOL_ERR;
 }
@@ -492,10 +508,10 @@ picolInterp* picolCreateInterp(void) {
     picolInitInterp(i);
     picolRegisterCmd(i, "set",  picol_set, 0);
     picolRegisterCmd(i, "proc", picol_proc, 0);
+    picolRegisterCmd(i, "return", picol_return, 0);
     picolRegisterCmd(i, "puts", picol_puts, 0);
     picolRegisterCmd(i, "test", picol_test, 0);
     picolRegisterCmd(i, "info", picol_info, 0);
-    picolRegisterCmd(i, "memory", picol_memory, 0);
     return i;
 }
 

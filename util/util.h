@@ -102,7 +102,5 @@ void io_echo(void);
 #define dbg_newline() dbg_send_str("\n\r", 2)
 #endif
 
-uint32_t version(char *buf, uint32_t len);
-
 #endif /* __UTIL_H__ */
 
