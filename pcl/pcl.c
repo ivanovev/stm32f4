@@ -13,8 +13,9 @@ void pcl_init(void)
     register_misc_cmds(pcl_interp);
     register_stm32f4_cmds(pcl_interp);
     register_sys_cmds(pcl_interp);
-    uart_send_str3("pcl_init", 1);
+    dbg_send_str3("pcl_init", 1);
     pcl_load();
+
 }
 
 int32_t pcl_get_chunksz(uint8_t *ptr, int32_t fsz)
@@ -36,11 +37,11 @@ int32_t pcl_get_chunksz(uint8_t *ptr, int32_t fsz)
     return len1;
 }
 
+#ifdef MY_FLASH
 uint16_t pcl_load(void)
 {
-#ifdef MY_UART
     uint8_t *ptr = USER_FLASH_MID_ADDR;
-    uart_send_hex2("pcl_load.addr", (uint32_t)ptr);
+    dbg_send_hex2("pcl_load.addr", (uint32_t)ptr);
     uint32_t fsz = flash_fsz1();
     uint32_t len = 0;
     uint8_t buf[MAXSTR];
@@ -58,32 +59,29 @@ uint16_t pcl_load(void)
             break;
         if(len >= sizeof(buf))
         {
-#ifdef MY_UART
-            uart_send_int2("chunk too big", len);
-            uart_send_int2("fsz", fsz);
-            uart_send_int2("ptr", ptr - USER_FLASH_MID_ADDR);
-#endif
+            dbg_send_int2("chunk too big", len);
+            dbg_send_int2("fsz", fsz);
+            dbg_send_int2("ptr", ptr - USER_FLASH_MID_ADDR);
             break;
         }
-#ifdef MY_UART
-        uart_send_int2("pcl_load.len", len);
-#endif
+        dbg_send_int2("pcl_load.len", len);
         mymemcpy(buf, ptr, len);
         buf[len] = 0;
-#ifdef MY_UART
-        uart_send_str3(buf, 1);
-#endif
+        dbg_send_str3(buf, 1);
         pcl_exec(buf);
-#ifdef MY_UART
-        uart_send_str3(buf, 1);
-#endif
+        dbg_send_str3(buf, 1);
         ptr += len + 1;
         fsz -= len + 1;
     }
-    uart_send_int2("pcl_load.fsz", fsz);
+    dbg_send_int2("pcl_load.fsz", fsz);
     return 0;
-#endif
 }
+#else
+uint16_t pcl_load(void)
+{
+    return 0;
+}
+#endif
 
 uint16_t pcl_exec(char *buf)
 {
@@ -98,7 +96,7 @@ void pcl_io(void)
     uint16_t sz = io_recv_str(buf);
     if(sz)
     {
-        if(!myisempty(buf[0]))
+        if(!myisempty(buf))
         {
             pcl_exec(buf);
             io_send_str4(buf);

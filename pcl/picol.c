@@ -142,7 +142,7 @@ int picolParseString(picolParser *p) {
 void picolInitInterp(picolInterp *i) {
     i->level    = 0;
     i->commands = 0;
-    i->callframe = calloc(1,sizeof(picolCallFrame));
+    i->callframe = mycalloc(1,sizeof(picolCallFrame));
 }
 picolCmd* picolGetCmd(picolInterp *i, char *name) {
     picolCmd *c;
@@ -336,7 +336,6 @@ int picolCallProc(picolInterp *i, int argc, char **argv) {
     if(!pd)
         return PICOL_ERR;
     char **x=pd;
-    printf("pd = %d\n\r", pd);
     dbg_send_int2("argc1", argc);
     char *alist=x[0], *body=x[1];
     char buf[MAXSTR];
@@ -410,8 +409,6 @@ COMMAND(set) {
     }
 }
 COMMAND(proc) {
-    printf("new proc %s\n\r", argv[1]);
-    printf("new proc %d\n\r", argc);
     char **procdata = NULL;
     picolCmd* c = picolGetCmd(i,argv[1]);
     ARITY(argc == 4, "proc name args body");
@@ -455,7 +452,6 @@ COMMAND(info) {
     {
         for(; c; c = c->next)
         {
-            printf("name procs privdata %s %d %d\n", c->name, procs, c->privdata);
             if(!procs || c->privdata)
                 LAPPEND(buf,c->name);
         }
