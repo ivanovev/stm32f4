@@ -177,7 +177,6 @@ int picolErr1(picolInterp *i, char* format, char* arg) {
     mysnprintf(buf, MAXSTR, format, arg);
     return picolErr(i, buf);
 }
-
 #define   picolGetVar(_i,_n)       picolGetVar2(_i,_n,0)
 #define   picolGetGlobalVar(_i,_n) picolGetVar2(_i,_n,1)
 picolVar *picolGetVar2(picolInterp *i, char *name, int glob) {
@@ -235,7 +234,6 @@ int     picolSetVar2(picolInterp *i, char *name, char *val,int glob) {
   v->val = mystrdup(val);
   return PICOL_OK;
 }
-
 int picolGetToken(picolInterp *i, picolParser *p) {
     int rc;
     while(1) {
@@ -261,7 +259,6 @@ int picolGetToken(picolInterp *i, picolParser *p) {
         }
     }
 }
-
 #define picolEval(_i,_t)  picolEval2(_i,_t,1)
 #define picolSubst(_i,_t) picolEval2(_i,_t,0)
 int picolEval2(picolInterp *i, char *t, int mode) { /*----------- EVAL! */
@@ -292,13 +289,13 @@ int picolEval2(picolInterp *i, char *t, int mode) { /*----------- EVAL! */
             picolListAppend(&args, v->val, buf);
             //___print_list(&args);
             continue;
-        }
-#if 0
         } else if (p.type == PT_CMD) {
-            rc = picolEval(i,t);
-            if (rc != PICOL_OK) goto err;
-            t = strdup(i->result);
-#endif
+            rc = picolEval(i,tmp);
+            if (rc != PICOL_OK)
+                break;
+            picolListAppend(&args, i->result, buf);
+            continue;
+        }
         /* We have a complete command + args. Call it! */
         else if (p.type == PT_EOL) {
             picolCmd *c;
@@ -336,7 +333,6 @@ int picolCallProc(picolInterp *i, int argc, char **argv) {
     if(!pd)
         return PICOL_ERR;
     char **x=pd;
-    dbg_send_int2("argc1", argc);
     char *alist=x[0], *body=x[1];
     char buf[MAXSTR];
     picolCallFrame *cf = mycalloc(1,sizeof(*cf));
@@ -351,10 +347,7 @@ int picolCallProc(picolInterp *i, int argc, char **argv) {
     i->callframe = cf;
     i->level++;
     char *p = mystrdup(alist);
-    dbg_send_int2("arglen", mystrnlen(alist, MAXSTR));
-    dbg_send_int2("argc2", argc);
     while(1) {
-        dbg_send_int2("argci", argc);
         char *start = p;
         while(*p != ' ' && *p != '\0') p++;
         if (*p != '\0' && p == start) { p++; continue; }
@@ -372,8 +365,6 @@ int picolCallProc(picolInterp *i, int argc, char **argv) {
         p++;
         if (done) break;
     }
-    dbg_send_int2("argc3", argc);
-    dbg_newline();
     if (a == argc-1)
         errcode = picolEval(i,body);
     else
@@ -442,7 +433,6 @@ COMMAND(puts) {
 COMMAND(test) {
     return picolSetResult(i,"test");
 }
-
 COMMAND(info) {
     char buf[MAXSTR] = "";
     picolCmd *c = i->commands;
@@ -493,12 +483,6 @@ COMMAND(info) {
     }
     return PICOL_ERR;
 }
-
-COMMAND(memory) {
-    return picolSetIntResult(i, mymemory());
-}
-
-
 picolInterp* picolCreateInterp(void) {
     picolInterp* i = mymalloc(sizeof(picolInterp));
     picolInitInterp(i);
