@@ -33,15 +33,11 @@ void eth_init(void)
 
     if (HAL_ETH_Init(&heth) == HAL_OK)
     {
-#ifdef HAL_UART_MODULE_ENABLED
-        uart_send_str3("HAL_ETH_Init = ok", 1);
-#endif
+        dbg_send_str3("HAL_ETH_Init = ok", 1);
     }
     else
     {
-#ifdef MY_UART
-        uart_send_str3("HAL_ETH_Init = err", 1);
-#endif
+        dbg_send_str3("HAL_ETH_Init = err", 1);
     }
     /* Initialize Tx Descriptors list: Chain Mode */
     HAL_ETH_DMATxDescListInit(&heth, DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);

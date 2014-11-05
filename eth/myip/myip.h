@@ -4,8 +4,6 @@
 
 #include <main.h>
 
-#define LOCAL_IP_ADDR 0xC0A80001
-
 #pragma pack(1)
 typedef struct
 {

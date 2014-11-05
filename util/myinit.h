@@ -10,7 +10,9 @@
 #include "flash/flash.h"
 #include "pcl/pcl.h"
 #include "tim/tim.h"
+#include "i2c/i2c.h"
 #include "uart/uart.h"
+#include "vfd/vfd.h"
 #ifdef MY_ETH
 #include "eth/eth.h"
 #endif

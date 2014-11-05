@@ -18,8 +18,10 @@
 #include "pcl/heap1.h"
 #include "pcl/pcl.h"
 #include "pcl/pcl_misc.h"
+#include "pcl/pcl_sys.h"
+#include "pcl/pcl_vfd.h"
 #ifdef __arm__
-#include "pcl/pcl_stm32f4.h"
+#include "pcl/pcl_stm.h"
 #endif
 
 #endif

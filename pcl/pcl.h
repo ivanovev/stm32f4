@@ -6,7 +6,6 @@
 #include "picol.h"
 
 void        pcl_init(void);
-uint16_t    pcl_load(void);
 uint16_t    pcl_exec(char *cmd);
 void        pcl_io(void);
 

@@ -47,30 +47,26 @@ static uint32_t flash_fsz(uint32_t *start, uint32_t *end)
 
 uint32_t flash_fsz0(void)
 {
-    return flash_fsz(USER_FLASH_START_ADDR, USER_FLASH_MID_ADDR);
+    return flash_fsz(USER_FLASH_START_ADDR, USER_FLASH_MID_ADDR - 0x100);
 }
 
 uint32_t flash_fsz1(void)
 {
-    return flash_fsz(USER_FLASH_MID_ADDR, USER_FLASH_END_ADDR);
+    return flash_fsz(USER_FLASH_MID_ADDR, USER_FLASH_END_ADDR - 0x100);
 }
 
 #if 1
 uint32_t flash_write(uint32_t addr, uint32_t data)
 {
+    uint32_t status = 0;
+    HAL_FLASH_Unlock();
     if((USER_FLASH_START_ADDR <= addr) && (addr <= (USER_FLASH_END_ADDR - 4)))
     {
-        uint32_t status = HAL_FLASH_Program(TYPEPROGRAM_WORD, addr & 0xFFFFFFFC, data);
-        //if(HAL_FLASH_Program(TYPEPROGRAM_WORD, addr & 0xFFFFFFFC, data) != HAL_OK)
-        if(status != HAL_OK)
-        {
-            //uart_send_hex2("flash_write.error", status);
-            //uart_send_hex2("flash_write.addr", addr);
-            return 1;
-        }
+        status = HAL_FLASH_Program(TYPEPROGRAM_WORD, addr & 0xFFFFFFFC, data);
     }
     else
-        return 1;
+        status = HAL_ERROR;
+    HAL_FLASH_Lock();
     return 0;
 }
 #endif
@@ -106,25 +102,7 @@ uint32_t flash_erase1(void)
 
 uint32_t flash_write_array(uint32_t addr, uint8_t *data, uint16_t sz)
 {
-    //uart_send_hex2("flash_write_array.sz", sz);
-#if 0
-    if(addr & 3)
-    {
-        uart_send_hex2("flash_write_array.return", addr);
-        return 0;
-    }
-#endif
     uint16_t i;
-#if 0
-    uint32_t *ptr, dataw;
-    for(i = 0; i < sz; i += 4)
-    {
-        ptr = (uint32_t*)&data[i];
-        dataw = *ptr;
-        if(HAL_FLASH_Program(TYPEPROGRAM_WORD, addr + i, *ptr) != HAL_OK)
-            return 1;
-    }
-#endif
     for(i = 0; i < sz; i++)
     {
         if(HAL_FLASH_Program(TYPEPROGRAM_BYTE, addr + i, data[i]) != HAL_OK)
@@ -272,5 +250,10 @@ void flash_copy10(void)
     uart_send_hex2("sram_flash_copy10", (uint32_t)sram_flash_copy10);
 #endif
     sram_flash_copy10();
+}
+
+uint32_t flash_read_hw_version(void)
+{
+    return *(uint32_t*)0x1FFF79E0;
 }
 

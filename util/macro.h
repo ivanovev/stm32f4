@@ -53,6 +53,11 @@
     GPIO_PinAFConfig(GPIO(gpio), PINSRC(pin), GPIO_AF_ETH); \
 } while(0)
 
+#define I2C_PINMUX(i2cn, sclgpio, sclpin, sdagpio, sdapin, i2caf) do { \
+    GPIO_INIT(sclgpio, sclpin, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_FAST, i2caf); \
+    GPIO_INIT(sdagpio, sdapin, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_FAST, i2caf); \
+} while(0)
+
 #endif
 
 #endif

@@ -22,17 +22,20 @@ uint8_t     itoa(int32_t i, char *b);
 uint32_t    htoi(char *myArray);
 uint8_t     itoh(uint32_t v, char *buf, uint8_t bytes);
 int32_t     str2int(const char *buf);
+int         str2bytes(const char *in, uint8_t *out, int maxlen);
 uint8_t     int2str(int32_t i, char *buf, uint8_t base);
 void        strip_str(char *str);
+
+inline uint8_t myisspace(char c);
+inline uint8_t myisnewline(char c);
+inline uint8_t myisalnum(char c);
+inline uint8_t myisdigit(char c);
 
 int         mystrncmp(const char* s1, const char *s2, uint32_t n);
 uint16_t    mystrnlen(const char* s, uint16_t maxlen);
 void*       mymemcpy(void* dest, const void* src, uint32_t count);
 char*       mystrncpy(char *dest, const char *src, uint32_t n);
 uint32_t    mysnprintf(char *str, uint32_t sz, const char *fmt, ...);
-inline uint8_t myisspace(char c);
-inline uint8_t myisnewline(char c);
-inline uint8_t myisalnum(char c);
 uint8_t     myisempty(char *str);
 char*       mystrchr(const char *s, int c);
 char*       mystrncat(char *dest, const char *src, uint32_t n);
@@ -75,16 +78,16 @@ void io_echo(void);
 #define dbg_send_hex3(a,b,c) uart_send_hex3(a,b,c)
 #define dbg_send_hex4(a,b,c) uart_send_hex4(a,b,c)
 #else
-#define dbg_send_str(a,b) (void)
-#define dbg_send_str2(a) (void)
-#define dbg_send_str3(a,b) (void)
-#define dbg_send_str4(a) (void)
-#define dbg_send_int(a) (void)
-#define dbg_send_int2(a,b) (void)
-#define dbg_send_hex(a) (void)
-#define dbg_send_hex2(a,b) (void)
-#define dbg_send_hex3(a,b,c) (void)
-#define dbg_send_hex4(a,b,c) (void)
+#define dbg_send_str(a,b) 0
+#define dbg_send_str2(a) 0
+#define dbg_send_str3(a,b) 0
+#define dbg_send_str4(a) 0
+#define dbg_send_int(a) 0
+#define dbg_send_int2(a,b) 0
+#define dbg_send_hex(a) 0
+#define dbg_send_hex2(a,b) 0
+#define dbg_send_hex3(a,b,c) 0
+#define dbg_send_hex4(a,b,c) 0
 #endif
 #else
 #define dbg_send_str(a,b) printf("%s",a)

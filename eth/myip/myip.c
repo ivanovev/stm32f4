@@ -29,6 +29,9 @@ void myip_init(void)
     myip_con_add(TCP_PORT_DATA, TCP_PROTO, myip_datad_io);
     ip_counter = 0;
     myip_tcp_init();
+#ifdef MY_I2C
+    local_ip_addr = eeprom_ipaddr_read();
+#endif
 }
 
 uint16_t dbg_con_handler(uint8_t *data, uint16_t sz)

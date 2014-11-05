@@ -16,7 +16,7 @@ COMMAND(inthex) {
     return picolSetResult(i, buf);
 }
 
-void register_misc_cmds(picolInterp *i)
+void pcl_misc_init(picolInterp *i)
 {
     picolRegisterCmd(i, "int", picol_inthex, 0);
     picolRegisterCmd(i, "hex", picol_inthex, 0);

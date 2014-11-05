@@ -4,7 +4,7 @@
 
 #include <main.h>
 
-void    register_misc_cmds(picolInterp *i);
+void    pcl_misc_init(picolInterp *i);
 
 #endif
 

@@ -20,7 +20,9 @@ C_SRCS += $(UTIL_DIR)/system_clock.c
 C_SRCS += $(UTIL_DIR)/systick_it.c
 C_SRCS += $(UTIL_DIR)/queue.c
 C_SRCS += $(UTIL_DIR)/util.c
+C_SRCS += $(UTIL_DIR)/version.c
 C_SRCS += $(UTIL_DIR)/myinit.c
+C_SRCS += $(UTIL_DIR)/heap1.c
 #C_SRCS += $(UTIL_DIR)/startup_stm32f4xx.c
 #C_SRCS += $(UTIL_DIR)/syscalls.c
 
@@ -85,7 +87,7 @@ VPATH     = $(sort $(dir $(C_SRCS)) $(dir $(A_SRCS)))
 
 .PHONY: proj clean echo debug
 
-all: proj touch_util_c
+all: proj touch_version_c
 
 proj: $(OUTFILES)
 
@@ -117,8 +119,8 @@ $(A_OBJS) : $(OBJDIR)/%.o : %.s Makefile
 	@echo $<
 	@$(CC) -c -o $@ $< ${CFLAGS}
 
-touch_util_c:
-	touch $(UTIL_DIR)/util.c
+touch_version_c:
+	touch $(UTIL_DIR)/version.c
 
 clean:
 	@echo $(CFLAGS)

@@ -1,5 +1,5 @@
 
-#include "pcl_stm32f4.h"
+#include "pcl_stm.h"
 #include "util/util.h"
 
 #ifdef MY_GPIO
@@ -14,6 +14,10 @@
 
 #ifdef MY_FLASH
 #include "flash/flash.h"
+#endif
+
+#ifdef MY_I2C
+#include "i2c/eeprom.h"
 #endif
 
 #ifdef MY_GPIO
@@ -117,7 +121,7 @@ COMMAND(flash) {
         if(SUBCMD3("fw"))
             myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, RESET_FWUPG);
         else if(SUBCMD3("pcl"))
-            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, RESET_PCLUPD);
+            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, 0);
         else
             return PICOL_ERR;
         return picolSetResult(i, argv[2]);
@@ -197,7 +201,7 @@ COMMAND(mdio) {
     {
         value = mdio_read(reg);
     }
-    return picolSetHex2Result(i,value);
+    return picolSetHex4Result(i,value);
 }
 
 COMMAND(eth) {
@@ -211,7 +215,39 @@ COMMAND(eth) {
 }
 #endif
 
-void register_stm32f4_cmds(picolInterp *i)
+#ifdef MY_I2C
+COMMAND(eeprom) {
+    ARITY(argc > 3, "eeprom read|write addr ...");
+    uint16_t addr = str2int(argv[2]);
+    uint8_t buf[MAXSTR];
+    uint8_t buf1[32];
+    uint16_t sz = 0, j, k;
+    if(SUBCMD1("read")) {
+        sz = str2int(argv[3]);
+        if(eeprom_read_data(addr, buf1, sz) == 0)
+            return PICOL_ERR;
+        for(j = 0, k = 0; j < sz; j++)
+        {
+            if(j)
+                buf[k++] = ' ';
+            itoh(buf1[j], &(buf[k]), 1);
+            k += 4;
+        }
+        return picolSetResult(i, buf);
+    }
+    if(SUBCMD1("write")) {
+        sz = argc - 3;
+        for(j = 0, k = 0; j < sz; j++)
+            buf1[j] = str2int(argv[j + 3]);
+        if(eeprom_write_data(addr, buf1, sz) == 0)
+            return PICOL_ERR;
+        return PICOL_OK;
+    }
+    return PICOL_ERR;
+}
+#endif
+
+void pcl_stm_init(picolInterp *i)
 {
 #ifdef MY_GPIO
     picolRegisterCmd(i, "gpio", picol_gpio, 0);
@@ -225,6 +261,9 @@ void register_stm32f4_cmds(picolInterp *i)
 #ifdef MY_ETH
     picolRegisterCmd(i, "mdio", picol_mdio, 0);
     picolRegisterCmd(i, "eth", picol_eth, 0);
+#endif
+#ifdef MY_I2C
+    picolRegisterCmd(i, "eeprom", picol_eeprom, 0);
 #endif
 }
 

@@ -468,19 +468,6 @@ COMMAND(info) {
         }
         return picolSetResult(i, buf);
     }
-    if(SUBCMD1("ram"))
-    {
-        return picolSetIntResult(i, mymemory());
-    }
-    if(SUBCMD1("version"))
-    {
-#ifdef __DATE__
-#ifdef __TIME__
-        mysnprintf(buf, sizeof(buf), "%s %s", __DATE__, __TIME__);
-#endif
-#endif
-        return picolSetResult(i, buf);
-    }
     return PICOL_ERR;
 }
 picolInterp* picolCreateInterp(void) {

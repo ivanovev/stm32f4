@@ -4,8 +4,9 @@
 int main(void)
 {
     myinit();
+    //led_on();
     //btn_init();
-    led_toggle();
+//    led_toggle();
     for (;;) {
         HAL_Delay(1000);
         led_toggle();

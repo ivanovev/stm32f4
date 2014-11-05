@@ -51,8 +51,8 @@
 
 #define picolSetBoolResult(i,x) picolSetFmtResult(i,"%d",!!x)
 #define picolSetIntResult(i,x)  picolSetFmtResult(i,"%d",x)
-#define picolSetHex2Result(i,x)  picolSetFmtResult(i,"%.2x",x)
-#define picolSetHexResult(i,x)  picolSetFmtResult(i,"%x",x)
+#define picolSetHexResult(i,x)  picolSetFmtResult(i,"%X",x)
+#define picolSetHex4Result(i,x)  picolSetFmtResult(i,"0x%8X",x)
 
 enum {PICOL_OK, PICOL_ERR, PICOL_RETURN, PICOL_BREAK, PICOL_CONTINUE};
 enum {PT_ESC,PT_STR,PT_CMD,PT_VAR,PT_SEP,PT_EOL,PT_EOF, PT_XPND};

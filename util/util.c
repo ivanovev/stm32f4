@@ -5,6 +5,26 @@
 io_send_func io_send_str_ptr = 0;
 io_recv_func io_recv_str_ptr = 0;
 
+inline uint8_t myisspace(char c)
+{
+    return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\12');
+}
+
+inline uint8_t myisnewline(char c)
+{
+    return (c == '\n' || c == '\r');
+}
+
+inline uint8_t myisalnum(char c)
+{
+    return ((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')) || (('0' <= c) && (c <= '9')));
+}
+
+inline uint8_t myisdigit(char c)
+{
+    return (('0' <= c) && (c <= '9'));
+}
+
 #if 0
 unsigned int mr(unsigned int addr)
 {
@@ -25,11 +45,11 @@ unsigned int mw(unsigned int addr, unsigned int value)
 int atoi(const char *p)
 {
     int k = 0;
-    while (*p) {
+    while (myisdigit(*p)) {
         k = (k<<3)+(k<<1)+(*p)-'0';
         p++;
-     }
-     return k;
+    }
+    return k;
 }
 
 uint8_t itoa(int32_t i, char *b)
@@ -92,17 +112,9 @@ uint32_t htoi(char *myArray)
     return tempInt;
 }
 
-uint8_t itoh(uint32_t v, char *buf, uint8_t bytes)
+uint8_t itoh_(uint32_t v, char *buf, uint8_t bytes)
 {
 	uint8_t i = 0;
-    buf[i++] = '0';
-    buf[i++] = 'x';
-	if (v == 0)
-	{
-		buf[i++] = '0';
-		buf[i] = 0;
-		return i;
-	}
 	int digit_shift, digit, c;
 	/* Find first non-zero digit. */
 #if 1
@@ -127,6 +139,13 @@ uint8_t itoh(uint32_t v, char *buf, uint8_t bytes)
 	return i;
 }
 
+uint8_t itoh(uint32_t v, char *buf, uint8_t bytes)
+{
+    buf[0] = '0';
+    buf[1] = 'x';
+    return itoh_(v, &(buf[2]), bytes);
+}
+
 uint8_t int2str(int32_t i, char *buf, uint8_t base)
 {
     if(base == 10)
@@ -143,6 +162,30 @@ int32_t str2int(const char *str)
     if(!mystrncmp(str, "0x", 2))
         return (int32_t)htoi((char*)ptr);
     return atoi(str);
+}
+
+int str2bytes(const char *in, uint8_t *out, int maxlen)
+{
+    int len;
+    char ch[3] = {0, 0, 0};
+    const char *tmp;
+    if(!mystrncmp(in, "0x", 2)) in += 2;
+    tmp = in;
+    for(len = 0; (tmp - in) < (2*maxlen); tmp++)
+    {
+        ch[0] = tmp[0];
+        ch[1] = tmp[1];
+        if(('0' <= ch[0]) && (ch[0] <= 'F') &&
+                ('0' <= ch[1]) && (ch[1] <= 'F'))
+        {
+            out[len++] = htoi(ch);
+            tmp++;
+        }
+        else
+            break;
+    }
+    out[len++] = 0;
+    return len - 1;
 }
 
 void strip_str(char *str)
@@ -205,7 +248,8 @@ uint32_t mysnprintf(char *buf, uint32_t sz, const char *fmt, ...)
     va_start(args, fmt);
     const char *w;
     uint32_t i = 0;
-    int8_t hexsz = 4;
+    char pad = '0';
+    int8_t width = 4;
     char c;
 
     w = fmt;
@@ -219,12 +263,24 @@ uint32_t mysnprintf(char *buf, uint32_t sz, const char *fmt, ...)
         {
             if ((c = *w++) != 0)
             {
+#if 0
                 if (c == '.')
                 {
                     hexsz = *w++ - '0';
                     if((hexsz <= 0) || (4 < hexsz))
                         hexsz = 4;
                     c = *w++;
+                }
+#endif
+                if((c == '0') || (c == ' '))
+                {
+                    pad = c;
+                    c = *w++;
+                }
+                if(myisdigit(c))
+                {
+                    width = atoi(w-1);
+                    while(myisdigit(c = *w++));
                 }
                 if (c == '%')
                 {
@@ -244,21 +300,13 @@ uint32_t mysnprintf(char *buf, uint32_t sz, const char *fmt, ...)
                             i += itoa(v, &(buf[i]));
                     }
                 }
-                else if (c == 'x')
+                else if((c == 'x') || (c == 'X'))
                 {
                     unsigned long v = va_arg(args, unsigned long);
 
-                    if (v == 0)
-                    {
-                        buf[i++] = '0';
-                        continue;
-                    }
-                    else
-                    {
-                        if((sz - i) > 10)
-                            i += itoh(v, &(buf[i]), hexsz);
-                    }
-                    hexsz = 4;
+                    if((sz - i) > width)
+                        i += itoh_(v, &(buf[i]), width/2);
+                    width = 4;
                 }
                 else if (c == 's')
                 {
@@ -275,21 +323,6 @@ uint32_t mysnprintf(char *buf, uint32_t sz, const char *fmt, ...)
     }
     buf[i] = 0;
     return i;
-}
-
-inline uint8_t myisspace(char c)
-{
-    return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\12');
-}
-
-inline uint8_t myisnewline(char c)
-{
-    return (c == '\n' || c == '\r');
-}
-
-inline uint8_t myisalnum(char c)
-{
-    return ((('a' <= c) || (c <= 'z')) || (('A' <= c) || (c <= 'Z')) || (('0' <= c) || (c <= '9')));
 }
 
 uint8_t myisempty(char *str)

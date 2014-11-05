@@ -17,8 +17,14 @@ int main(void)
     {
         //eth_io();
         pcl_io();
-        if(reset && myip_tcp_con_closed())
-            break;
+#ifdef MY_VFD
+        vfd_upd();
+#endif
+        if(myip_tcp_con_closed())
+        {
+            if((reset == RESET_FWUPG) || (reset == RESET_REBOOT))
+                break;
+        }
     }
     mydeinit();
 #ifdef MY_UART

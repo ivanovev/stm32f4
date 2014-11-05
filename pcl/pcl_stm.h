@@ -4,7 +4,7 @@
 
 #include <main.h>
 
-void    register_stm32f4_cmds(picolInterp *i);
+void    pcl_stm_init(picolInterp *i);
 
 #endif
 

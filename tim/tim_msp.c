@@ -22,3 +22,4 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
     TIMx_FORCE_RESET();
     TIMx_RELEASE_RESET();
 }
+

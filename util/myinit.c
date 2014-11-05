@@ -26,6 +26,11 @@ void myinit(void)
     uart_init();
 #endif
 
+#ifdef MY_I2C
+#pragma message "i2c_init()"
+    i2c_init();
+#endif
+
 #ifdef MY_FLASH
 #pragma message "flash_erase_img1()"
     flash_erase_img1();
@@ -49,6 +54,11 @@ void myinit(void)
 #ifdef MY_TIM
 #pragma message "tim_init()"
     tim_init();
+#endif
+
+#ifdef MY_VFD
+#pragma message "vfd_init()"
+    vfd_init();
 #endif
 
 }

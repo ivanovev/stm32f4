@@ -47,17 +47,13 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
     GPIO_INIT(ETH_TXD1_GPIO, ETH_TXD1_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
 
     __ETH_CLK_ENABLE();
-#ifdef MY_UART
-    uart_send_str3("HAL_ETH_MspInit", 1);
-#endif
+    dbg_send_str3("HAL_ETH_MspInit", 1);
     eth_reset();
 }
 
 void HAL_ETH_MspDeInit(ETH_HandleTypeDef *heth)
 {
-#ifdef MY_UART
-    uart_send_str3("HAL_ETH_MspDeInit", 1);
-#endif
+    dbg_send_str3("HAL_ETH_MspDeInit", 1);
     __ETH_CLK_DISABLE();
 }
 
