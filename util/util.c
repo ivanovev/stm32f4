@@ -188,6 +188,18 @@ int str2bytes(const char *in, uint8_t *out, int maxlen)
     return len - 1;
 }
 
+uint16_t bytes2str(const char *in, uint8_t *out, uint16_t sz)
+{
+    uint16_t i = 0;
+    out[0] = '0';
+    out[1] = 'x';
+    for(i = 0; i < sz; i++)
+    {
+        itoh_(in[i], &out[2*i+2], 1);
+    }
+    return sz;
+}
+
 void strip_str(char *str)
 {
     uint16_t len = mystrnlen(str, IO_BUF_SZ);

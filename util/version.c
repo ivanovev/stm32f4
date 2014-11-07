@@ -24,3 +24,8 @@ uint32_t version_time(char *buf, int sz)
 #endif
 }
 
+uint32_t version_hw(void)
+{
+    return *(uint32_t*)0x1FFF79E0;
+}
+

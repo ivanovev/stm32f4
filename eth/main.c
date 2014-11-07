@@ -37,8 +37,10 @@ int main(void)
     NVIC_SystemReset();
 }
 
+#if 0
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     eth_io();
 }
+#endif
 

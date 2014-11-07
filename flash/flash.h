@@ -35,7 +35,6 @@ uint32_t    flash_crc0(uint32_t sz);
 uint32_t    flash_crc1(uint32_t sz);
 void        flash_copy10(void);
 void        flash_erase_img1(void);
-uint32_t    flash_read_hw_version(void);
 
 #endif /* __FLASH_H__ */
 

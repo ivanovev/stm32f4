@@ -1,5 +1,5 @@
 
-#include "myinit.h"
+#include "util/system_msp.h"
 
 extern void SystemClock_Config(void);
 extern uint32_t SystemCoreClock;
@@ -76,5 +76,23 @@ void mydeinit(void)
     eth_deinit();
 #endif
 
+#ifdef MY_VFD
+#pragma message "vfd_deinit()"
+    vfd_deinit();
+#endif
+}
+
+void uptime(char *buf, uint16_t sz)
+{
+    uint32_t t = HAL_GetTick();
+    t /= 1000;
+    int ss = t % 60;
+    t /= 60;
+    int mm = t % 60;
+    t /= 60;
+    int hh = t % 24;
+    t /= 24;
+    int dd = t;
+    mysnprintf(buf, sz, "%dd %dh %dm %ds", dd, hh, mm, ss);
 }
 

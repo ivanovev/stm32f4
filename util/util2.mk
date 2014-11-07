@@ -17,11 +17,11 @@ C_SRCS += $(HAL_DIR)/stm32f4xx_hal_cortex.c
 C_SRCS += $(HAL_DIR)/stm32f4xx_hal_dma.c
 C_SRCS += $(UTIL_DIR)/system_stm32f4xx.c
 C_SRCS += $(UTIL_DIR)/system_clock.c
-C_SRCS += $(UTIL_DIR)/systick_it.c
+C_SRCS += $(UTIL_DIR)/system_it.c
+C_SRCS += $(UTIL_DIR)/system_msp.c
 C_SRCS += $(UTIL_DIR)/queue.c
 C_SRCS += $(UTIL_DIR)/util.c
 C_SRCS += $(UTIL_DIR)/version.c
-C_SRCS += $(UTIL_DIR)/myinit.c
 C_SRCS += $(UTIL_DIR)/heap1.c
 #C_SRCS += $(UTIL_DIR)/startup_stm32f4xx.c
 #C_SRCS += $(UTIL_DIR)/syscalls.c
@@ -56,8 +56,8 @@ CFLAGS += $(IINCDIR)
 
 LDSCRIPT_RAM = $(UTIL_DIR)/stm32f4_ram.ld
 LDSCRIPT_FLASH = $(UTIL_DIR)/stm32f4_flash.ld
-#LDSCRIPT = $(LDSCRIPT_RAM)
-LDSCRIPT = $(LDSCRIPT_FLASH)
+LDSCRIPT = $(LDSCRIPT_RAM)
+#LDSCRIPT = $(LDSCRIPT_FLASH)
 ifeq ($(LDSCRIPT), $(LDSCRIPT_RAM))
     CFLAGS += -DVECT_TAB_SRAM
 endif
@@ -81,7 +81,6 @@ OBJDIR = $(BUILDDIR)/obj
 C_OBJS  = $(addprefix $(OBJDIR)/, $(notdir $(C_SRCS:.c=.o)))
 A_OBJS  = $(addprefix $(OBJDIR)/, $(notdir $(A_SRCS:.s=.o)))
 OBJS = $(C_OBJS) $(A_OBJS)
-
 
 VPATH     = $(sort $(dir $(C_SRCS)) $(dir $(A_SRCS)))
 

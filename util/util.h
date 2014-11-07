@@ -3,6 +3,9 @@
 #define __UTIL_H__
 
 #include "stdint.h"
+#include "util/macro.h"
+
+#define IO_BUF_SZ 512
 
 #if 0
 #ifndef MIN
@@ -23,6 +26,7 @@ uint32_t    htoi(char *myArray);
 uint8_t     itoh(uint32_t v, char *buf, uint8_t bytes);
 int32_t     str2int(const char *buf);
 int         str2bytes(const char *in, uint8_t *out, int maxlen);
+uint16_t    bytes2str(const char *in, uint8_t *out, uint16_t sz);
 uint8_t     int2str(int32_t i, char *buf, uint8_t base);
 void        strip_str(char *str);
 
@@ -40,8 +44,6 @@ uint8_t     myisempty(char *str);
 char*       mystrchr(const char *s, int c);
 char*       mystrncat(char *dest, const char *src, uint32_t n);
 uint8_t*    mymemchr(const uint8_t *s, uint8_t c, uint32_t n);
-
-#define IO_BUF_SZ 512
 
 typedef uint16_t (*io_recv_func)(char *buf);
 extern io_recv_func io_recv_str_ptr;

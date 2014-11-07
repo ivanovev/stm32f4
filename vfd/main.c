@@ -14,3 +14,10 @@ int main(void)
     }
 }
 
+#if 0
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    led_toggle();
+}
+#endif
+

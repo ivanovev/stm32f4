@@ -5,10 +5,21 @@
 #ifdef MY_VFD
 COMMAND(vfd) {
     char buf[MAXSTR] = "";
+    char tmp[IO_BUF_SZ];
     ARITY(argc >= 2 || argc == 3, "vfd cls|... ...");
+    if(SUBCMD1("crlf"))
+    {
+        vfd_crlf();
+        return PICOL_OK;
+    }
     if(SUBCMD1("cls"))
     {
         vfd_cls();
+        return PICOL_OK;
+    }
+    if(SUBCMD1("home"))
+    {
+        vfd_home();
         return PICOL_OK;
     }
     if(SUBCMD1("str"))
@@ -29,6 +40,13 @@ COMMAND(vfd) {
     {
         vfd_menu_draw();
         return PICOL_OK;
+    }
+    if(SUBCMD1("line"))
+    {
+        ARITY(argc == 3, "vfd line index"); 
+        vfd_menu_line(tmp, str2int(argv[2]));
+        bytes2str(tmp, buf, 16);
+        return picolSetResult(i, buf);
     }
     if(SUBCMD1("down"))
     {

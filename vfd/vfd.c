@@ -6,6 +6,7 @@
 #pragma message "VFD_UART_BAUDRATE: " STR(VFD_UART_BAUDRATE)
 
 UART_HandleTypeDef hvfduart;
+TIM_HandleTypeDef hvfdtim;
 
 extern void Error_Handler(void);
 
@@ -53,6 +54,34 @@ void vfd_init(void)
 
     //vfd_reset();
     vfd_menu_init();
+
+    hvfdtim.Instance = VFD_TIMx;
+    hvfdtim.Init.Period = 10*VFD_TIMx_INTERVAL - 1;
+    hvfdtim.Init.Prescaler = tim_get_prescaler(VFD_TIMx);
+    hvfdtim.Init.ClockDivision = 0;
+    hvfdtim.Init.CounterMode = TIM_COUNTERMODE_UP;
+    if(HAL_TIM_Base_Init(&hvfdtim) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    if(HAL_TIM_Base_Start_IT(&hvfdtim) != HAL_OK)
+    {
+        Error_Handler();
+    }
+}
+
+void vfd_deinit(void)
+{
+    VFD_TIMx_FORCE_RESET();
+    VFD_TIMx_RELEASE_RESET();
+}
+
+void VFD_TIMx_IRQHandler(void)
+{
+    HAL_TIM_IRQHandler(&hvfdtim);
+    //led_toggle();
+    //vfd_state |= VFD_EVT_TIM_UPD;
 }
 
 uint16_t vfd_busy(void)
@@ -83,15 +112,15 @@ uint16_t vfd_btn_status(void)
 {
     uint16_t status = 0;
     if(HAL_GPIO_ReadPin(GPIO(BTNL_GPIO), PIN(BTNL_PIN)) == 0)
-        status |= BTNL_STATUS;
+        status |= VFD_EVT_BTNL;
     if(HAL_GPIO_ReadPin(GPIO(BTNR_GPIO), PIN(BTNR_PIN)) == 0)
-        status |= BTNR_STATUS;
+        status |= VFD_EVT_BTNR;
     if(HAL_GPIO_ReadPin(GPIO(BTNU_GPIO), PIN(BTNU_PIN)) == 0)
-        status |= BTNU_STATUS;
+        status |= VFD_EVT_BTNU;
     if(HAL_GPIO_ReadPin(GPIO(BTND_GPIO), PIN(BTND_PIN)) == 0)
-        status |= BTND_STATUS;
+        status |= VFD_EVT_BTND;
     if(HAL_GPIO_ReadPin(GPIO(BTNO_GPIO), PIN(BTNO_PIN)) == 0)
-        status |= BTNO_STATUS;
+        status |= VFD_EVT_BTNO;
     return status;
 }
 
@@ -129,14 +158,25 @@ void vfd_str(const char *str)
     vfd_send_str(str, mystrnlen(str, 32));
 }
 
+void vfd_cp866(void)
+{
+    vfd_str("0x1B7411");
+}
+
+void vfd_home(void)
+{
+    vfd_str("0x0B");
+}
+
 void vfd_cls(void)
 {
     vfd_str("0x0C");
 }
 
-void vfd_cp866(void)
+void vfd_crlf(void)
 {
-    vfd_str("0x1B7411");
+    vfd_str("0x0D");
+    vfd_str("0x0A");
 }
 
 uint8_t vfd_brightness(int8_t newlvl)
@@ -159,7 +199,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
     if(btn_status)
     {
         vfd_state = btn_status;
-        led_toggle();
+        //led_toggle();
     }
 #endif
 }
@@ -168,16 +208,25 @@ void vfd_upd(void)
 {
     if(vfd_state)
     {
-        if(vfd_state & BTNU_STATUS)
+        if(vfd_state & VFD_EVT_BTNU)
             vfd_menu_up();
-        if(vfd_state & BTND_STATUS)
+        if(vfd_state & VFD_EVT_BTND)
             vfd_menu_down();
-        if(vfd_state & BTNL_STATUS)
+        if(vfd_state & VFD_EVT_BTNL)
             vfd_menu_left();
-        if(vfd_state & BTNR_STATUS)
+        if(vfd_state & VFD_EVT_BTNR)
             vfd_menu_right();
+        if(vfd_state & VFD_EVT_BTNO)
+            vfd_menu_ok();
+        if(vfd_state & VFD_EVT_TIM_UPD)
+            vfd_menu_tim_upd();
         //led_toggle();
         vfd_state = 0;
     }
+}
+
+void vfd_tim_upd(void)
+{
+    vfd_state |= VFD_EVT_TIM_UPD;
 }
 

@@ -1,25 +1,62 @@
 
 #include <main.h>
 
-#define TIMx_CLK_ENABLE     JOIN3(__TIM, TIMn, _CLK_ENABLE)
-#define TIMx_IRQn           JOIN3(TIM, TIMn, _IRQn)
-#define TIMx_FORCE_RESET JOIN3(__TIM, TIMn, _FORCE_RESET)
-#define TIMx_RELEASE_RESET JOIN3(__TIM, TIMn, _RELEASE_RESET)
-
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 {
-    TIMx_CLK_ENABLE();
-
-    /* Set Interrupt Group Priority */
-    HAL_NVIC_SetPriority(TIMx_IRQn, 4, 0);
-
-    /* Enable the TIMx global Interrupt */
-    HAL_NVIC_EnableIRQ(TIMx_IRQn);
+#ifdef TIMx
+    if(htim->Instance == TIMx)
+    {
+        TIMx_CLK_ENABLE();
+        HAL_NVIC_SetPriority(TIMx_IRQn, 4, 0);
+        HAL_NVIC_EnableIRQ(TIMx_IRQn);
+    }
+#endif
+#ifdef MY_VFD
+    if(htim->Instance == VFD_TIMx)
+    {
+        VFD_TIMx_CLK_ENABLE();
+        HAL_NVIC_SetPriority(VFD_TIMx_IRQn, 0xD, 0);
+        HAL_NVIC_EnableIRQ(VFD_TIMx_IRQn);
+    }
+#endif
 }
 
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
 {
-    TIMx_FORCE_RESET();
-    TIMx_RELEASE_RESET();
+#ifdef TIMx
+    if(htim->Instance == TIMx)
+    {
+        TIMx_FORCE_RESET();
+        TIMx_RELEASE_RESET();
+    }
+#endif
+#ifdef MY_VFD
+    if(htim->Instance == VFD_TIMx)
+    {
+        VFD_TIMx_FORCE_RESET();
+        VFD_TIMx_RELEASE_RESET();
+    }
+#endif
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+#ifdef TIMx
+    if(htim->Instance == TIMx)
+    {
+#ifdef MY_ETH
+        eth_io();
+#else
+        led_toggle();
+#endif
+    }
+#endif
+#ifdef MY_VFD
+    if(htim->Instance == VFD_TIMx)
+    {
+        led_toggle();
+        vfd_tim_upd();
+    }
+#endif
 }
 

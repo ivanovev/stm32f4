@@ -3,11 +3,12 @@
 #define __MAIN_H__
 
 #include "stm32f4xx_hal.h"
-#include "util/macro.h"
-#include "util/myinit.h"
+#include "util/util.h"
+#include "util/system_msp.h"
 
 #define TIMn                3
-#define TIMx_INTERVAL       5
+#define TIMx                JOIN(TIM, TIMn)
+#define TIMx_INTERVAL       1000
 
 #endif
 

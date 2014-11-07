@@ -252,8 +252,3 @@ void flash_copy10(void)
     sram_flash_copy10();
 }
 
-uint32_t flash_read_hw_version(void)
-{
-    return *(uint32_t*)0x1FFF79E0;
-}
-

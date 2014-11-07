@@ -33,6 +33,7 @@ void* mymalloc(size_t sz)
     return ptr;
 }
 
+#ifdef MAXSTR
 char* mystrdup(char *str)
 {
     size_t len = mystrnlen(str, MAXSTR);
@@ -44,6 +45,7 @@ char* mystrdup(char *str)
     }
     return 0;
 }
+#endif
 
 void* mycalloc(size_t nmemb, size_t sz)
 {

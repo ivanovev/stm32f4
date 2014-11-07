@@ -136,12 +136,10 @@ COMMAND(sys) {
         version_time(buf, sizeof(buf));
         return picolSetResult(i, buf);
     }
-#ifdef MY_FLASH
     if(SUBCMD1("hw"))
     {
-        return picolSetIntResult(i, flash_read_hw_version());
+        return picolSetIntResult(i, version_hw());
     }
-#endif
     if(SUBCMD1("ipaddr"))
     {
         uint32_t ipaddr = 0;
@@ -181,6 +179,11 @@ COMMAND(sys) {
             return picolSetHex4Result(i, ipaddr);
         }
     }
+    if(SUBCMD1("uptime"))
+    {
+        uptime(buf, sizeof(buf));
+        return picolSetResult(i, buf);
+    }
     return PICOL_ERR;
 }
 
@@ -190,10 +193,10 @@ void pcl_sys_init(picolInterp *i)
     picolRegisterCmd(i, "exit", picol_exit, 0);
     picolRegisterCmd(i, "reset", picol_reset, 0);
     picolRegisterCmd(i, "reload", picol_reload, 0);
-    picolRegisterCmd(i, "sys", picol_sys, 0);
 #endif
 #ifdef MY_FLASH
     //pcl_load(i, USER_FLASH_MID_ADDR);
 #endif
+    picolRegisterCmd(i, "sys", picol_sys, 0);
 }
 

@@ -26,6 +26,7 @@ extern void usb_init();
 
 void myinit(void);
 void mydeinit(void);
+void uptime(char *buf, uint16_t sz);
 
 #endif
 

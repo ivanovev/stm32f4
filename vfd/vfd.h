@@ -32,6 +32,18 @@
 #define GPIO_AF_VFD_UARTx JOIN(GPIO_AF8_USART, VFD_UARTn)
 #endif
 
+#define VFD_TIMn            7
+#define VFD_TIMx            JOIN(TIM, VFD_TIMn)
+#define VFD_TIMx_INTERVAL   1000
+
+#define VFD_TIMn 7
+
+#define VFD_TIMx_CLK_ENABLE     JOIN3(__TIM, VFD_TIMn, _CLK_ENABLE)
+#define VFD_TIMx_IRQn           JOIN3(TIM, VFD_TIMn, _IRQn)
+#define VFD_TIMx_FORCE_RESET JOIN3(__TIM, VFD_TIMn, _FORCE_RESET)
+#define VFD_TIMx_RELEASE_RESET JOIN3(__TIM, VFD_TIMn, _RELEASE_RESET)
+#define VFD_TIMx_IRQHandler     JOIN3(TIM, VFD_TIMn, _IRQHandler)
+
 #define VFD_BUSY_GPIO E
 #define VFD_BUSY_PIN 1
 
@@ -58,19 +70,24 @@
 #define BTNU_PIN 7
 #define BTNU_IRQn EXTI9_5_IRQn
 
-#define BTNL_STATUS (1 << 0)
-#define BTNR_STATUS (1 << 1)
-#define BTNU_STATUS (1 << 2)
-#define BTND_STATUS (1 << 3)
-#define BTNO_STATUS (1 << 4)
+#define VFD_EVT_BTNL    (1 << 0)
+#define VFD_EVT_BTNR    (1 << 1)
+#define VFD_EVT_BTNU    (1 << 2)
+#define VFD_EVT_BTND    (1 << 3)
+#define VFD_EVT_BTNO    (1 << 4)
+#define VFD_EVT_TIM_UPD (1 << 5)
 
 void vfd_init(void);
+void vfd_deinit(void);
 void vfd_reset(void);
 void vfd_upd(void);
+void vfd_tim_upd(void);
 uint16_t vfd_btn_status(void);
 void vfd_send_str(const char *str, uint16_t len);
 void vfd_str(const char *str);
+void vfd_crlf(void);
 void vfd_cls(void);
+void vfd_home(void);
 void vfd_cp866(void);
 uint8_t vfd_brightness(int8_t newlvl);
 

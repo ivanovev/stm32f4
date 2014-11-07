@@ -5,7 +5,7 @@
 #ifdef __arm__
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
-#include "util/myinit.h"
+#include "util/system_msp.h"
 #endif
 
 #include "util/macro.h"
