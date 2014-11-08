@@ -21,6 +21,16 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 #endif
 }
 
+#define TIMx_CH1_GPIO A
+#define TIMx_CH1_PIN 5
+#define TIMx_AF GPIO_AF1_TIM2
+void HAL_TIM_OC_MspInit(TIM_HandleTypeDef *htim)
+{
+    TIMx_CLK_ENABLE();
+    GPIO_InitTypeDef gpio_init;
+    GPIO_INIT(TIMx_CH1_GPIO, TIMx_CH1_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_HIGH, TIMx_AF);
+}
+
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
 {
 #ifdef TIMx

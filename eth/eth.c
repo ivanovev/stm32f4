@@ -114,3 +114,8 @@ uint8_t eth_io(void)
     return 0;
 }
 
+void eth_gpio_exti_cb()
+{
+    while(eth_io());
+}
+

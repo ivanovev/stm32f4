@@ -4,6 +4,8 @@
 
 #pragma message "VFD_UART: UART" STR(VFD_UARTn)
 #pragma message "VFD_UART_BAUDRATE: " STR(VFD_UART_BAUDRATE)
+#pragma message "VFD_UART_TX: GPIO" STR(VFD_UART_TX_GPIO) " PIN" STR(VFD_UART_TX_PIN)
+#pragma message "VFD_UART_AF: " STR(GPIO_AF_VFD_UARTx)
 
 UART_HandleTypeDef hvfduart;
 TIM_HandleTypeDef hvfdtim;
@@ -14,10 +16,6 @@ static volatile uint32_t vfd_state = 0;
 
 void vfd_init(void)
 {
-    GPIO_InitTypeDef gpio_init;
-    GPIO_INIT(VFD_UART_TX_GPIO, VFD_UART_TX_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF_VFD_UARTx);
-    VFD_UARTx_CLK_ENABLE();
-
     hvfduart.Instance        = VFD_UARTx;
     hvfduart.Init.BaudRate   = VFD_UART_BAUDRATE;
     hvfduart.Init.WordLength = UART_WORDLENGTH_8B;
@@ -31,7 +29,7 @@ void vfd_init(void)
         led_on();
     }
 
-    //GPIO_InitTypeDef gpio_init;
+    GPIO_InitTypeDef gpio_init;
     GPIO_INIT(VFD_BUSY_GPIO, VFD_BUSY_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
     //GPIO_INIT(VFD_RESETN_GPIO, VFD_RESETN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
 
@@ -108,20 +106,20 @@ void vfd_reset(void)
     vfd_wait();
 }
 
-uint16_t vfd_btn_status(void)
+uint16_t vfd_btn_state(void)
 {
-    uint16_t status = 0;
+    uint16_t state = 0;
     if(HAL_GPIO_ReadPin(GPIO(BTNL_GPIO), PIN(BTNL_PIN)) == 0)
-        status |= VFD_EVT_BTNL;
+        state |= VFD_EVT_BTNL;
     if(HAL_GPIO_ReadPin(GPIO(BTNR_GPIO), PIN(BTNR_PIN)) == 0)
-        status |= VFD_EVT_BTNR;
+        state |= VFD_EVT_BTNR;
     if(HAL_GPIO_ReadPin(GPIO(BTNU_GPIO), PIN(BTNU_PIN)) == 0)
-        status |= VFD_EVT_BTNU;
+        state |= VFD_EVT_BTNU;
     if(HAL_GPIO_ReadPin(GPIO(BTND_GPIO), PIN(BTND_PIN)) == 0)
-        status |= VFD_EVT_BTND;
+        state |= VFD_EVT_BTND;
     if(HAL_GPIO_ReadPin(GPIO(BTNO_GPIO), PIN(BTNO_PIN)) == 0)
-        status |= VFD_EVT_BTNO;
-    return status;
+        state |= VFD_EVT_BTNO;
+    return state;
 }
 
 void vfd_send_str(const char *str, uint16_t len)
@@ -192,16 +190,18 @@ uint8_t vfd_brightness(int8_t newlvl)
     return lvl;
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t pin)
+uint16_t vfd_gpio_exti_cb(void)
 {
 #if 1
-    uint16_t btn_status = vfd_btn_status();
-    if(btn_status)
+    uint16_t btn_state = vfd_btn_state();
+    if(btn_state)
     {
-        vfd_state = btn_status;
         //led_toggle();
+        vfd_state = btn_state;
+        return btn_state;
     }
 #endif
+    return 0;
 }
 
 void vfd_upd(void)

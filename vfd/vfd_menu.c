@@ -182,7 +182,9 @@ void vfd_menu_init(void)
     pstate->scroll = pmain;
     vfd_menu_append(pmain, "Monitor", 0);
     vfd_menu_item *psys = vfd_menu_append(pmain, "System", 0);
+#ifdef MY_ETH
     vfd_menu_append_child(psys, "IP address", "sys ipaddr");
+#endif
     vfd_menu_append_child(psys, "SW version", "sys date");
     vfd_menu_append_child(psys, "HW version", "sys hw");
     vfd_menu_item *item = vfd_menu_append_child(psys, "Brightness", "vfd brightness");

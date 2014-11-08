@@ -12,6 +12,7 @@ extern uint32_t SystemCoreClock;
 
 void tim_init(void)
 {
+#if 0
     htim.Instance = TIMx;
     htim.Init.Period = 10*TIMx_INTERVAL - 1;
     //htim.Init.Prescaler = (uint32_t) ((SystemCoreClock / 20000) - 1);
@@ -27,6 +28,30 @@ void tim_init(void)
     { 
         Error_Handler();
     }
+#else
+    htim.Instance = TIMx;
+    htim.Init.Period = 999999;
+    //htim.Init.Prescaler = (uint32_t) ((SystemCoreClock / 20000) - 1);
+    htim.Init.Prescaler = tim_get_prescaler(TIMx)/100;
+    htim.Init.ClockDivision = 0;
+    htim.Init.CounterMode = TIM_COUNTERMODE_UP;
+    if(HAL_TIM_OC_Init(&htim) != HAL_OK)
+    { 
+        Error_Handler();
+    }
+    TIM_OC_InitTypeDef oc_init;
+    oc_init.OCMode     = TIM_OCMODE_PWM1;
+    oc_init.OCPolarity = TIM_OCPOLARITY_HIGH;
+    oc_init.Pulse = 1000;
+    if(HAL_TIM_OC_ConfigChannel(&htim, &oc_init, TIM_CHANNEL_1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    if(HAL_TIM_OC_Start(&htim, TIM_CHANNEL_1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+#endif
 }
 
 void tim_deinit(void)

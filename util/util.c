@@ -195,7 +195,7 @@ uint16_t bytes2str(const char *in, uint8_t *out, uint16_t sz)
     out[1] = 'x';
     for(i = 0; i < sz; i++)
     {
-        itoh_(in[i], &out[2*i+2], 1);
+        itoh_(in[i], (char*)&out[2*i+2], 1);
     }
     return sz;
 }

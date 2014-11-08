@@ -77,19 +77,22 @@
 #define VFD_EVT_BTNO    (1 << 4)
 #define VFD_EVT_TIM_UPD (1 << 5)
 
-void vfd_init(void);
-void vfd_deinit(void);
-void vfd_reset(void);
-void vfd_upd(void);
-void vfd_tim_upd(void);
-uint16_t vfd_btn_status(void);
-void vfd_send_str(const char *str, uint16_t len);
-void vfd_str(const char *str);
-void vfd_crlf(void);
-void vfd_cls(void);
-void vfd_home(void);
-void vfd_cp866(void);
-uint8_t vfd_brightness(int8_t newlvl);
+void        vfd_init(void);
+void        vfd_deinit(void);
+void        vfd_reset(void);
+void        vfd_crlf(void);
+void        vfd_cls(void);
+void        vfd_home(void);
+void        vfd_cp866(void);
+uint8_t     vfd_brightness(int8_t newlvl);
+
+void        vfd_str(const char *str);
+void        vfd_send_str(const char *str, uint16_t len);
+
+void        vfd_upd(void);
+void        vfd_tim_upd(void);
+uint16_t    vfd_btn_state(void);
+uint16_t    vfd_gpio_exti_cb(void);
 
 #endif
 

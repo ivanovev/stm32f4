@@ -33,6 +33,8 @@
 #ifdef BOARD_MY1
 #define ETH_RESET_GPIO C
 #define ETH_RESET_PIN 2
+#define ETH_NINT_GPIO C
+#define ETH_NINT_PIN 3
 
 #define ETH_TXEN_GPIO B
 #define ETH_TXEN_PIN 11
@@ -47,7 +49,8 @@ void        eth_deinit(void);
 void        eth_reset(void);
 //uint16_t    eth_input(ETH_FRAME *frm);
 //void        eth_output(ETH_FRAME *frm, uint16_t sz);
-uint8_t    eth_io(void);
+uint8_t     eth_io(void);
+void        eth_gpio_exti_cb();
 
 #endif
 

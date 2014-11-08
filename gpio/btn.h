@@ -10,7 +10,7 @@
 #endif
 
 void btn_init(void);
-uint8_t btn_status(void);
+uint16_t btn_state(void);
 
 #endif /* __BTN_H__ */
 

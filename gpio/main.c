@@ -11,11 +11,11 @@ int main(void)
         HAL_Delay(1000);
         led_toggle();
 #if 0
-        if(btn_status())
+        if(btn_state())
             led_toggle();
 #else
 #if 0
-        if(btn_status())
+        if(btn_state())
             led_on();
         else
             led_off();

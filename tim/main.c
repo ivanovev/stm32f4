@@ -6,7 +6,7 @@ int main(void)
     myinit();
     for (;;) {
         HAL_Delay(1000);
-        //led_toggle();
+        led_toggle();
     }
 }
 

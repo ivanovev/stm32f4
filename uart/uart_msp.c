@@ -10,10 +10,22 @@
 void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {
     GPIO_InitTypeDef gpio_init;
-    UART_PINMUX(UARTn, UART_TX_GPIO, UART_TX_PIN, UART_RX_GPIO, UART_RX_PIN, GPIO_AF_UARTx);
-    UARTx_CLK_ENABLE();
+#ifdef UARTx
+    if(huart->Instance == UARTx)
+    {
+        UART_PINMUX(UARTn, UART_TX_GPIO, UART_TX_PIN, UART_RX_GPIO, UART_RX_PIN, GPIO_AF_UARTx);
+        UARTx_CLK_ENABLE();
 
-    HAL_NVIC_SetPriority(UARTx_IRQn, 0, 1);
-    HAL_NVIC_EnableIRQ(UARTx_IRQn);
+        HAL_NVIC_SetPriority(UARTx_IRQn, 0, 1);
+        HAL_NVIC_EnableIRQ(UARTx_IRQn);
+    }
+#endif
+#ifdef MY_VFD
+    if(huart->Instance == VFD_UARTx)
+    {
+        GPIO_INIT(VFD_UART_TX_GPIO, VFD_UART_TX_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF_VFD_UARTx);
+        VFD_UARTx_CLK_ENABLE();
+    }
+#endif
 }
 

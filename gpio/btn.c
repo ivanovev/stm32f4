@@ -12,7 +12,7 @@ void btn_init(void)
     HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 }
 
-uint8_t btn_status(void)
+uint16_t btn_state(void)
 {
     return HAL_GPIO_ReadPin(GPIO(BTN_GPIO), PIN(BTN_PIN));
 }

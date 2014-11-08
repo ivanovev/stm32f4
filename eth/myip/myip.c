@@ -3,6 +3,7 @@
 #include "mytcp.h"
 #include "mytelnetd.h"
 #include "mydatad.h"
+#include "myptpd.h"
 
 ARP_ENTRY arp_table[ARP_TABLE_SZ];
 CON_ENTRY con_table[CON_TABLE_SZ];
@@ -27,6 +28,7 @@ void myip_init(void)
     myip_con_add(UDP_PORT_DBG, UDP_PROTO, dbg_con_handler);
     myip_con_add(TCP_PORT_TELNET, TCP_PROTO, myip_telnetd_io);
     myip_con_add(TCP_PORT_DATA, TCP_PROTO, myip_datad_io);
+    myip_con_add(UDP_PORT_PTP, UDP_PROTO, myip_ptpd_io);
     ip_counter = 0;
     myip_tcp_init();
 #ifdef MY_I2C
