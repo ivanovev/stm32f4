@@ -51,7 +51,8 @@ uint16_t myip_tcp_data(TCP_FRAME *tfrm, uint16_t sz, uint8_t **ptr)
     {
         tmp2 += TCPH_SZ;
         *ptr = (uint8_t*)tmp2;
-        return ETH_MAX_PACKET_SIZE - IPH_SZ - TCPH_SZ;
+        //return ETH_MAX_PACKET_SIZE - IPH_SZ - TCPH_SZ;
+        return 0;
     }
 }
 

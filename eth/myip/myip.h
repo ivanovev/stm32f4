@@ -107,6 +107,7 @@ typedef uint16_t (*con_handler)(uint8_t* data, uint16_t sz);
 typedef struct {
     uint16_t port;
     uint8_t proto;
+    uint8_t bcast;
     uint8_t state;
     con_handler con_handler_ptr;
 } CON_ENTRY;
@@ -154,14 +155,19 @@ typedef struct
 #define UDP_PROTO           0x11
 #define TCP_PROTO          0x06
 
-#define UDP_PORT_DBG    1234
-#define TCP_PORT_TELNET 23
-#define TCP_PORT_DATA   8888
-#define UDP_PORT_PTP    319
+#define UDP_PORT_DBG        1234
+#define TCP_PORT_TELNET     23
+#define TCP_PORT_DATA       8888
+#ifdef ENABLE_PTP
+#define UDP_PORT_PTP_EVT    319
+#define UDP_PORT_PTP_MSG    320
+#endif
+#define BCAST_REJECT    0
+#define BCAST_ACCEPT    1
 
 void        myip_init(void);
 void        myip_update_arp_table(uint32_t ip_addr, uint8_t *mac_addr);
-void        myip_con_add(uint16_t port, uint8_t proto, con_handler con_handler_ptr);
+void        myip_con_add(uint16_t port, uint8_t proto, uint8_t bcast, con_handler con_handler_ptr);
 uint16_t    myip_eth_frame_handler(ETH_FRAME *frm, uint16_t sz);
 uint16_t    myip_arp_frame_handler(ETH_FRAME *frm, uint16_t sz);
 uint16_t    myip_icmp_frame_handler(ETH_FRAME *frm, uint16_t sz);

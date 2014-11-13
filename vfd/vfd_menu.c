@@ -191,9 +191,14 @@ void vfd_menu_init(void)
     vfd_menu_make_edit_int(item, 1, 8, 1, VFD_FLAG_IMMEDIATE);
     item = vfd_menu_append_child(psys, "Uptime", "sys uptime");
     item->edit->flags |= VFD_FLAG_TIM_UPD;
+#ifdef ENABLE_PTP
+    vfd_menu_item *pptp = vfd_menu_append_child(psys, "PTP", 0);
+    item = vfd_menu_append_child(pptp, "PTP time", "sys ptptime");
+    item->edit->flags |= VFD_FLAG_TIM_UPD;
+#endif
     vfd_cls();
     vfd_cp866();
-    vfd_brightness(3);
+    vfd_brightness(1);
     vfd_menu_draw();
 }
 
@@ -248,11 +253,15 @@ void vfd_menu_line(char *buf, uint16_t num)
                 index += vfd_menu_item_data_get(&buf[index], VFD_LINE_SZ, pstate->sel);
         }
     }
-    if(buf[index - 1] == 0)
-        index--;
+    if(index > 0)
+    {
+        if(buf[index - 1] == 0)
+            index--;
+    }
     while(index < VFD_LINE_SZ)
         buf[index++] = ' ';
     buf[VFD_LINE_SZ] = 0;
+    //dbg_send_int2(buf, num);
 }
 
 void vfd_menu_draw(void)
@@ -294,13 +303,13 @@ void vfd_menu_draw(void)
         vfd_str(data);
     }
 #else
-    vfd_home();
     char buf[17];
     vfd_menu_line(buf, 0);
+    vfd_home();
     vfd_str(buf);
+    vfd_menu_line(buf, 1);
     vfd_home();
     vfd_crlf();
-    vfd_menu_line(buf, 1);
     vfd_str(buf);
 #endif
 }

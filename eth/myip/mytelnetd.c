@@ -1,4 +1,5 @@
 
+#include "eth/eth.h"
 #include "mytelnetd.h"
 #include "uart/uart.h"
 

@@ -7,7 +7,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
     if(htim->Instance == TIMx)
     {
         TIMx_CLK_ENABLE();
-        HAL_NVIC_SetPriority(TIMx_IRQn, 4, 0);
+        HAL_NVIC_SetPriority(TIMx_IRQn, 0xF, 0);
         HAL_NVIC_EnableIRQ(TIMx_IRQn);
     }
 #endif
@@ -15,7 +15,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
     if(htim->Instance == VFD_TIMx)
     {
         VFD_TIMx_CLK_ENABLE();
-        HAL_NVIC_SetPriority(VFD_TIMx_IRQn, 0xD, 0);
+        HAL_NVIC_SetPriority(VFD_TIMx_IRQn, 0xF, 0);
         HAL_NVIC_EnableIRQ(VFD_TIMx_IRQn);
     }
 #endif
@@ -26,9 +26,11 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 #define TIMx_AF GPIO_AF1_TIM2
 void HAL_TIM_OC_MspInit(TIM_HandleTypeDef *htim)
 {
+#ifdef TIMx
     TIMx_CLK_ENABLE();
     GPIO_InitTypeDef gpio_init;
     GPIO_INIT(TIMx_CH1_GPIO, TIMx_CH1_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_HIGH, TIMx_AF);
+#endif
 }
 
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)

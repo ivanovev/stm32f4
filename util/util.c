@@ -488,3 +488,18 @@ void io_echo(void)
     }
 }
 
+void format_time(char *buf, uint16_t sz, uint32_t t)
+{
+    int ss = t % 60;
+    t /= 60;
+    int mm = t % 60;
+    t /= 60;
+    int hh = t % 24;
+    t /= 24;
+    int dd = t;
+    if(dd)
+        mysnprintf(buf, sz, "%dd %dh %dm %ds", dd, hh, mm, ss);
+    else
+        mysnprintf(buf, sz, "%dh %dm %ds", hh, mm, ss);
+}
+

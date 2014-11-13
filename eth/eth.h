@@ -50,7 +50,15 @@ void        eth_reset(void);
 //uint16_t    eth_input(ETH_FRAME *frm);
 //void        eth_output(ETH_FRAME *frm, uint16_t sz);
 uint8_t     eth_io(void);
-void        eth_gpio_exti_cb();
+
+#ifdef ENABLE_PTP
+typedef struct ptpts_t {
+    uint32_t s;
+    uint32_t ns;
+} ptpts_t;
+uint32_t    eth_ptpclk_seconds(void);
+void        eth_ptpts_get(ptpts_t *pts, volatile ETH_DMADescTypeDef *pdmadesc);
+#endif
 
 #endif
 

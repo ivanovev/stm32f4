@@ -20,6 +20,7 @@ int main(void)
 #ifdef MY_VFD
         vfd_upd();
 #endif
+        eth_io();
         if(myip_tcp_con_closed())
         {
             if((reset == RESET_FWUPG) || (reset == RESET_REBOOT))

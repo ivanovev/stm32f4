@@ -3,6 +3,7 @@
 #include "util/util.h"
 
 #ifdef MY_ETH
+#include "eth/eth.h"
 #include "eth/myip/mytcp.h"
 extern TCP_CON tcp_con;
 extern volatile uint8_t reset;
@@ -181,9 +182,16 @@ COMMAND(sys) {
     }
     if(SUBCMD1("uptime"))
     {
-        uptime(buf, sizeof(buf));
+        format_time(buf, sizeof(buf), HAL_GetTick()/1000);
         return picolSetResult(i, buf);
     }
+#ifdef ENABLE_PTP
+    if(SUBCMD1("ptptime"))
+    {
+        format_time(buf, sizeof(buf), eth_ptpclk_seconds());
+        return picolSetResult(i, buf);
+    }
+#endif
     return PICOL_ERR;
 }
 

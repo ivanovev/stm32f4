@@ -179,7 +179,7 @@ void vfd_crlf(void)
 
 uint8_t vfd_brightness(int8_t newlvl)
 {
-    static uint8_t lvl = 3;
+    static uint8_t lvl = 1;
     if((1 <= newlvl) && (newlvl <= 8))
         lvl = newlvl;
     else

@@ -3,7 +3,9 @@
 #include "mytcp.h"
 #include "mytelnetd.h"
 #include "mydatad.h"
+#ifdef ENABLE_PTP
 #include "myptpd.h"
+#endif
 
 ARP_ENTRY arp_table[ARP_TABLE_SZ];
 CON_ENTRY con_table[CON_TABLE_SZ];
@@ -25,10 +27,13 @@ void myip_init(void)
         con_table[i].state = 0;
         con_table[i].con_handler_ptr = 0;
     }
-    myip_con_add(UDP_PORT_DBG, UDP_PROTO, dbg_con_handler);
-    myip_con_add(TCP_PORT_TELNET, TCP_PROTO, myip_telnetd_io);
-    myip_con_add(TCP_PORT_DATA, TCP_PROTO, myip_datad_io);
-    myip_con_add(UDP_PORT_PTP, UDP_PROTO, myip_ptpd_io);
+    myip_con_add(UDP_PORT_DBG, UDP_PROTO, BCAST_REJECT, dbg_con_handler);
+    myip_con_add(TCP_PORT_TELNET, TCP_PROTO, BCAST_REJECT, myip_telnetd_io);
+    myip_con_add(TCP_PORT_DATA, TCP_PROTO, BCAST_REJECT, myip_datad_io);
+#ifdef ENABLE_PTP
+    myip_con_add(UDP_PORT_PTP_EVT, UDP_PROTO, BCAST_ACCEPT, myip_ptpd_evt_io);
+    myip_con_add(UDP_PORT_PTP_MSG, UDP_PROTO, BCAST_ACCEPT, myip_ptpd_msg_io);
+#endif
     ip_counter = 0;
     myip_tcp_init();
 #ifdef MY_I2C
@@ -41,11 +46,12 @@ uint16_t dbg_con_handler(uint8_t *data, uint16_t sz)
     return 0;
 }
 
-void myip_con_add(uint16_t port, uint8_t proto, con_handler con_handler_ptr)
+void myip_con_add(uint16_t port, uint8_t proto, uint8_t bcast, con_handler con_handler_ptr)
 {
     static uint8_t i = 0;
     con_table[i].port = port;
     con_table[i].proto = proto;
+    con_table[i].bcast = bcast;
     con_table[i].con_handler_ptr = con_handler_ptr;
     i++;
 }
@@ -57,8 +63,8 @@ uint16_t myip_udp_data(UDP_FRAME *ufrm, uint16_t sz, uint8_t **ptr)
     *ptr = (uint8_t*)tmp2;
     if(sz)
         return HTONS_16(ufrm->p.total_len) - IPH_SZ - UDPH_SZ;
-    else
-        return ETH_MAX_PACKET_SIZE - IPH_SZ - UDPH_SZ;
+    //return ETH_MAX_PACKET_SIZE - IPH_SZ - UDPH_SZ;
+    return 0;
 }
 
 uint16_t myip_arp_find(uint32_t ip_addr)
@@ -95,7 +101,7 @@ void myip_swap_addr(preamble3 *p)
     p->src_port = dst_port;
 }
 
-void myip_update_ip_mac_addr(preamble2 *p, uint32_t dst_ip_addr)
+static void myip_update_ip_mac_addr(preamble2 *p, uint32_t dst_ip_addr)
 {
     uint16_t i = myip_arp_find(dst_ip_addr);
     mymemcpy(p->dst, arp_table[i].mac_addr, 6);
@@ -104,11 +110,11 @@ void myip_update_ip_mac_addr(preamble2 *p, uint32_t dst_ip_addr)
     p->src_ip_addr = HTONS_32(local_ip_addr);
 }
 
-void myip_update_ip_mac_addr_and_port(preamble3 *p, uint32_t dst_ip_addr, uint16_t dst_port, uint16_t src_port)
+static void myip_udp_update_ip_mac_port(preamble3 *p, uint32_t dst_ip_addr, uint16_t dst_port, uint16_t src_port)
 {
     myip_update_ip_mac_addr((preamble2*)p, dst_ip_addr);
-    p->dst_port = dst_port;
-    p->src_port = src_port;
+    p->dst_port = HTONS_16(dst_port);
+    p->src_port = HTONS_16(src_port);
 }
 
 void myip_arp_table_update(uint32_t ip_addr, uint8_t *mac_addr)
@@ -144,8 +150,6 @@ uint16_t myip_eth_frame_handler(ETH_FRAME *frm, uint16_t sz)
 
         if ((ipfrm->p.ver_ihl != IP_VER_IHL) || ((ipfrm->p.frag & FRAG_MASK) != 0))
             return 0;
-        if (HTONS_32(ipfrm->p.dst_ip_addr) != local_ip_addr)
-            return 0;
         myip_arp_table_update(HTONS_32((uint32_t)ipfrm->p.src_ip_addr), ipfrm->p.src);
 
         if(ipfrm->p.proto == ICMP_PROTO)
@@ -162,9 +166,13 @@ uint16_t myip_eth_frame_handler(ETH_FRAME *frm, uint16_t sz)
         i = 0;
     for(; i < CON_TABLE_SZ; i++)
     {
-        //uart_send_int2("myip_eth_frame_handler.i", i);
         if(!con_table[i].con_handler_ptr)
             break;
+        if(sz && (con_table[i].bcast == BCAST_REJECT))
+        {
+            if (HTONS_32(ipfrm->p.dst_ip_addr) != local_ip_addr)
+                continue;
+        }
         if(con_table[i].proto == UDP_PROTO)
         {
             sz1 = myip_udp_con_handler(frm, sz, i);
@@ -231,7 +239,7 @@ uint16_t myip_udp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
             return 0;
         if(con_table[con_index].proto != UDP_PROTO)
             return 0;
-        if(con_table[con_index].port != ufrm->p.dst_port)
+        if(con_table[con_index].port != HTONS_16(ufrm->p.dst_port))
             return 0;
     }
     uint8_t *data_ptr;
@@ -239,8 +247,10 @@ uint16_t myip_udp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
     data_sz = con_table[con_index].con_handler_ptr(data_ptr, data_sz);
     if(data_sz)
     {
-        myip_update_ip_mac_addr_and_port(&ufrm->p, HTONS_32(ufrm->p.src_ip_addr), HTONS_16(ufrm->p.src_port), HTONS_16(ufrm->p.dst_port));
-        return MACH_SZ + UDPH_SZ + data_sz;
+        myip_udp_update_ip_mac_port(&ufrm->p, HTONS_32(ufrm->p.src_ip_addr), HTONS_16(ufrm->p.src_port), HTONS_16(ufrm->p.dst_port));
+        sz = UDPH_SZ + data_sz;
+        ufrm->len = HTONS_16(sz);
+        return MACH_SZ + IPH_SZ + sz;
     }
     return 0;
 }

@@ -16,6 +16,11 @@ __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethe
 
 ETH_HandleTypeDef heth;
 
+#ifdef ENABLE_PTP
+#include "eth/myip/myptpd.h"
+extern void eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method);
+#endif
+
 void eth_init(void)
 {
     myip_init();
@@ -27,6 +32,7 @@ void eth_init(void)
     heth.Init.Speed = ETH_SPEED_100M;
     heth.Init.DuplexMode = ETH_MODE_FULLDUPLEX;
     heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
+    //heth.Init.RxMode = ETH_RXINTERRUPT_MODE;
     heth.Init.RxMode = ETH_RXPOLLING_MODE;
     heth.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
     heth.Init.PhyAddress = PHY_ADDRESS;
@@ -43,6 +49,9 @@ void eth_init(void)
     HAL_ETH_DMATxDescListInit(&heth, DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);
     /* Initialize Rx Descriptors list: Chain Mode  */
     HAL_ETH_DMARxDescListInit(&heth, DMARxDscrTab, &Rx_Buff[0][0], ETH_RXBUFNB);
+#ifdef ENABLE_PTP
+    eth_ptp_start(&heth, PTP_FINE);
+#endif
     HAL_ETH_Start(&heth);
 }
 
@@ -68,6 +77,9 @@ uint16_t eth_input(ETH_FRAME *frm)
     mymemcpy(frm->packet, (uint8_t*)heth.RxFrameInfos.buffer, sz);
     uint32_t i = 0;
     __IO ETH_DMADescTypeDef *dmarxdesc = heth.RxFrameInfos.FSRxDesc;
+#ifdef ENABLE_PTP
+    eth_ptpts_get(0, dmarxdesc);
+#endif
 
     /* Set Own bit in Rx descriptors: gives the buffers back to DMA */
     //io_send_int2("seg_count", (heth.RxFrameInfos).SegCount);
@@ -94,9 +106,11 @@ uint16_t eth_input(ETH_FRAME *frm)
 void eth_output(ETH_FRAME *frm, uint16_t sz)
 {
     //io_send_int2("send_sz", sz);
-    //__IO ETH_DMADescTypeDef *DmaTxDesc = heth.TxDesc;
     uint8_t *buf = (uint8_t *)(heth.TxDesc->Buffer1Addr);
     mymemcpy(buf, frm->packet, sz);
+    __IO ETH_DMADescTypeDef *dmatxdesc = heth.TxDesc;
+    dmatxdesc->Status |= ETH_DMATXDESC_TTSE | ETH_DMATXDESC_IC;
+    //dmatxdesc->Status &= ~ETH_DMATXDESC_TCH;
     HAL_ETH_TransmitFrame(&heth, sz);
 }
 
@@ -114,8 +128,27 @@ uint8_t eth_io(void)
     return 0;
 }
 
-void eth_gpio_exti_cb()
+#ifdef ENABLE_PTP
+void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *pheth)
 {
-    while(eth_io());
+    (void)pheth;
 }
+
+void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef *pheth)
+{
+    uint16_t i;
+    __IO ETH_DMADescTypeDef *dmatxdesc = 0;
+    for(i = 0; i < ETH_TXBUFNB; i++)
+    {
+        if(pheth->TxDesc == &DMATxDscrTab[i])
+        {
+            dmatxdesc = i ? &DMATxDscrTab[i - 1] : &DMATxDscrTab[ETH_TXBUFNB - 1];
+            break;
+        }
+    }
+    ptpts_t time;
+    eth_ptpts_get(&time, dmatxdesc);
+    myip_ptpd_save_t3(&time);
+}
+#endif
 

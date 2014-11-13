@@ -5,6 +5,10 @@
 #include "uart/uart.h"
 
 extern void eth_reset(void);
+extern ETH_HandleTypeDef heth;
+#ifdef ENABLE_PTP
+#include "eth/myip/myptpd.h"
+#endif
 
 #pragma message "ETH_MDC_GPIO: GPIO" STR(ETH_MDC_GPIO) " PIN" STR(ETH_MDC_PIN)
 #pragma message "ETH_MDIO_GPIO: GPIO" STR(ETH_MDIO_GPIO) " PIN" STR(ETH_MDIO_PIN)
@@ -17,7 +21,7 @@ extern void eth_reset(void);
 #pragma message "ETH_TXD0_GPIO: GPIO" STR(ETH_TXD0_GPIO) " PIN" STR(ETH_TXD0_PIN)
 #pragma message "ETH_TXD1_GPIO: GPIO" STR(ETH_TXD1_GPIO) " PIN" STR(ETH_TXD1_PIN)
 
-void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
+void HAL_ETH_MspInit(ETH_HandleTypeDef *pheth)
 {
     GPIO_InitTypeDef gpio_init;
 
@@ -49,13 +53,78 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
     GPIO_INIT(ETH_TXD1_GPIO, ETH_TXD1_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
 
     __ETH_CLK_ENABLE();
+    __ETHMACPTP_CLK_ENABLE();
     dbg_send_str3("HAL_ETH_MspInit", 1);
     eth_reset();
 }
 
-void HAL_ETH_MspDeInit(ETH_HandleTypeDef *heth)
+#ifdef ENABLE_PTP
+void eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method)
+{
+    // step 1
+    __HAL_ETH_MAC_DISABLE_IT(pheth, ETH_MAC_IT_TST);
+    //pheth->Instance->MACIMR |= ETH_MAC_IT_TST;
+    // step2; enable ptp timestamps for transmit and receive frames
+    pheth->Instance->PTPTSCR |= ETH_PTPTSCR_TSE | ETH_PTPTSSR_TSSIPV4FE | ETH_PTPTSSR_TSSARFE;
+    // step 3;
+    // 168/50 = 3.36
+    // 43/3.36 = 13
+    pheth->Instance->PTPSSIR = 13;
+    // step 4; in case of fine update
+    // 168/50 = 3.36
+    // 2**32/3.36 = 0x4C30C30C
+    if(update_method == PTP_FINE)
+    {
+        pheth->Instance->PTPTSAR = 0x4C30C30C;
+        pheth->Instance->PTPTSCR |= ETH_PTPTSCR_TSARU;
+        while(pheth->Instance->PTPTSCR & ETH_PTPTSCR_TSARU);
+    }
+    // step 6; set coarse update
+    if(update_method == PTP_FINE)
+        pheth->Instance->PTPTSCR |= ETH_PTPTSCR_TSFCU;
+    else
+        pheth->Instance->PTPTSCR &= ~ETH_PTPTSCR_TSFCU;
+    // step 7
+    pheth->Instance->PTPTSHUR = 0;
+    pheth->Instance->PTPTSLUR = 0;
+    // step 8
+    pheth->Instance->PTPTSCR |= ETH_PTPTSCR_TSSTI;
+    // step 9
+    pheth->Instance->DMABMR |= ETH_DMABMR_EDE;
+    // pass control frames
+    pheth->Instance->MACFFR = ETH_PASSCONTROLFRAMES_FORWARDALL | ETH_MULTICASTFRAMESFILTER_NONE;
+
+    __HAL_ETH_DMA_ENABLE_IT(pheth, ETH_DMA_IT_NIS | ETH_DMA_IT_T);
+    HAL_NVIC_SetPriority(ETH_IRQn, 0x7, 0);
+    HAL_NVIC_EnableIRQ(ETH_IRQn);
+}
+#endif
+
+void HAL_ETH_MspDeInit(ETH_HandleTypeDef *pheth)
 {
     dbg_send_str3("HAL_ETH_MspDeInit", 1);
     __ETH_CLK_DISABLE();
 }
+
+#ifdef ENABLE_PTP
+uint32_t eth_ptpclk_seconds(void)
+{
+    return heth.Instance->PTPTSHR % (60*60*24);
+}
+
+void eth_ptpts_get(ptpts_t *ptime, volatile ETH_DMADescTypeDef *pdmadesc)
+{
+    static ptpts_t time;
+    if(pdmadesc)
+    {
+        time.ns = pdmadesc->TimeStampLow*0.46;
+        time.s = pdmadesc->TimeStampHigh;
+    }
+    if(ptime)
+    {
+        ptime->ns = time.ns;
+        ptime->s = time.s;
+    }
+}
+#endif
 

@@ -45,6 +45,8 @@ char*       mystrchr(const char *s, int c);
 char*       mystrncat(char *dest, const char *src, uint32_t n);
 uint8_t*    mymemchr(const uint8_t *s, uint8_t c, uint32_t n);
 
+void        format_time(char *buf, uint16_t sz, uint32_t t);
+
 typedef uint16_t (*io_recv_func)(char *buf);
 extern io_recv_func io_recv_str_ptr;
 
