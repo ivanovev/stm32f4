@@ -1,19 +1,25 @@
 
 #include "pcl_sys.h"
 #include "util/util.h"
+#include "util/version.h"
+#include "util/heap1.h"
 
-#ifdef MY_ETH
+#ifdef ENABLE_ETH
 #include "eth/eth.h"
 #include "eth/myip/mytcp.h"
 extern TCP_CON tcp_con;
 extern volatile uint8_t reset;
 #endif
 
-#ifdef MY_I2C
+#ifdef ENABLE_I2C
 #include "i2c/eeprom.h"
 #endif
 
-#ifdef MY_ETH
+#ifdef ENABLE_FLASH
+#include "flash/flash.h"
+#endif
+
+#ifdef ENABLE_ETH
 COMMAND(exit) {
     tcp_con.state = TCP_CON_CLOSE;
     return picolSetIntResult(i, 0);
@@ -46,7 +52,7 @@ int32_t pcl_get_chunksz(uint8_t *ptr, int32_t fsz)
     return len1;
 }
 
-#ifdef MY_FLASH
+#ifdef ENABLE_FLASH
 uint16_t pcl_load(picolInterp *i, uint32_t addr)
 {
     uint8_t *ptr = addr;
@@ -107,14 +113,6 @@ uint16_t pcl_load(picolInterp *i, uint32_t addr)
 }
 #endif
 
-#ifdef MY_ETH
-extern uint32_t local_ip_addr;
-#endif
-
-#ifdef MY_FLASH
-#include "flash/flash.h"
-#endif
-
 COMMAND(sys) {
     char buf[MAXSTR] = "";
     ARITY(argc >= 2 || argc == 3, "sys ram|version|ipaddr|... ...");
@@ -146,7 +144,7 @@ COMMAND(sys) {
         uint32_t ipaddr = 0;
         if(argc == 2)
         {
-#ifdef MY_I2C
+#ifdef ENABLE_I2C
             uint32_t ipaddr = eeprom_ipaddr_read();
 #else
             uint32_t ipaddr = LOCAL_IP_ADDR;
@@ -159,7 +157,6 @@ COMMAND(sys) {
         {
             //ipaddr = 
             uint8_t j, k, ii;
-            uint32_t tmp[4];
             char *a = argv[2];
             for(j = 0, k = 0, ii = 3; j <= 16; j++)
             {
@@ -174,7 +171,7 @@ COMMAND(sys) {
                     k = j + 1;
                 }
             }
-#ifdef MY_I2C
+#ifdef ENABLE_I2C
             eeprom_ipaddr_write(ipaddr);
 #endif
             return picolSetHex4Result(i, ipaddr);
@@ -197,12 +194,12 @@ COMMAND(sys) {
 
 void pcl_sys_init(picolInterp *i)
 {
-#ifdef MY_ETH
+#ifdef ENABLE_ETH
     picolRegisterCmd(i, "exit", picol_exit, 0);
     picolRegisterCmd(i, "reset", picol_reset, 0);
-    picolRegisterCmd(i, "reload", picol_reload, 0);
 #endif
-#ifdef MY_FLASH
+#ifdef ENABLE_FLASH
+    picolRegisterCmd(i, "reload", picol_reload, 0);
     //pcl_load(i, USER_FLASH_MID_ADDR);
 #endif
     picolRegisterCmd(i, "sys", picol_sys, 0);

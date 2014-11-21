@@ -182,7 +182,7 @@ int picolErr1(picolInterp *i, char* format, char* arg) {
 picolVar *picolGetVar2(picolInterp *i, char *name, int glob) {
     picolVar *v = i->callframe->vars;
     int  global = COLONED(name);
-    char buf[MAXSTR], buf2[MAXSTR], *cp, *cp2;
+    //char buf[MAXSTR], buf2[MAXSTR], *cp, *cp2;
     if(global || glob) {
         picolCallFrame *c = &i->callframe;
         while(c->parent) c = c->parent;
@@ -334,7 +334,7 @@ int picolCallProc(picolInterp *i, int argc, char **argv) {
         return PICOL_ERR;
     char **x=pd;
     char *alist=x[0], *body=x[1];
-    char buf[MAXSTR];
+    //char buf[MAXSTR];
     picolCallFrame *cf = mycalloc(1,sizeof(*cf));
     int a = 0, done = 0, errcode = PICOL_ERR;
 #ifndef __arm__

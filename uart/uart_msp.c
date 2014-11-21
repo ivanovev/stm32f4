@@ -20,7 +20,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
         HAL_NVIC_EnableIRQ(UARTx_IRQn);
     }
 #endif
-#ifdef MY_VFD
+#ifdef ENABLE_VFD
     if(huart->Instance == VFD_UARTx)
     {
         GPIO_INIT(VFD_UART_TX_GPIO, VFD_UART_TX_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF_VFD_UARTx);

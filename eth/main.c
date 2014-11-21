@@ -16,8 +16,10 @@ int main(void)
     for (;;)
     {
         //eth_io();
+#ifdef ENABLE_PCL
         pcl_io();
-#ifdef MY_VFD
+#endif
+#ifdef ENABLE_VFD
         vfd_upd();
 #endif
         eth_io();
@@ -28,13 +30,14 @@ int main(void)
         }
     }
     mydeinit();
-#ifdef MY_UART
-    uart_send_int2("reset", reset);
-#endif
+    dbg_send_int2("reset", reset);
+
+#ifdef ENABLE_FLASH
     if(reset == RESET_FWUPG)
     {
         flash_copy10();
     }
+#endif
     NVIC_SystemReset();
 }
 

@@ -182,11 +182,10 @@ uint16_t myip_tcp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
         return 0;
     if((sz > 0) && (sz1 > 0) && ((seqn + sz1) < tcp_con.ackn))
     {
-#ifdef MY_UART
-        uart_send_hex2("seqn", seqn);
-        uart_send_hex2("sz1", sz1);
-        uart_send_hex2("ackn", ackn);
-#endif
+        dbg_send_hex2("seqn", seqn);
+        dbg_send_hex2("sz1", sz1);
+        dbg_send_hex2("ackn", ackn);
+
         myip_update_frame(tfrm, &tcp_con);
         tfrm->ackn = HTONS_32((seqn + sz1));
         //tfrm->seqn = HTONS_32(ackn);

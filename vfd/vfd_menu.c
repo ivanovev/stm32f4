@@ -4,87 +4,87 @@
 #include "vfd_menu.h"
 #include "pcl/pcl.h"
 
-typedef struct vfd_menu_state {
+typedef struct vfd_menu_state_t {
     uint8_t lvl;
-    struct vfd_menu_item *sel;
-    struct vfd_menu_item *scroll;
-} vfd_menu_state;
+    struct vfd_menu_item_t *sel;
+    struct vfd_menu_item_t *scroll;
+} vfd_menu_state_t;
 
-typedef struct vfd_menu_edit_int {
+typedef struct vfd_menu_edit_int_t {
     int v1, v2, cur, step;
-} vfd_menu_edit_int;
+} vfd_menu_edit_int_t;
 
-typedef struct vfd_menu_edit_double {
+typedef struct vfd_menu_edit_double_t {
     double v1, v2, cur, step;
-} vfd_menu_edit_double;
+} vfd_menu_edit_double_t;
 
-typedef struct vfd_menu_edit_list {
+typedef struct vfd_menu_edit_list_t {
     uint8_t count, cur;
     char **data;
-} vfd_menu_edit_list;
+} vfd_menu_edit_list_t;
 
-typedef struct vfd_menu_edit {
+typedef struct vfd_menu_edit_t {
     char *cmd;
     uint16_t flags;
     union {
-        vfd_menu_edit_list d_l;
-        vfd_menu_edit_double d_f;
-        vfd_menu_edit_int d_i;
+        vfd_menu_edit_list_t d_l;
+        vfd_menu_edit_double_t d_f;
+        vfd_menu_edit_int_t d_i;
     } data;
-} vfd_menu_edit;
+} vfd_menu_edit_t;
 
-typedef struct vfd_menu_item {
+typedef struct vfd_menu_item_t {
     char *name;
-    vfd_menu_edit *edit;
-    struct vfd_menu_item *next;
-    struct vfd_menu_item *prev;
-    struct vfd_menu_item *child;
-    struct vfd_menu_item *parent;
-} vfd_menu_item;
+    struct vfd_menu_edit_t *edit;
+    struct vfd_menu_item_t *next;
+    struct vfd_menu_item_t *prev;
+    struct vfd_menu_item_t *child;
+    struct vfd_menu_item_t *parent;
+} vfd_menu_item_t;
 
-typedef struct vfd_words {
+typedef struct vfd_words_t {
     char **en_ru;
     int len;
-} vfd_words;
+} vfd_words_t;
 
-static vfd_menu_state   *pstate = NULL;
-static vfd_menu_item    *pmain = NULL;
-static vfd_words        *pwords = NULL;
+static vfd_menu_state_t   *pstate = NULL;
+static vfd_menu_item_t    *pmain = NULL;
+static vfd_words_t        *pwords = NULL;
 
-static uint16_t vfd_menu_flag(vfd_menu_item *item, uint16_t flag)
+static uint16_t vfd_menu_flag(vfd_menu_item_t *item, uint16_t flag)
 {
     if(item->edit)
         return (item->edit->flags & flag) ? 1 : 0;
     return 0;
 }
 
-static vfd_menu_item* vfd_menu_new_item(char *name, char *cmd)
+static vfd_menu_item_t* vfd_menu_new_item(char *name, char *cmd)
 {
-    vfd_menu_item *item = mycalloc(1, sizeof(vfd_menu_item));
+    vfd_menu_item_t *item = mycalloc(1, sizeof(vfd_menu_item_t));
     item->name = mystrdup(name);
     if(cmd)
     {
-        item->edit = mycalloc(1, sizeof(vfd_menu_edit));
+        item->edit = mycalloc(1, sizeof(vfd_menu_edit_t));
         item->edit->cmd = mystrdup(cmd);
     }
     return item;
 }
 
-static vfd_menu_item* vfd_menu_last(vfd_menu_item *item)
+static vfd_menu_item_t* vfd_menu_last(vfd_menu_item_t *item)
 {
     while(item->next)
         item = item->next;
     return item;
 }
 
-static vfd_menu_item* vfd_menu_first(vfd_menu_item *item)
+static vfd_menu_item_t* vfd_menu_first(vfd_menu_item_t *item)
 {
     while(item->prev)
         item = item->prev;
     return item;
 }
 
-static uint8_t vfd_menu_sz(vfd_menu_item *item)
+static uint8_t vfd_menu_sz(vfd_menu_item_t *item)
 {
     uint8_t j;
     item = vfd_menu_first(item);
@@ -93,32 +93,32 @@ static uint8_t vfd_menu_sz(vfd_menu_item *item)
     return j;
 }
 
-static uint8_t vfd_menu_index(vfd_menu_item *item)
+static uint8_t vfd_menu_index(vfd_menu_item_t *item)
 {
     uint8_t j;
-    vfd_menu_item *i1 = vfd_menu_first(item);
+    vfd_menu_item_t *i1 = vfd_menu_first(item);
     for(j = 0; (i1 != item) && i1; j++)
         i1 = i1->next;
     return j;
 }
 
-static vfd_menu_item* vfd_menu_append(vfd_menu_item *i1, char *name, char *cmd)
+static vfd_menu_item_t* vfd_menu_append(vfd_menu_item_t *i1, char *name, char *cmd)
 {
-    vfd_menu_item *item = vfd_menu_new_item(name, cmd);
+    vfd_menu_item_t *item = vfd_menu_new_item(name, cmd);
     if(!i1)
         return item;
-    vfd_menu_item *last = vfd_menu_last(i1);
+    vfd_menu_item_t *last = vfd_menu_last(i1);
     last->next = item;
     item->prev = last;
     item->parent = last->parent;
     return item;
 }
 
-static vfd_menu_item* vfd_menu_append_child(vfd_menu_item *i1, char *name, char *cmd)
+static vfd_menu_item_t* vfd_menu_append_child(vfd_menu_item_t *i1, char *name, char *cmd)
 {
     if(i1->child)
         return vfd_menu_append(i1->child, name, cmd);
-    vfd_menu_item *item = vfd_menu_new_item(name, cmd);
+    vfd_menu_item_t *item = vfd_menu_new_item(name, cmd);
     if(!i1)
         return item;
     i1->child = item;
@@ -126,9 +126,9 @@ static vfd_menu_item* vfd_menu_append_child(vfd_menu_item *i1, char *name, char 
     return item;
 }
 
-static uint16_t vfd_menu_item_data_get(char *buf, uint16_t sz, vfd_menu_item *item)
+static uint16_t vfd_menu_item_data_get(char *buf, uint16_t sz, vfd_menu_item_t *item)
 {
-#ifdef MY_PCL
+#ifdef ENABLE_PCL
     char buf1[IO_BUF_SZ];
     mysnprintf(buf1, sz, "%s", item->edit->cmd);
     pcl_exec(buf1);
@@ -141,9 +141,9 @@ static uint16_t vfd_menu_item_data_get(char *buf, uint16_t sz, vfd_menu_item *it
 #endif
 }
 
-static void vfd_menu_item_data_set(vfd_menu_item* item)
+static void vfd_menu_item_data_set(vfd_menu_item_t* item)
 {
-#ifdef MY_PCL
+#ifdef ENABLE_PCL
     char buf[IO_BUF_SZ];
     buf[0] = 0;
     if(vfd_menu_flag(item, VFD_FLAG_EDIT_INT) == 1)
@@ -155,9 +155,9 @@ static void vfd_menu_item_data_set(vfd_menu_item* item)
 #endif
 }
 
-static uint16_t vfd_menu_make_edit_int(vfd_menu_item* item, int v1, int v2, int step, uint16_t flags)
+static uint16_t vfd_menu_make_edit_int(vfd_menu_item_t* item, int v1, int v2, int step, uint16_t flags)
 {
-    vfd_menu_edit_int *d_i = &(item->edit->data.d_i);
+    vfd_menu_edit_int_t *d_i = &(item->edit->data.d_i);
     item->edit->flags = flags | VFD_FLAG_EDIT_INT;
     d_i->v1 = v1;
     d_i->v2 = v2;
@@ -176,23 +176,23 @@ void vfd_menu_init(void)
     if(pmain)
         return;
 
-    pstate = mycalloc(1, sizeof(vfd_menu_state));
+    pstate = mycalloc(1, sizeof(vfd_menu_state_t));
     pmain = vfd_menu_append(pmain, "Control", 0);
     pstate->sel = pmain;
     pstate->scroll = pmain;
     vfd_menu_append(pmain, "Monitor", 0);
-    vfd_menu_item *psys = vfd_menu_append(pmain, "System", 0);
-#ifdef MY_ETH
+    vfd_menu_item_t *psys = vfd_menu_append(pmain, "System", 0);
+#ifdef ENABLE_ETH
     vfd_menu_append_child(psys, "IP address", "sys ipaddr");
 #endif
     vfd_menu_append_child(psys, "SW version", "sys date");
     vfd_menu_append_child(psys, "HW version", "sys hw");
-    vfd_menu_item *item = vfd_menu_append_child(psys, "Brightness", "vfd brightness");
+    vfd_menu_item_t *item = vfd_menu_append_child(psys, "Brightness", "vfd brightness");
     vfd_menu_make_edit_int(item, 1, 8, 1, VFD_FLAG_IMMEDIATE);
     item = vfd_menu_append_child(psys, "Uptime", "sys uptime");
     item->edit->flags |= VFD_FLAG_TIM_UPD;
 #ifdef ENABLE_PTP
-    vfd_menu_item *pptp = vfd_menu_append_child(psys, "PTP", 0);
+    vfd_menu_item_t *pptp = vfd_menu_append_child(psys, "PTP", 0);
     item = vfd_menu_append_child(pptp, "PTP time", "sys ptptime");
     item->edit->flags |= VFD_FLAG_TIM_UPD;
 #endif
@@ -215,7 +215,7 @@ void vfd_menu_line(char *buf, uint16_t num)
     uint16_t index = 0;
     if(vfd_menu_flag(pstate->sel, VFD_FLAG_EDIT) == 0)
     {
-        vfd_menu_item *item = pstate->scroll;
+        vfd_menu_item_t *item = pstate->scroll;
         if(num == 0)
         {
             if(pstate->sel == item)
@@ -270,7 +270,7 @@ void vfd_menu_draw(void)
     vfd_cls();
     if(vfd_menu_flag(pstate->sel, VFD_FLAG_EDIT) == 0)
     {
-        vfd_menu_item *item = pstate->scroll;
+        vfd_menu_item_t *item = pstate->scroll;
         if(pstate->sel == item)
             vfd_reverse(1);
         vfd_str(item->name);
@@ -289,7 +289,7 @@ void vfd_menu_draw(void)
     {
         if(vfd_menu_flag(pstate->sel, VFD_FLAG_IMMEDIATE) == 1)
         {
-            vfd_menu_item_data_set(pstate->sel);
+            vfd_menu_item_t_data_set(pstate->sel);
         }
         vfd_str(pstate->sel->name);
         vfd_str("\r\n");
@@ -299,7 +299,7 @@ void vfd_menu_draw(void)
             mysnprintf(data, sizeof(data), "%d", pstate->sel->edit->data.d_i.cur);
         }
         else
-            vfd_menu_item_data_get(data, sizeof(data), pstate->sel);
+            vfd_menu_item_t_data_get(data, sizeof(data), pstate->sel);
         vfd_str(data);
     }
 #else
@@ -314,9 +314,9 @@ void vfd_menu_draw(void)
 #endif
 }
 
-static void vfd_menu_imm_upd(vfd_menu_item *item, uint8_t up)
+static void vfd_menu_imm_upd(vfd_menu_item_t *item, uint8_t up)
 {
-    vfd_menu_edit_int *d_i = &(item->edit->data.d_i);
+    vfd_menu_edit_int_t *d_i = &(item->edit->data.d_i);
     if(up == 1)
     {
         d_i->cur += d_i->step;

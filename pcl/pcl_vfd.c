@@ -1,9 +1,9 @@
 
+#ifdef ENABLE_VFD
 #include "pcl_vfd.h"
 #include "vfd/vfd.h"
 #include "vfd/vfd_menu.h"
 
-#ifdef MY_VFD
 COMMAND(vfd) {
     char buf[MAXSTR] = "";
     char tmp[IO_BUF_SZ];
@@ -61,12 +61,10 @@ COMMAND(vfd) {
     }
     return PICOL_ERR;
 }
-#endif
 
 void pcl_vfd_init(picolInterp *i)
 {
-#ifdef MY_VFD
     picolRegisterCmd(i, "vfd", picol_vfd, 0);
-#endif
 }
+#endif
 

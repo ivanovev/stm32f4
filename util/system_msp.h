@@ -13,10 +13,10 @@
 #include "i2c/i2c.h"
 #include "uart/uart.h"
 #include "vfd/vfd.h"
-#ifdef MY_ETH
+#ifdef ENABLE_ETH
 #include "eth/eth.h"
 #endif
-#ifdef MY_USB
+#ifdef ENABLE_USB
 extern void usb_init();
 #endif
 

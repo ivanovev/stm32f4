@@ -36,8 +36,6 @@
 #define VFD_TIMx            JOIN(TIM, VFD_TIMn)
 #define VFD_TIMx_INTERVAL   1000
 
-#define VFD_TIMn 7
-
 #define VFD_TIMx_CLK_ENABLE     JOIN3(__TIM, VFD_TIMn, _CLK_ENABLE)
 #define VFD_TIMx_IRQn           JOIN3(TIM, VFD_TIMn, _IRQn)
 #define VFD_TIMx_FORCE_RESET JOIN3(__TIM, VFD_TIMn, _FORCE_RESET)

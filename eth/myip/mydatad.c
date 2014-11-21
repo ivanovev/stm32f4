@@ -1,11 +1,14 @@
 
 #include "mydatad.h"
 #include "uart/uart.h"
-#include "flash/flash.h"
 
 #define DATAD_IDLE 0
+
+#ifdef ENABLE_FLASH
+#include "flash/flash.h"
 #define DATAD_FLASH_TX 1
 #define DATAD_FLASH_RX 2
+#endif
 
 DATAD_STATE dds;
 extern volatile uint8_t reset;
@@ -22,6 +25,7 @@ uint16_t myip_datad_io(uint8_t *data, uint16_t sz)
     if(dds.state == DATAD_IDLE)
         return 0;
     uint32_t chunk_sz = 512;
+#ifdef ENABLE_FLASH
     if(dds.state == DATAD_FLASH_TX)
     {
         if(chunk_sz >= (dds.end - dds.start))
@@ -52,9 +56,11 @@ uint16_t myip_datad_io(uint8_t *data, uint16_t sz)
                 HAL_FLASH_Lock();
         }
     }
+#endif
     return 0;
 }
 
+#ifdef ENABLE_FLASH
 uint16_t myip_datad_io_flash_tx(uint32_t sz, uint32_t offset)
 {
     dds.start = USER_FLASH_START_ADDR + offset;
@@ -74,4 +80,5 @@ uint16_t myip_datad_io_flash_rx(uint32_t sz, uint32_t offset, uint8_t reset)
     //uart_send_hex2("myip_datad_io.end", dds.end);
     return sz;
 }
+#endif
 

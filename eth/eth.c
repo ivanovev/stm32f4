@@ -16,11 +16,6 @@ __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethe
 
 ETH_HandleTypeDef heth;
 
-#ifdef ENABLE_PTP
-#include "eth/myip/myptpd.h"
-extern void eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method);
-#endif
-
 void eth_init(void)
 {
     myip_init();

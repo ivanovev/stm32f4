@@ -33,6 +33,18 @@ void myip_telnetd_init(void)
 
 uint16_t myip_telnetd_io(uint8_t *data, uint16_t sz)
 {
+#ifndef ENABLE_PCL
+    if(!mystrncmp((char*)data, "exit", 4))
+    {
+        tcp_con.state = TCP_CON_CLOSE;
+        return 0;
+    }
+    else if(sz > 0)
+    {
+        if(data[0] != TELNET_IAC)
+            enqueue_str(&tds.qo, telnetd_prompt, sizeof(telnetd_prompt));
+    }
+#else
     uint16_t i;
     for(i = 0; i < sz; i++)
     {
@@ -43,6 +55,7 @@ uint16_t myip_telnetd_io(uint8_t *data, uint16_t sz)
         }
         enqueue(&tds.qi, data[i]);
     }
+#endif
     return dequeue(&tds.qo, data, 0);
 }
 

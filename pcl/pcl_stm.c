@@ -2,25 +2,25 @@
 #include "pcl_stm.h"
 #include "util/util.h"
 
-#ifdef MY_GPIO
+#ifdef ENABLE_GPIO
 #include "gpio/gpio.h"
 #endif
 
-#ifdef MY_ETH
+#ifdef ENABLE_ETH
 #include "eth/mdio.h"
 #include "eth/eth.h"
 #include "eth/myip/mydatad.h"
 #endif
 
-#ifdef MY_FLASH
+#ifdef ENABLE_FLASH
 #include "flash/flash.h"
 #endif
 
-#ifdef MY_I2C
+#ifdef ENABLE_I2C
 #include "i2c/eeprom.h"
 #endif
 
-#ifdef MY_GPIO
+#ifdef ENABLE_GPIO
 static GPIO_TypeDef *get_gpiox(char *a)
 {
     char x = to_upper(a[0]);
@@ -44,7 +44,7 @@ static GPIO_TypeDef *get_gpiox(char *a)
 }
 #endif
 
-#ifdef MY_UART
+#ifdef ENABLE_UART
 static USART_TypeDef *get_uartx(char *a)
 {
     char x = a[0];
@@ -64,7 +64,7 @@ static USART_TypeDef *get_uartx(char *a)
 }
 #endif
 
-#ifdef MY_FLASH
+#ifdef ENABLE_FLASH
 COMMAND(flash) {
     ARITY(argc >= 2, "flash mr|mw addr ...");
     uint32_t *ptr = (uint32_t*)str2int(argv[2]);
@@ -101,7 +101,7 @@ COMMAND(flash) {
     if(SUBCMD1("pclupd"))
         return picolSetHexResult(i, pcl_load());
 #endif
-#ifdef MY_ETH
+#ifdef ENABLE_ETH
     if(SUBCMD1("tx0"))
     {
         sz = flash_fsz0();
@@ -138,7 +138,7 @@ COMMAND(mw) {
     return picolSetResult(i, argv[2]);
 }
 
-#ifdef MY_GPIO
+#ifdef ENABLE_GPIO
 COMMAND(gpio) {
     ARITY(argc >= 3, "gpio a|b|c... num [val]");
     GPIO_TypeDef *gpiox = get_gpiox(argv[1]);
@@ -172,7 +172,7 @@ COMMAND(gpio) {
 }
 #endif
 
-#ifdef MY_UART
+#ifdef ENABLE_UART
 COMMAND(uart) {
     ARITY((argc >= 3), "uart 1|2|3 str");
     USART_TypeDef *uartx = get_uartx(argv[1]);
@@ -192,7 +192,7 @@ COMMAND(uart) {
 }
 #endif
 
-#ifdef MY_ETH
+#ifdef ENABLE_ETH
 COMMAND(mdio) {
     ARITY(argc >= 2, "mdio ...");
     uint32_t reg, value = 0;
@@ -215,7 +215,7 @@ COMMAND(eth) {
 }
 #endif
 
-#ifdef MY_I2C
+#ifdef ENABLE_I2C
 COMMAND(eeprom) {
     ARITY(argc > 3, "eeprom read|write addr ...");
     uint16_t addr = str2int(argv[2]);
@@ -249,20 +249,20 @@ COMMAND(eeprom) {
 
 void pcl_stm_init(picolInterp *i)
 {
-#ifdef MY_GPIO
+#ifdef ENABLE_GPIO
     picolRegisterCmd(i, "gpio", picol_gpio, 0);
 #endif
-#ifdef MY_FLASH
+#ifdef ENABLE_FLASH
     picolRegisterCmd(i, "flash", picol_flash, 0);
 #endif
-#ifdef MY_UART
+#ifdef ENABLE_UART
     picolRegisterCmd(i, "uart", picol_uart, 0);
 #endif
-#ifdef MY_ETH
+#ifdef ENABLE_ETH
     picolRegisterCmd(i, "mdio", picol_mdio, 0);
     picolRegisterCmd(i, "eth", picol_eth, 0);
 #endif
-#ifdef MY_I2C
+#ifdef ENABLE_I2C
     picolRegisterCmd(i, "eeprom", picol_eeprom, 0);
 #endif
 }

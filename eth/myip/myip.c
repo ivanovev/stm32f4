@@ -36,14 +36,24 @@ void myip_init(void)
 #endif
     ip_counter = 0;
     myip_tcp_init();
-#ifdef MY_I2C
+#ifdef ENABLE_I2C
     local_ip_addr = eeprom_ipaddr_read();
 #endif
 }
 
 uint16_t dbg_con_handler(uint8_t *data, uint16_t sz)
 {
-    return 0;
+    uint16_t i;
+    uint32_t *ptr1, *ptr2;
+    uint32_t tmp;
+    for(i = 0; i < sz; i += 4)
+    {
+        ptr1 = (uint32_t*)&data[i];
+        ptr2 = (uint32_t*)(HTONS_32(*ptr1));
+        dbg_send_hex2("addr", ptr2);
+        *ptr1 = HTONS_32(*ptr2);
+    }
+    return sz;
 }
 
 void myip_con_add(uint16_t port, uint8_t proto, uint8_t bcast, con_handler con_handler_ptr)
@@ -155,7 +165,6 @@ uint16_t myip_eth_frame_handler(ETH_FRAME *frm, uint16_t sz)
         if(ipfrm->p.proto == ICMP_PROTO)
             return myip_icmp_frame_handler(frm, sz);
     }
-
     static uint8_t i = 0;
     uint16_t sz1 = 0;
     if(sz)
@@ -173,13 +182,13 @@ uint16_t myip_eth_frame_handler(ETH_FRAME *frm, uint16_t sz)
             if (HTONS_32(ipfrm->p.dst_ip_addr) != local_ip_addr)
                 continue;
         }
-        if(con_table[i].proto == UDP_PROTO)
+        if(sz && (con_table[i].proto == UDP_PROTO))
         {
             sz1 = myip_udp_con_handler(frm, sz, i);
             if(sz1)
                 break;
         }
-        if(con_table[i].proto == TCP_PROTO)
+        if((sz ? 1 : !myip_tcp_con_closed()) && con_table[i].proto == TCP_PROTO)
         {
             sz1 = myip_tcp_con_handler(frm, sz, i);
             if(sz1)
@@ -244,6 +253,7 @@ uint16_t myip_udp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index)
     }
     uint8_t *data_ptr;
     uint16_t data_sz = myip_udp_data(ufrm, sz, &data_ptr);
+    dbg_send_int2("myip_udp_con_handler", data_sz);
     data_sz = con_table[con_index].con_handler_ptr(data_ptr, data_sz);
     if(data_sz)
     {

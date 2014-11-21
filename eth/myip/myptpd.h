@@ -27,11 +27,28 @@ typedef struct ptpmsg_t
     uint32_t ns;
 } ptpmsg_t;
 
+typedef struct ptpts_t {
+    uint32_t s;
+    uint32_t ns;
+} ptpts_t;
+
+typedef struct ptpdt_t {
+    uint32_t s;
+    uint32_t ns;
+    uint32_t negative;
+} ptpdt_t;
 
 void        myip_ptpd_init(void);
 uint16_t    myip_ptpd_evt_io(uint8_t *data, uint16_t sz);
 uint16_t    myip_ptpd_msg_io(uint8_t *data, uint16_t sz);
 void        myip_ptpd_save_t3(ptpts_t *t);
+void        myip_ptpd_adjust_freq(ptpdt_t *dt);
+
+uint32_t    ptp_ss2ns(uint32_t ss);
+uint32_t    ptp_ns2ss(uint32_t ss);
+void        ptpts_div2(ptpts_t *t);
+void        ptpts_sum(const ptpts_t *t1, const ptpts_t *t2, ptpts_t *sum);
+void        ptpts_diff(const ptpts_t *t1, const ptpts_t *t2, ptpdt_t *dt);
 
 #endif
 

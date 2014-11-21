@@ -1,9 +1,9 @@
 
 #include <main.h>
-#ifdef MY_UART
+#ifdef ENABLE_UART
 #include "uart/uart.h"
 #endif
-#ifdef MY_USB
+#ifdef ENABLE_USB
 #include "usb/cdc/usb.h"
 #endif
 

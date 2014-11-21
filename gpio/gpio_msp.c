@@ -3,7 +3,7 @@
 
 void HAL_GPIO_EXTI_Callback(uint16_t pin)
 {
-#ifdef MY_VFD
+#ifdef ENABLE_VFD
     vfd_gpio_exti_cb();
 #endif
 #ifdef BTN_PIN

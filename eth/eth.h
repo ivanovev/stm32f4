@@ -52,12 +52,13 @@ void        eth_reset(void);
 uint8_t     eth_io(void);
 
 #ifdef ENABLE_PTP
-typedef struct ptpts_t {
-    uint32_t s;
-    uint32_t ns;
-} ptpts_t;
+#define ETH_PPS_OUT_GPIO B
+#define ETH_PPS_OUT_PIN 5
+#include "eth/myip/myptpd.h"
+void        eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method);
 uint32_t    eth_ptpclk_seconds(void);
 void        eth_ptpts_get(ptpts_t *pts, volatile ETH_DMADescTypeDef *pdmadesc);
+void        eth_ptpfreq_adjust(int32_t adj);
 #endif
 
 #endif

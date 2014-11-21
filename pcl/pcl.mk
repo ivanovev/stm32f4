@@ -1,5 +1,5 @@
 
-CFLAGS += -DMY_PCL
+CFLAGS += -DENABLE_PCL
 C_SRCS += $(ROOT_DIR)/pcl/picol.c
 C_SRCS += $(ROOT_DIR)/pcl/pcl.c
 C_SRCS += $(ROOT_DIR)/pcl/pcl_misc.c

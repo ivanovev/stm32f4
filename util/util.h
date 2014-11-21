@@ -70,7 +70,7 @@ void io_prompt(uint8_t newline);
 void io_echo(void);
 
 #ifdef __arm__
-#ifdef MY_UART
+#ifdef ENABLE_UART
 #define dbg_send_str(a,b) uart_send_str(a,b)
 #define dbg_send_str2(a) uart_send_str2(a)
 #define dbg_send_str3(a,b) uart_send_str3(a,b)

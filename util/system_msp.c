@@ -12,7 +12,7 @@ void myinit(void)
     HAL_Init();
     SystemClock_Config();
 
-#ifdef MY_GPIO
+#ifdef ENABLE_GPIO
 #pragma message "led_init()"
     led_init();
 #ifdef btn_init
@@ -21,42 +21,42 @@ void myinit(void)
 #endif
 #endif
 
-#ifdef MY_UART
+#ifdef ENABLE_UART
 #pragma message "uart_init()"
     uart_init();
 #endif
 
-#ifdef MY_I2C
+#ifdef ENABLE_I2C
 #pragma message "i2c_init()"
     i2c_init();
 #endif
 
-#ifdef MY_FLASH
+#ifdef ENABLE_FLASH
 #pragma message "flash_erase_img1()"
     flash_erase_img1();
 #endif
 
-#ifdef MY_PCL
+#ifdef ENABLE_PCL
 #pragma message "pcl_init()"
     pcl_init();
 #endif
 
-#ifdef MY_ETH
+#ifdef ENABLE_ETH
 #pragma message "eth_init()"
     eth_init();
 #endif
 
-#ifdef MY_USB
+#ifdef ENABLE_USB
 #pragma message "usb_init()"
     usb_init();
 #endif
 
-#ifdef MY_TIM
+#ifdef ENABLE_TIM
 #pragma message "tim_init()"
     tim_init();
 #endif
 
-#ifdef MY_VFD
+#ifdef ENABLE_VFD
 #pragma message "vfd_init()"
     vfd_init();
 #endif
@@ -66,17 +66,17 @@ void myinit(void)
 void mydeinit(void)
 {
 #pragma message "mydeinit()"
-#ifdef MY_TIM
+#ifdef ENABLE_TIM
 #pragma message "tim_deinit()"
     tim_deinit();
 #endif
 
-#ifdef MY_ETH
+#ifdef ENABLE_ETH
 #pragma message "eth_deinit()"
     eth_deinit();
 #endif
 
-#ifdef MY_VFD
+#ifdef ENABLE_VFD
 #pragma message "vfd_deinit()"
     vfd_deinit();
 #endif

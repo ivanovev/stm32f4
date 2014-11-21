@@ -4,6 +4,7 @@
 #include "pcl_stm.h"
 #include "pcl_sys.h"
 #include "uart/uart.h"
+#include "util/heap1.h"
 
 static struct picolInterp *pcl_interp = 0;
 
@@ -28,7 +29,9 @@ void pcl_init(void)
         pcl_misc_init(pcl_interp);
         pcl_stm_init(pcl_interp);
         pcl_sys_init(pcl_interp);
+#ifdef ENABLE_VFD
         pcl_vfd_init(pcl_interp);
+#endif
         picolRegisterCmd(pcl_interp, "clear", picol_clear, 0);
         dbg_send_str3("pcl_init", 1);
     }

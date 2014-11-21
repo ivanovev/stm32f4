@@ -246,9 +246,7 @@ __attribute__ ((long_call, section (".ramtext"))) uint32_t sram_flash_copy10(voi
 
 void flash_copy10(void)
 {
-#ifdef MY_UART
-    uart_send_hex2("sram_flash_copy10", (uint32_t)sram_flash_copy10);
-#endif
+    dbg_send_hex2("sram_flash_copy10", (uint32_t)sram_flash_copy10);
     sram_flash_copy10();
 }
 

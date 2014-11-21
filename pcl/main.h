@@ -15,7 +15,6 @@
 #include "stdint.h"
 #include "stddef.h"
 #include "pcl/picol.h"
-#include "pcl/heap1.h"
 #include "pcl/pcl.h"
 #include "pcl/pcl_misc.h"
 #include "pcl/pcl_sys.h"

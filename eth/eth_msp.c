@@ -52,13 +52,26 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *pheth)
     GPIO_INIT(ETH_TXD0_GPIO, ETH_TXD0_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
     GPIO_INIT(ETH_TXD1_GPIO, ETH_TXD1_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
 
+    GPIO_INIT(ETH_PPS_OUT_GPIO, ETH_PPS_OUT_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
+
     __ETH_CLK_ENABLE();
     __ETHMACPTP_CLK_ENABLE();
     dbg_send_str3("HAL_ETH_MspInit", 1);
     eth_reset();
 }
 
+void HAL_ETH_MspDeInit(ETH_HandleTypeDef *pheth)
+{
+    dbg_send_str3("HAL_ETH_MspDeInit", 1);
+    __ETH_CLK_DISABLE();
+}
+
 #ifdef ENABLE_PTP
+
+#define ADJ_FREQ_INC            43
+#define ADJ_FREQ_ADDEND         0x4C19EF00
+#define PTP_UPD_SIGN_NEGATIVE ETH_PTPTSLUR_TSUPNS
+
 void eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method)
 {
     // step 1
@@ -69,13 +82,13 @@ void eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method)
     // step 3;
     // 168/50 = 3.36
     // 43/3.36 = 13
-    pheth->Instance->PTPSSIR = 13;
+    pheth->Instance->PTPSSIR = ADJ_FREQ_INC;
     // step 4; in case of fine update
     // 168/50 = 3.36
     // 2**32/3.36 = 0x4C30C30C
     if(update_method == PTP_FINE)
     {
-        pheth->Instance->PTPTSAR = 0x4C30C30C;
+        pheth->Instance->PTPTSAR = ADJ_FREQ_ADDEND;
         pheth->Instance->PTPTSCR |= ETH_PTPTSCR_TSARU;
         while(pheth->Instance->PTPTSCR & ETH_PTPTSCR_TSARU);
     }
@@ -91,6 +104,50 @@ void eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method)
     pheth->Instance->PTPTSCR |= ETH_PTPTSCR_TSSTI;
     // step 9
     pheth->Instance->DMABMR |= ETH_DMABMR_EDE;
+
+//#ifdef PTP_TIMx
+#if 0
+    TIM_HandleTypeDef htim;
+    htim.Instance = PTP_TIMx;
+    htim.Init.Period = 999999;
+    htim.Init.Prescaler = (uint32_t) ((SystemCoreClock / 20000) - 1);
+    htim.Init.Prescaler = tim_get_prescaler(PTP_TIMx)/100;
+    htim.Init.ClockDivision = 0;
+    htim.Init.CounterMode = TIM_COUNTERMODE_UP;
+    if(HAL_TIM_OC_Init(&htim) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    TIM_ClockConfigTypeDef clk_src;
+    clk_src.ClockSource = TIM_CLOCKSOURCE_ITR1;
+    clk_src.ClockPolarity = TIM_CLOCKPOLARITY_NONINVERTED;
+    clk_src.ClockPrescaler = TIM_CLOCKPRESCALER_DIV1;
+    clk_src.ClockFilter = 0;
+    if(HAL_TIM_ConfigClockSource(&htim, &sCLKSourceConfig) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    TIM_OC_InitTypeDef oc_init;
+    oc_init.OCMode     = TIM_OCMODE_PWM1;
+    oc_init.OCPolarity = TIM_OCPOLARITY_HIGH;
+    oc_init.Pulse = 1000;
+    if(HAL_TIM_OC_ConfigChannel(&htim, &oc_init, TIM_CHANNEL_1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    if(HAL_TIM_OC_Start(&htim, TIM_CHANNEL_1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+#endif
+
+#if 1
+    PTP_TIMx->OR = TIM_OR_ITR1_RMP_0;
+    uint32_t *PTPPPSCR = (uint32_t*)&pheth->Instance->PTPTSSR + 1;
+    dbg_send_hex2("PTPPPSCR", PTPPPSCR);
+    *PTPPPSCR = 6;
+#endif
+
     // pass control frames
     pheth->Instance->MACFFR = ETH_PASSCONTROLFRAMES_FORWARDALL | ETH_MULTICASTFRAMESFILTER_NONE;
 
@@ -98,18 +155,30 @@ void eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method)
     HAL_NVIC_SetPriority(ETH_IRQn, 0x7, 0);
     HAL_NVIC_EnableIRQ(ETH_IRQn);
 }
-#endif
 
-void HAL_ETH_MspDeInit(ETH_HandleTypeDef *pheth)
-{
-    dbg_send_str3("HAL_ETH_MspDeInit", 1);
-    __ETH_CLK_DISABLE();
-}
-
-#ifdef ENABLE_PTP
 uint32_t eth_ptpclk_seconds(void)
 {
     return heth.Instance->PTPTSHR % (60*60*24);
+}
+
+void eth_ptpts_update(ptpdt_t *dt)
+{
+    heth.Instance->PTPTSHUR = dt->s;
+    uint32_t ss = ptp_ns2ss(dt->ns);
+    if(dt->negative)
+        ss |= ETH_PTPTSLUR_TSUPNS;
+    heth.Instance->PTPTSLUR = ss;
+    heth.Instance->PTPTSCR |= ETH_PTPTSCR_TSSTU;
+}
+
+void eth_ptpfreq_adjust(int32_t adj)
+{
+    //dbg_send_int2("adj", adj);
+    int32_t a = ADJ_FREQ_ADDEND / 10000000;
+    a *= adj;
+    //dbg_send_int2("a", a);
+    heth.Instance->PTPTSAR = ADJ_FREQ_ADDEND + a;
+    heth.Instance->PTPTSCR |= ETH_PTPTSCR_TSARU;
 }
 
 void eth_ptpts_get(ptpts_t *ptime, volatile ETH_DMADescTypeDef *pdmadesc)
@@ -117,7 +186,7 @@ void eth_ptpts_get(ptpts_t *ptime, volatile ETH_DMADescTypeDef *pdmadesc)
     static ptpts_t time;
     if(pdmadesc)
     {
-        time.ns = pdmadesc->TimeStampLow*0.46;
+        time.ns = ptp_ss2ns(pdmadesc->TimeStampLow);
         time.s = pdmadesc->TimeStampHigh;
     }
     if(ptime)
@@ -126,5 +195,6 @@ void eth_ptpts_get(ptpts_t *ptime, volatile ETH_DMADescTypeDef *pdmadesc)
         ptime->s = time.s;
     }
 }
+
 #endif
 
