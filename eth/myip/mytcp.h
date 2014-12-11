@@ -31,7 +31,7 @@ typedef struct {
 typedef struct {
     volatile uint8_t state;
     uint8_t remote_mac_addr[6];
-    uint32_t remote_ip_addr;
+    uint8_t remote_ip_addr[4];
     uint16_t remote_port;
     uint16_t local_port;
     uint16_t id;
@@ -42,8 +42,7 @@ typedef struct {
 } TCP_CON;
 
 void        myip_tcp_init(void);
-uint16_t    myip_tcp_frame_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index);
-uint16_t    myip_tcp_con_handler(ETH_FRAME *frm, uint16_t sz, uint8_t con_index);
+uint16_t    myip_tcp_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index);
 uint16_t    myip_tcp_con_closed(void);
 
 #endif

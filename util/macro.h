@@ -16,6 +16,10 @@
 #define STR(X) STR_HELPER(X)
 #define STR_HELPER(X) #X
 
+#define HTONS_16( x ) ((((x) >> 8) + ((x) << 8)) & 0x0000FFFF)
+#define HTONS_32( x ) ( ((x >> 24) & 0x000000FF) + ((x >> 8) & 0x0000FF00) + \
+                        ((x << 8) & 0x00FF0000) + ((x << 24) & 0xFF000000))
+
 #define GPIO_INIT(gpio, pin, mode, pull, speed, alternate) do { \
     JOIN3(__GPIO, gpio, _CLK_ENABLE)(); \
     gpio_init.Pin = PIN(pin); \

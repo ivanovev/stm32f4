@@ -3,6 +3,7 @@
 #define __ETH_H__
 
 #include "myip.h"
+#include "mytcp.h"
 
 #define ETH_REFCLK_GPIO A
 #define ETH_REFCLK_PIN 1
@@ -50,16 +51,6 @@ void        eth_reset(void);
 //uint16_t    eth_input(ETH_FRAME *frm);
 //void        eth_output(ETH_FRAME *frm, uint16_t sz);
 uint8_t     eth_io(void);
-
-#ifdef ENABLE_PTP
-#define ETH_PPS_OUT_GPIO B
-#define ETH_PPS_OUT_PIN 5
-#include "eth/myip/myptpd.h"
-void        eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method);
-uint32_t    eth_ptpclk_seconds(void);
-void        eth_ptpts_get(ptpts_t *pts, volatile ETH_DMADescTypeDef *pdmadesc);
-void        eth_ptpfreq_adjust(int32_t adj);
-#endif
 
 #endif
 

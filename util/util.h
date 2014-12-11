@@ -34,16 +34,19 @@ inline uint8_t myisspace(char c);
 inline uint8_t myisnewline(char c);
 inline uint8_t myisalnum(char c);
 inline uint8_t myisdigit(char c);
+uint8_t     myisempty(char *str);
 
 int         mystrncmp(const char* s1, const char *s2, uint32_t n);
 uint16_t    mystrnlen(const char* s, uint16_t maxlen);
-void*       mymemcpy(void* dest, const void* src, uint32_t count);
 char*       mystrncpy(char *dest, const char *src, uint32_t n);
 uint32_t    mysnprintf(char *str, uint32_t sz, const char *fmt, ...);
-uint8_t     myisempty(char *str);
 char*       mystrchr(const char *s, int c);
 char*       mystrncat(char *dest, const char *src, uint32_t n);
+
+void*       mymemcpy(void* dest, const void* src, uint32_t count);
+int         mymemcmp(const void *s1, const void *s2, uint32_t n);
 uint8_t*    mymemchr(const uint8_t *s, uint8_t c, uint32_t n);
+void*       mymemset(void *s, int c, uint32_t n);
 
 void        format_time(char *buf, uint16_t sz, uint32_t t);
 

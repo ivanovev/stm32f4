@@ -39,8 +39,8 @@ INCDIR += $(UTIL_DIR)
 MCPU = -mcpu=cortex-m4
 MTHUMB = -mthumb
 #MTHUMB += -mthumb-interwork
-CFLAGS += -O0 -g -Wall
-#CFLAGS += -O1 -Wall
+#CFLAGS += -O0 -g -Wall
+CFLAGS += -O1 -Wall
 #CFLAGS += -dD
 CFLAGS += $(MCPU)
 CFLAGS += $(MTHUMB)

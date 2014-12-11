@@ -1,79 +1,11 @@
 
-#include <main.h>
-#include "eth/eth.h"
-#include "eth/mdio.h"
-#include "uart/uart.h"
-
-extern void eth_reset(void);
-extern ETH_HandleTypeDef heth;
-#ifdef ENABLE_PTP
-#include "eth/myip/ptp/myptpd.h"
-#endif
-
-#pragma message "ETH_MDC_GPIO: GPIO" STR(ETH_MDC_GPIO) " PIN" STR(ETH_MDC_PIN)
-#pragma message "ETH_MDIO_GPIO: GPIO" STR(ETH_MDIO_GPIO) " PIN" STR(ETH_MDIO_PIN)
-#pragma message "ETH_RESET_GPIO: GPIO" STR(ETH_RESET_GPIO) " PIN" STR(ETH_RESET_PIN)
-#pragma message "ETH_REFCLK_GPIO: GPIO" STR(ETH_REFCLK_GPIO) " PIN" STR(ETH_REFCLK_PIN)
-#pragma message "ETH_CRSDV_GPIO: GPIO" STR(ETH_CRSDV_GPIO) " PIN" STR(ETH_CRSDV_PIN)
-#pragma message "ETH_RXD0_GPIO: GPIO" STR(ETH_RXD0_GPIO) " PIN" STR(ETH_RXD0_PIN)
-#pragma message "ETH_RXD1_GPIO: GPIO" STR(ETH_RXD1_GPIO) " PIN" STR(ETH_RXD1_PIN)
-#pragma message "ETH_TXEN_GPIO: GPIO" STR(ETH_TXEN_GPIO) " PIN" STR(ETH_TXEN_PIN)
-#pragma message "ETH_TXD0_GPIO: GPIO" STR(ETH_TXD0_GPIO) " PIN" STR(ETH_TXD0_PIN)
-#pragma message "ETH_TXD1_GPIO: GPIO" STR(ETH_TXD1_GPIO) " PIN" STR(ETH_TXD1_PIN)
-
-void HAL_ETH_MspInit(ETH_HandleTypeDef *pheth)
-{
-    GPIO_InitTypeDef gpio_init;
-
-    __GPIOA_CLK_ENABLE();
-    __GPIOB_CLK_ENABLE();
-    __GPIOC_CLK_ENABLE();
-    __GPIOD_CLK_ENABLE();
-    __GPIOE_CLK_ENABLE();
-    __GPIOF_CLK_ENABLE();
-    __GPIOG_CLK_ENABLE();
-    __GPIOH_CLK_ENABLE();
-
-    GPIO_INIT(ETH_MDC_GPIO, ETH_MDC_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-    GPIO_INIT(ETH_MDIO_GPIO, ETH_MDIO_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-
-    GPIO_INIT(ETH_RESET_GPIO, ETH_RESET_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FAST, 0);
-    HAL_GPIO_WritePin(GPIO(ETH_RESET_GPIO), PIN(ETH_RESET_PIN), GPIO_PIN_SET);
-
-    GPIO_INIT(ETH_NINT_GPIO, ETH_NINT_PIN, GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
-
-    GPIO_INIT(ETH_REFCLK_GPIO, ETH_REFCLK_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-
-    GPIO_INIT(ETH_CRSDV_GPIO, ETH_CRSDV_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-    GPIO_INIT(ETH_RXD0_GPIO, ETH_RXD0_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-    GPIO_INIT(ETH_RXD1_GPIO, ETH_RXD1_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-
-    GPIO_INIT(ETH_TXEN_GPIO, ETH_TXEN_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-    GPIO_INIT(ETH_TXD0_GPIO, ETH_TXD0_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-    GPIO_INIT(ETH_TXD1_GPIO, ETH_TXD1_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-
-#ifdef ENABLE_PTP
-    GPIO_INIT(ETH_PPS_OUT_GPIO, ETH_PPS_OUT_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, GPIO_AF11_ETH);
-#endif
-
-    __ETH_CLK_ENABLE();
-    __ETHMACPTP_CLK_ENABLE();
-    dbg_send_str3("HAL_ETH_MspInit", 1);
-    eth_reset();
-}
-
-void HAL_ETH_MspDeInit(ETH_HandleTypeDef *pheth)
-{
-    dbg_send_str3("HAL_ETH_MspDeInit", 1);
-    __ETH_CLK_DISABLE();
-}
-
-#if 0
-#ifdef ENABLE_PTP
+#include "myptpd.h"
 
 #define ADJ_FREQ_INC            43
 #define ADJ_FREQ_ADDEND         0x4C19EF00
 #define PTP_UPD_SIGN_NEGATIVE ETH_PTPTSLUR_TSUPNS
+
+extern ETH_HandleTypeDef heth;
 
 void eth_ptp_start(ETH_HandleTypeDef *pheth, uint16_t update_method)
 {
@@ -167,7 +99,7 @@ int32_t eth_ptp_ppsfreq(int32_t ppsfreq)
     uint32_t *PTPPPSCR = (uint32_t*)&heth.Instance->PTPTSSR + 1;
     if(ppsfreq == -1)
         return *PTPPPSCR;
-    dbg_send_hex2("PTPPPSCR", PTPPPSCR);
+    //dbg_send_hex2("PTPPPSCR", (uint32_t)PTPPPSCR);
     *PTPPPSCR = ppsfreq;
     return *PTPPPSCR;
 }
@@ -225,5 +157,25 @@ void eth_ptpts_now(ptpts_t *pts)
     pts->ns = ptp_ss2ns(heth.Instance->PTPTSLR);
 }
 
+void eth_ptpts_rx(ptpts_t *pts, ETH_DMADescTypeDef *dmarxdesc)
+{
+    if((dmarxdesc->Status & ETH_DMARXDESC_MAMPCE) && (dmarxdesc->ExtendedStatus & ETH_DMAPTPRXDESC_PTPMT))
+    {
+        //dmarxdesc = heth.RxFrameInfos.LSRxDesc;
+        //dbg_send_hex2("rx status", dmarxdesc->Status);
+        //dbg_send_hex2("rx ext status", dmarxdesc->ExtendedStatus);
+#if 0
+        //uint16_t i;
+        ptpts_t time;
+        //eth_ptpts_now(&time);
+        for(i = 0; i < ETH_RXBUFNB; i++)
+        {
+            eth_ptpts_get(&time, &DMARxDscrTab[i]);
+            dbg_send_int2("rx.s", time.s);
+            dbg_send_int2("rx.ns", time.ns);
+        }
 #endif
-#endif
+        eth_ptpts_get(0, dmarxdesc);
+    }
+}
+

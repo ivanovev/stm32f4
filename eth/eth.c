@@ -3,6 +3,10 @@
 #include "eth.h"
 #include "eth/myip/mytcp.h"
 
+#ifdef ENABLE_PTP
+#include "eth/myip/ptp/myptpd.h"
+#endif
+
 #pragma message "PHY_ADDRESS: " STR(PHY_ADDRESS)
 
 /* Private variables ---------------------------------------------------------*/
@@ -14,15 +18,22 @@ __ALIGN_BEGIN uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __ALIGN_END; /* Ethe
 
 __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethernet Transmit Buffer */
 
+__ALIGN_BEGIN static ETH_FRAME iofrm __ALIGN_END;
+
 ETH_HandleTypeDef heth;
+extern uint8_t local_ipaddr[4];
+extern uint8_t local_macaddr[6];
 
 void eth_init(void)
 {
+#ifdef ENABLE_I2C
+    eeprom_ipaddr_read(local_ipaddr);
+    eeprom_macaddr_read(local_macaddr);
+#endif
     myip_init();
-    uint8_t macaddress[6]= { MAC_ADDR0, MAC_ADDR1, MAC_ADDR2, MAC_ADDR3, MAC_ADDR4, MAC_ADDR5 };
 
     heth.Instance = ETH;
-    heth.Init.MACAddr = macaddress;
+    heth.Init.MACAddr = local_macaddr;
     heth.Init.AutoNegotiation = ETH_AUTONEGOTIATION_ENABLE;
     heth.Init.Speed = ETH_SPEED_100M;
     heth.Init.DuplexMode = ETH_MODE_FULLDUPLEX;
@@ -65,25 +76,43 @@ void eth_reset(void)
 
 uint16_t eth_input(ETH_FRAME *frm)
 {
-    if (HAL_ETH_GetReceivedFrame(&heth) != HAL_OK)
+    if(HAL_ETH_GetReceivedFrame(&heth) != HAL_OK)
         return 0;
 
+    uint16_t i;
     uint16_t sz = heth.RxFrameInfos.length;
-    mymemcpy(frm->packet, (uint8_t*)heth.RxFrameInfos.buffer, sz);
-    uint32_t i = 0;
-    __IO ETH_DMADescTypeDef *dmarxdesc = heth.RxFrameInfos.FSRxDesc;
+    ETH_DMADescTypeDef *dmarxdesc = heth.RxFrameInfos.LSRxDesc;
 #ifdef ENABLE_PTP
     eth_ptpts_get(0, dmarxdesc);
+    //eth_ptpts_rx(0, dmarxdesc);
+#if 0
+    if((dmarxdesc->Status & ETH_DMARXDESC_MAMPCE) && (dmarxdesc->ExtendedStatus & ETH_DMAPTPRXDESC_PTPMT))
+    {
+        //dmarxdesc = heth.RxFrameInfos.LSRxDesc;
+        //dbg_send_hex2("rx status", dmarxdesc->Status);
+        //dbg_send_hex2("rx ext status", dmarxdesc->ExtendedStatus);
+        //uint16_t i;
+        ptpts_t time;
+        //eth_ptpts_now(&time);
+        for(i = 0; i < ETH_RXBUFNB; i++)
+        {
+            eth_ptpts_get(&time, &DMARxDscrTab[i]);
+            dbg_send_int2("rx.s", time.s);
+            dbg_send_int2("rx.ns", time.ns);
+        }
+        eth_ptpts_get(0, dmarxdesc);
+    }
 #endif
+#endif
+    mymemcpy(frm->packet, (uint8_t*)heth.RxFrameInfos.buffer, sz);
 
     /* Set Own bit in Rx descriptors: gives the buffers back to DMA */
-    //io_send_int2("seg_count", (heth.RxFrameInfos).SegCount);
+    dmarxdesc = heth.RxFrameInfos.FSRxDesc;
     for(i = 0; i< (heth.RxFrameInfos).SegCount; i++)
     {
         dmarxdesc->Status = ETH_DMARXDESC_OWN;
         dmarxdesc = (ETH_DMADescTypeDef *)(dmarxdesc->Buffer2NextDescAddr);
     }
-
     /* Clear Segment_Count */
     (heth.RxFrameInfos).SegCount = 0;
 
@@ -101,23 +130,28 @@ uint16_t eth_input(ETH_FRAME *frm)
 void eth_output(ETH_FRAME *frm, uint16_t sz)
 {
     //io_send_int2("send_sz", sz);
-    uint8_t *buf = (uint8_t *)(heth.TxDesc->Buffer1Addr);
-    mymemcpy(buf, frm->packet, sz);
     __IO ETH_DMADescTypeDef *dmatxdesc = heth.TxDesc;
+    uint8_t *buf = (uint8_t *)(dmatxdesc->Buffer1Addr);
+    mymemcpy(buf, frm->packet, sz);
     dmatxdesc->Status |= ETH_DMATXDESC_TTSE | ETH_DMATXDESC_IC;
     //dmatxdesc->Status &= ~ETH_DMATXDESC_TCH;
     HAL_ETH_TransmitFrame(&heth, sz);
+    //uint16_t i;
+#if 0
+    ptpts_t time;
+    eth_ptpts_get(&time, dmatxdesc);
+    myip_ptpd_save_t3(&time);
+#endif
 }
 
 uint8_t eth_io(void)
 {
-    static ETH_FRAME frm;
-    frm.e.p.type = 0;
-    uint16_t sz = eth_input(&frm);
-    sz = myip_eth_frame_handler(&frm, sz);
+    iofrm.e.p.type = 0;
+    uint16_t sz = eth_input(&iofrm);
+    sz = myip_eth_frm_handler(&iofrm, sz);
     if(sz)
     {
-        eth_output(&frm, sz);
+        eth_output(&iofrm, sz);
         return 1;
     }
     return 0;
@@ -127,11 +161,21 @@ uint8_t eth_io(void)
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *pheth)
 {
     (void)pheth;
+    //dbg_send_str3("HAL_ETH_RxCpltCallback", 1);
+    if(pheth->Init.RxMode == ETH_RXINTERRUPT_MODE)
+        eth_io();
 }
 
 void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef *pheth)
 {
     uint16_t i;
+    ptpts_t time;
+#if 0
+    eth_ptpts_now(&time);
+    dbg_send_int2("now.s", time.s);
+    dbg_send_int2("now.ns", time.ns);
+#endif
+#if 1
     __IO ETH_DMADescTypeDef *dmatxdesc = 0;
     for(i = 0; i < ETH_TXBUFNB; i++)
     {
@@ -141,9 +185,9 @@ void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef *pheth)
             break;
         }
     }
-    ptpts_t time;
     eth_ptpts_get(&time, dmatxdesc);
-    myip_ptpd_save_t3(&time);
+    myip_ptpd_save_ts(&time);
+#endif
 }
 #endif
 

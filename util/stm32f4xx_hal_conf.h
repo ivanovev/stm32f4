@@ -181,7 +181,12 @@
 #define MAC_ADDR4   4
 #define MAC_ADDR5   5
 
-#define LOCAL_IP_ADDR 0xC0A80001
+#define IP_ADDR0    0xC0
+#define IP_ADDR1    0xA8
+#define IP_ADDR2    0x00
+#define IP_ADDR3    0x01
+
+#define IP_ADDR32   IP_ADDR3 | (IP_ADDR2 << 8) | (IP_ADDR1 << 16) | (IP_ADDR0 << 24)
 
 /* Definition of the Ethernet driver buffers size and count */   
 #define ETH_RX_BUF_SIZE                ETH_MAX_PACKET_SIZE /* buffer size for receive               */

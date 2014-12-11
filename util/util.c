@@ -25,6 +25,12 @@ inline uint8_t myisdigit(char c)
     return (('0' <= c) && (c <= '9'));
 }
 
+inline uint8_t myisxdigit(char c)
+{
+    return (('0' <= c) && (c <= '9')) || (('A' <= c) && (c <= 'F')) || (('a' <= c) && (c <= 'f'));
+}
+
+
 #if 0
 unsigned int mr(unsigned int addr)
 {
@@ -85,7 +91,9 @@ uint32_t htoi(char *myArray)
 {
     unsigned int tempInt=0, tmp = 1;
     int tempArray[8];
-    int i, n = mystrnlen(myArray, 8);
+    int i = 0, n = 0;
+    for(n = 0; myisxdigit(myArray[n]); n++);
+    if(n > 8) n = 8;
     for(i = 0; i < n; tempArray[i++] = 0);
 
     // we are setting hex value to lone ints
@@ -245,13 +253,24 @@ char* mystrncpy(char *dest, const char *src, uint32_t n)
     return dest;
 }
 
-void* mymemcpy(void* dest, const void* src, uint32_t n)
+void* mymemcpy(void *dest, const void *src, uint32_t n)
 {
     char* dst8 = (char*)dest;
     char* src8 = (char*)src;
     while (n--)
         *dst8++ = *src8++;
     return dest;
+}
+
+int mymemcmp(const void *s1, const void *s2, uint32_t n)
+{
+    int v = 0;
+    uint8_t *p1 = (uint8_t*)s1;
+    uint8_t *p2 = (uint8_t*)s2;
+    while(n-- > 0 && v == 0) {
+        v = *(p1++) - *(p2++);
+    }
+    return v;
 }
 
 uint32_t mysnprintf(char *buf, uint32_t sz, const char *fmt, ...)
@@ -379,6 +398,14 @@ uint8_t* mymemchr(const uint8_t *s, uint8_t c, uint32_t n)
         } while (--n != 0);
     }
     return 0;
+}
+
+void* mymemset(void *s, int c, uint32_t n)
+{
+    uint8_t *p = s;
+    while(n--)
+        *p++ = (uint8_t)c;
+    return s;
 }
 
 uint16_t io_recv_str(char *buf)

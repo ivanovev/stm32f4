@@ -31,7 +31,7 @@ void myip_telnetd_init(void)
     enqueue_str(&tds.qo, telnetd_prompt, sizeof(telnetd_prompt));
 }
 
-uint16_t myip_telnetd_io(uint8_t *data, uint16_t sz)
+uint16_t myip_telnetd_con_handler(uint8_t *data, uint16_t sz)
 {
 #ifndef ENABLE_PCL
     if(!mystrncmp((char*)data, "exit", 4))
@@ -45,6 +45,7 @@ uint16_t myip_telnetd_io(uint8_t *data, uint16_t sz)
             enqueue_str(&tds.qo, telnetd_prompt, sizeof(telnetd_prompt));
     }
 #else
+    //dbg_send_int2("telnetd_io_sz", sz);
     uint16_t i;
     for(i = 0; i < sz; i++)
     {

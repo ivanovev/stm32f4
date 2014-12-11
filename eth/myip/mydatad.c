@@ -1,6 +1,6 @@
 
+#include "eth/eth.h"
 #include "mydatad.h"
-#include "uart/uart.h"
 
 #define DATAD_IDLE 0
 
@@ -45,11 +45,9 @@ uint16_t myip_datad_io(uint8_t *data, uint16_t sz)
         {
             uint8_t eof[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
             flash_write_array(dds.start, eof, sizeof(eof));
-            //uart_send_hex2("myip_datad_io.end_ok", dds.start);
             dds.state = DATAD_IDLE;
             if(dds.reset)
             {
-                //uart_send_hex2("myip_datad_io.reset", dds.reset);
                 reset = dds.reset;
             }
             else
@@ -76,8 +74,6 @@ uint16_t myip_datad_io_flash_rx(uint32_t sz, uint32_t offset, uint8_t reset)
     dds.end = dds.start + sz;
     dds.state = DATAD_FLASH_RX;
     dds.reset = reset;
-    //uart_send_hex2("myip_datad_io.start", dds.start);
-    //uart_send_hex2("myip_datad_io.end", dds.end);
     return sz;
 }
 #endif

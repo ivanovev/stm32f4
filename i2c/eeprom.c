@@ -52,25 +52,50 @@ uint16_t eeprom_read_data(uint16_t addr, uint8_t *data, uint16_t sz)
     return sz;
 }
 
-#define EEPROM_IPADDR_PAGE 0x1FFC
+#define EEPROM_IPADDR_PAGE      0x1FFC
+#define EEPROM_MACADDR_PAGE     0x1FF6
+#define EEPROM_PTP_PORT_ID_PAGE 0x1FF4
 
-uint32_t eeprom_ipaddr_read(void)
+uint32_t eeprom_ipaddr_read(uint8_t *ipaddr)
 {
-    uint8_t buf[5];
-    buf[0] = 0xFF;
-    buf[1] = 0xFF;
-    buf[2] = 0xFF;
-    buf[3] = 0xFF;
-    eeprom_read_data(EEPROM_IPADDR_PAGE, buf, 4);
-    if((buf[0] == 0xFF) || (buf[1] == 0xFF) || (buf[2] == 0xFF) || (buf[3] == 0xFF))
-        return LOCAL_IP_ADDR;
-    uint32_t ipaddr = *(uint32_t*)&buf;
-    return ipaddr;
+    uint8_t buf[4];
+    if(eeprom_read_data(EEPROM_IPADDR_PAGE, buf, 4) == 0)
+        return IP_ADDR32;
+    if(ipaddr)
+        mymemcpy(ipaddr, buf, 4);
+    uint32_t ret = *(uint32_t*)&buf;
+    ret = HTONS_32(ret);
+    dbg_send_hex2("ipaddr", ret);
+    return ret;
 }
 
-void eeprom_ipaddr_write(uint32_t ipaddr)
+void eeprom_ipaddr_write(uint8_t *ipaddr)
 {
-    uint8_t *data = (uint8_t*)&ipaddr;
-    eeprom_write_data(EEPROM_IPADDR_PAGE, data, 4);
+    eeprom_write_data(EEPROM_IPADDR_PAGE, ipaddr, 4);
 }
+
+void eeprom_macaddr_read(uint8_t *macaddr)
+{
+    uint8_t buf[6];
+    if(eeprom_read_data(EEPROM_MACADDR_PAGE, buf, 6) == 0)
+        return;
+    mymemcpy(macaddr, buf, 6);
+}
+
+void eeprom_macaddr_write(uint8_t *macaddr)
+{
+    eeprom_write_data(EEPROM_MACADDR_PAGE, macaddr, 6);
+}
+
+#ifdef ENABLE_PTP
+void eeprom_ptp_port_id_read(uint16_t *port_id)
+{
+    eeprom_read_data(EEPROM_PTP_PORT_ID_PAGE, (uint8_t*)port_id, 2);
+}
+
+void eeprom_ptp_port_id_write(uint8_t *port_id)
+{
+    eeprom_write_data(EEPROM_PTP_PORT_ID_PAGE, (uint8_t*)port_id, 2);
+}
+#endif
 

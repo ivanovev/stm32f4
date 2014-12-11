@@ -6,13 +6,38 @@
 #include "stddef.h"
 
 #include <main.h>
+#ifdef ENABLE_GPIO
 #include "gpio/gpio.h"
+#endif
+
+#ifdef ENABLE_FLASH
 #include "flash/flash.h"
+#endif
+
+#ifdef ENABLE_PCL
 #include "pcl/pcl.h"
+#endif
+
+#ifdef ENABLE_TIM
 #include "tim/tim.h"
+#endif
+
+#ifdef ENABLE_I2C
 #include "i2c/i2c.h"
+#endif
+
+#ifdef ENABLE_UART
 #include "uart/uart.h"
+#endif
+
+#ifdef ENABLE_VFD
 #include "vfd/vfd.h"
+#endif
+
+#ifdef ENABLE_RNG
+#include "rng/rng.h"
+#endif
+
 #ifdef ENABLE_ETH
 #include "eth/eth.h"
 #endif
@@ -24,9 +49,9 @@ extern void usb_init();
 #define RESET_FWUPG 2
 #define RESET_PCLUPD 3
 
-void myinit(void);
-void mydeinit(void);
-void uptime(char *buf, uint16_t sz);
+void        myinit(void);
+void        mydeinit(void);
+uint32_t    uptime(void);
 
 #endif
 

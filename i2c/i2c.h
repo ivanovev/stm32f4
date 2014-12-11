@@ -3,6 +3,7 @@
 #define __I2C_H__
 
 #include <main.h>
+#include "i2c/eeprom.h"
 
 #ifdef BOARD_MY1
 #define I2Cn 1

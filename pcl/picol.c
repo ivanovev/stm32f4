@@ -94,7 +94,7 @@ int picolParseVar(picolParser *p) {
     if(COLONED(p->p)) {p->p += 2; p->len -= 2;}
     /*  while(isalnum(*p->p) || strchr("()_",*p->p)) { p->p++; p->len--; }*/
 #if 1
-    while(isalnum(*p->p) || *p->p == '_' || *p->p=='('||*p->p==')') {
+    while(myisalnum(*p->p) || *p->p == '_' || *p->p=='('||*p->p==')') {
         if(*p->p=='(') parened = 1;
         p->p++; p->len--;
     }
@@ -143,6 +143,8 @@ void picolInitInterp(picolInterp *i) {
     i->level    = 0;
     i->commands = 0;
     i->callframe = mycalloc(1,sizeof(picolCallFrame));
+    i->ass = 0;
+    i->wait = 0;
 }
 picolCmd* picolGetCmd(picolInterp *i, char *name) {
     picolCmd *c;
@@ -184,7 +186,7 @@ picolVar *picolGetVar2(picolInterp *i, char *name, int glob) {
     int  global = COLONED(name);
     //char buf[MAXSTR], buf2[MAXSTR], *cp, *cp2;
     if(global || glob) {
-        picolCallFrame *c = &i->callframe;
+        picolCallFrame *c = i->callframe;
         while(c->parent) c = c->parent;
         v = c->vars;
         if(global) name += 2;  /* skip the "::" */
@@ -261,7 +263,7 @@ int picolGetToken(picolInterp *i, picolParser *p) {
 }
 #define picolEval(_i,_t)  picolEval2(_i,_t,1)
 #define picolSubst(_i,_t) picolEval2(_i,_t,0)
-int picolEval2(picolInterp *i, char *t, int mode) { /*----------- EVAL! */
+int picolEval2(picolInterp *i, const char *t, int mode) { /*----------- EVAL! */
     /* mode==0: subst only, mode==1: full eval */
     picolParser p;
     char        buf[MAXSTR], tmp[MAXSTR];

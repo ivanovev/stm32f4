@@ -7,7 +7,8 @@ int main(void)
     myinit();
     //led_on();
     //eeprom_ipaddr_write(0x01020304);
-    uint32_t ipaddr = eeprom_ipaddr_read();
+    uint8_t ipaddr8[4];
+    uint32_t ipaddr = eeprom_ipaddr_read(ipaddr8);
     for (;;)
     {
         i2c_send1();

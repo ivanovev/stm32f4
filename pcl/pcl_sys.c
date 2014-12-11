@@ -4,31 +4,8 @@
 #include "util/version.h"
 #include "util/heap1.h"
 
-#ifdef ENABLE_ETH
-#include "eth/eth.h"
-#include "eth/myip/mytcp.h"
-extern TCP_CON tcp_con;
-extern volatile uint8_t reset;
-#endif
-
-#ifdef ENABLE_I2C
-#include "i2c/eeprom.h"
-#endif
-
 #ifdef ENABLE_FLASH
 #include "flash/flash.h"
-#endif
-
-#ifdef ENABLE_ETH
-COMMAND(exit) {
-    tcp_con.state = TCP_CON_CLOSE;
-    return picolSetIntResult(i, 0);
-}
-COMMAND(reset) {
-    tcp_con.state = TCP_CON_CLOSE;
-    reset = RESET_REBOOT;
-    return picolSetIntResult(i, 0);
-}
 #endif
 
 int32_t pcl_get_chunksz(uint8_t *ptr, int32_t fsz)
@@ -139,65 +116,16 @@ COMMAND(sys) {
     {
         return picolSetIntResult(i, version_hw());
     }
-    if(SUBCMD1("ipaddr"))
-    {
-        uint32_t ipaddr = 0;
-        if(argc == 2)
-        {
-#ifdef ENABLE_I2C
-            uint32_t ipaddr = eeprom_ipaddr_read();
-#else
-            uint32_t ipaddr = LOCAL_IP_ADDR;
-#endif
-            uint8_t *ipaddr8 = (uint8_t*)&ipaddr;
-            mysnprintf(buf, sizeof(buf), "%d.%d.%d.%d", ipaddr8[3], ipaddr8[2], ipaddr8[1], ipaddr8[0]);
-            return picolSetResult(i, buf);
-        }
-        if(argc == 3)
-        {
-            //ipaddr = 
-            uint8_t j, k, ii;
-            char *a = argv[2];
-            for(j = 0, k = 0, ii = 3; j <= 16; j++)
-            {
-                if(a[j] == 0)
-                {
-                    ipaddr |= (str2int(&(a[k])) << (8*ii--));
-                    break;
-                }
-                if(a[j] == '.')
-                {
-                    ipaddr |= (str2int(&(a[k])) << (8*ii--));
-                    k = j + 1;
-                }
-            }
-#ifdef ENABLE_I2C
-            eeprom_ipaddr_write(ipaddr);
-#endif
-            return picolSetHex4Result(i, ipaddr);
-        }
-    }
     if(SUBCMD1("uptime"))
     {
-        format_time(buf, sizeof(buf), HAL_GetTick()/1000);
+        format_time(buf, sizeof(buf), uptime());
         return picolSetResult(i, buf);
     }
-#ifdef ENABLE_PTP
-    if(SUBCMD1("ptptime"))
-    {
-        format_time(buf, sizeof(buf), eth_ptpclk_seconds());
-        return picolSetResult(i, buf);
-    }
-#endif
     return PICOL_ERR;
 }
 
 void pcl_sys_init(picolInterp *i)
 {
-#ifdef ENABLE_ETH
-    picolRegisterCmd(i, "exit", picol_exit, 0);
-    picolRegisterCmd(i, "reset", picol_reset, 0);
-#endif
 #ifdef ENABLE_FLASH
     picolRegisterCmd(i, "reload", picol_reload, 0);
     //pcl_load(i, USER_FLASH_MID_ADDR);

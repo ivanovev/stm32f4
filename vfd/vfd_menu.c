@@ -176,26 +176,38 @@ void vfd_menu_init(void)
     if(pmain)
         return;
 
+    vfd_menu_item_t *item, *psys, *pparent;
     pstate = mycalloc(1, sizeof(vfd_menu_state_t));
     pmain = vfd_menu_append(pmain, "Control", 0);
     pstate->sel = pmain;
     pstate->scroll = pmain;
     vfd_menu_append(pmain, "Monitor", 0);
-    vfd_menu_item_t *psys = vfd_menu_append(pmain, "System", 0);
+    psys = vfd_menu_append(pmain, "System", 0);
 #ifdef ENABLE_ETH
-    vfd_menu_append_child(psys, "IP address", "sys ipaddr");
+    pparent = vfd_menu_append_child(psys, "Ethernet", 0);
+    vfd_menu_append_child(pparent, "IP address", "sys ipaddr");
+    vfd_menu_append_child(pparent, "MAC address", "sys macaddr");
+#ifdef ENABLE_PTP
+    pparent = vfd_menu_append_child(psys, "PTP", 0);
+    item = vfd_menu_append_child(pparent, "Time", "sys ptp time");
+    item->edit->flags |= VFD_FLAG_TIM_UPD;
+    item = vfd_menu_append_child(pparent, "Offset", "sys ptp offset");
+    item->edit->flags |= VFD_FLAG_TIM_UPD;
+    item = vfd_menu_append_child(pparent, "Clock id", "sys ptp clkid");
+    item = vfd_menu_append_child(pparent, "Port id", "sys ptp portid");
+    item = vfd_menu_append_child(pparent, "PPS", "sys ptp pps");
+    vfd_menu_make_edit_int(item, 0, 15, 1, VFD_FLAG_IMMEDIATE);
 #endif
-    vfd_menu_append_child(psys, "SW version", "sys date");
-    vfd_menu_append_child(psys, "HW version", "sys hw");
-    vfd_menu_item_t *item = vfd_menu_append_child(psys, "Brightness", "vfd brightness");
+#endif
+    pparent = vfd_menu_append_child(psys, "Version", 0);
+    vfd_menu_append_child(pparent, "SW", "sys date");
+    vfd_menu_append_child(pparent, "HW", "sys hw");
+
+    item = vfd_menu_append_child(psys, "Brightness", "vfd brightness");
     vfd_menu_make_edit_int(item, 1, 8, 1, VFD_FLAG_IMMEDIATE);
     item = vfd_menu_append_child(psys, "Uptime", "sys uptime");
     item->edit->flags |= VFD_FLAG_TIM_UPD;
-#ifdef ENABLE_PTP
-    vfd_menu_item_t *pptp = vfd_menu_append_child(psys, "PTP", 0);
-    item = vfd_menu_append_child(pptp, "PTP time", "sys ptptime");
-    item->edit->flags |= VFD_FLAG_TIM_UPD;
-#endif
+
     vfd_cls();
     vfd_cp866();
     vfd_brightness(1);

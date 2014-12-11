@@ -15,7 +15,6 @@ int main(void)
     io_send_str_ptr = telnetd_send_str;
     for (;;)
     {
-        //eth_io();
 #ifdef ENABLE_PCL
         pcl_io();
 #endif
@@ -23,11 +22,13 @@ int main(void)
         vfd_upd();
 #endif
         eth_io();
+#if 0
         if(myip_tcp_con_closed())
         {
             if((reset == RESET_FWUPG) || (reset == RESET_REBOOT))
                 break;
         }
+#endif
     }
     mydeinit();
     dbg_send_int2("reset", reset);

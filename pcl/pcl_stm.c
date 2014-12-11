@@ -192,29 +192,6 @@ COMMAND(uart) {
 }
 #endif
 
-#ifdef ENABLE_ETH
-COMMAND(mdio) {
-    ARITY(argc >= 2, "mdio ...");
-    uint32_t reg, value = 0;
-    reg = str2int(argv[1]);
-    if(argc == 2)
-    {
-        value = mdio_read(reg);
-    }
-    return picolSetHex4Result(i,value);
-}
-
-COMMAND(eth) {
-    ARITY(argc >= 2, "eth subcmd ...");
-    if(SUBCMD1("reset")) {
-        eth_reset();
-    }
-    else
-        return PICOL_ERR;
-    return PICOL_OK;
-}
-#endif
-
 #ifdef ENABLE_I2C
 COMMAND(eeprom) {
     ARITY(argc > 3, "eeprom read|write addr ...");
@@ -257,10 +234,6 @@ void pcl_stm_init(picolInterp *i)
 #endif
 #ifdef ENABLE_UART
     picolRegisterCmd(i, "uart", picol_uart, 0);
-#endif
-#ifdef ENABLE_ETH
-    picolRegisterCmd(i, "mdio", picol_mdio, 0);
-    picolRegisterCmd(i, "eth", picol_eth, 0);
 #endif
 #ifdef ENABLE_I2C
     picolRegisterCmd(i, "eeprom", picol_eeprom, 0);

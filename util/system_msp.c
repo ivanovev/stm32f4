@@ -21,6 +21,11 @@ void myinit(void)
 #endif
 #endif
 
+#ifdef ENABLE_RNG
+#pragma message "rng_init()"
+    rng_init();
+#endif
+
 #ifdef ENABLE_UART
 #pragma message "uart_init()"
     uart_init();
@@ -60,7 +65,6 @@ void myinit(void)
 #pragma message "vfd_init()"
     vfd_init();
 #endif
-
 }
 
 void mydeinit(void)
@@ -80,5 +84,15 @@ void mydeinit(void)
 #pragma message "vfd_deinit()"
     vfd_deinit();
 #endif
+
+#ifdef ENABLE_RNG
+#pragma message "rng_deinit()"
+    rng_deinit();
+#endif
+}
+
+uint32_t uptime(void)
+{
+    return HAL_GetTick()/1000;
 }
 
