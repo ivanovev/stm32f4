@@ -29,7 +29,6 @@
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_conf.h"
-#include "uart/uart.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -122,9 +121,7 @@ __ALIGN_BEGIN uint8_t USBD_StrDesc[USBD_MAX_STR_DESC_SIZ] __ALIGN_END;
 uint8_t *USBD_HID_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
 #if 0
-#ifdef HAL_UART_MODULE_ENABLED
-    uart_send_str("USBD_HID_DeviceDescriptor", 1);
-#endif
+    dbg_send_str3("USBD_HID_DeviceDescriptor", 1);
 #endif
     *length = sizeof(USBD_DeviceDesc);
     return USBD_DeviceDesc;

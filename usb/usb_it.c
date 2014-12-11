@@ -31,7 +31,6 @@
 #include "usb_it.h"
 #include "stm32f4xx_hal_pcd.h"
 #include "usbd_def.h"
-#include "uart/uart.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

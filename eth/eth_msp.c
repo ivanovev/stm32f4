@@ -2,7 +2,6 @@
 #include <main.h>
 #include "eth/eth.h"
 #include "eth/mdio.h"
-#include "uart/uart.h"
 
 extern void eth_reset(void);
 extern ETH_HandleTypeDef heth;

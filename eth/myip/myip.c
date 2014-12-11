@@ -1,12 +1,14 @@
 
 #include "eth.h"
-#include "mytelnetd.h"
 #include "mydatad.h"
 #ifdef ENABLE_ICMP
 #include "icmp/icmp.h"
 #endif
 #ifdef ENABLE_PTP
 #include "ptp/myptpd.h"
+#endif
+#ifdef ENABLE_PTP
+#include "telnet/mytelnetd.h"
 #endif
 
 ARP_ENTRY arp_table[ARP_TABLE_SZ];
@@ -42,7 +44,9 @@ void myip_init(void)
     myip_con_add(myip_ptpd_frm_handler, 0, UDP_PROTO, 0);
 #endif
     myip_tcp_init();
+#ifdef ENABLE_TELNET
     myip_con_add(myip_tcp_frm_handler, myip_telnetd_con_handler, TCP_PROTO, TCP_PORT_TELNET);
+#endif
     //myip_con_add(dbg_con_handler, UDP_PROTO);
     //myip_con_add(myip_datad_io, TCP_PROTO);
 }

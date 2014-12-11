@@ -1,7 +1,9 @@
 
 #include "mytcp.h"
+
+#ifdef ENABLE_TELNET
 #include "mytelnetd.h"
-#include "uart/uart.h"
+#endif
 
 #define TCP_FIN 0x01
 #define TCP_SYN 0x02
@@ -33,7 +35,9 @@ void myip_tcp_init(void)
     tcp_con.seqn = 0;
     tcp_con.ackn = 0;
     tcp_con.rxseqn0 = 0;
+#ifdef ENABLE_TELNET
     myip_telnetd_init();
+#endif
 }
 
 uint16_t myip_tcp_data(TCP_FRAME *tfrm, uint16_t sz, uint8_t **ptr)
@@ -101,7 +105,6 @@ void myip_make_tcp_frame(TCP_FRAME *tfrm, TCP_CON *con)
 uint16_t myip_tcp_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
 {
     TCP_FRAME *tfrm = (TCP_FRAME*)frm;
-    //uart_send_int2("myip_tcp_con_handler", sz);
     if (con_index >= CON_TABLE_SZ)
         return 0;
     uint8_t flags = 0;
@@ -139,7 +142,9 @@ uint16_t myip_tcp_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
         tcp_con.state = TCP_CON_LISTEN;
         myip_new_tcp_con(tfrm, &tcp_con);
         myip_make_tcp_frame(tfrm, &tcp_con);
+#ifdef ENABLE_TELNET
         myip_telnetd_init();
+#endif
 
         tcp_con.seqn += 1;
         tfrm->flags |= TCP_ACK;
@@ -181,8 +186,6 @@ uint16_t myip_tcp_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
         tcp_con.ackn += 1;
     }
 #endif
-    //if(sz)
-        //uart_send_int2("myip_tcp_con_handler.psh_sz", sz);
     if(tcp_con.state == TCP_CON_CLOSED)
         return 0;
     if(con_table[con_index].port != tcp_con.local_port)

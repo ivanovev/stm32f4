@@ -1,7 +1,6 @@
 
 #include "eth/eth.h"
 #include "mytelnetd.h"
-#include "uart/uart.h"
 
 #define STATE_NORMAL 0
 #define STATE_IAC    1
@@ -45,7 +44,6 @@ uint16_t myip_telnetd_con_handler(uint8_t *data, uint16_t sz)
             enqueue_str(&tds.qo, telnetd_prompt, sizeof(telnetd_prompt));
     }
 #else
-    //dbg_send_int2("telnetd_io_sz", sz);
     uint16_t i;
     for(i = 0; i < sz; i++)
     {

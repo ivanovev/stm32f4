@@ -2,7 +2,9 @@
 #include <main.h>
 #include "eth/eth.h"
 #include "eth/myip/mytcp.h"
-#include "eth/myip/mytelnetd.h"
+#ifdef ENABLE_TELNET
+#include "eth/myip/telnet/mytelnetd.h"
+#endif
 #include "core_cm4.h"
 #include "flash/flash.h"
 
@@ -11,8 +13,10 @@ volatile uint8_t reset = 0;
 int main(void)
 {
     myinit();
+#ifdef ENABLE_TELNET
     io_recv_str_ptr = telnetd_recv_str;
     io_send_str_ptr = telnetd_send_str;
+#endif
     for (;;)
     {
 #ifdef ENABLE_PCL

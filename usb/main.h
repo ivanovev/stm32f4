@@ -9,9 +9,6 @@
 #include "usb.h"
 #include "util/macro.h"
 #include "util/util.h"
-#ifdef HAL_UART_MODULE_ENABLED
-#include "uart/uart.h"
-#endif
 
 #define TIMn                3
 #define TIMx_INTERVAL       5

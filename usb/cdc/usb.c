@@ -1,6 +1,5 @@
 
 #include "usb.h"
-#include "uart/uart.h"
 #include "tim/tim.h"
 
 USBD_HandleTypeDef  USBD_Device;
