@@ -34,6 +34,7 @@ inline uint8_t myisspace(char c);
 inline uint8_t myisnewline(char c);
 inline uint8_t myisalnum(char c);
 inline uint8_t myisdigit(char c);
+inline uint8_t myisxdigit(char c);
 uint8_t     myisempty(char *str);
 
 int         mystrncmp(const char* s1, const char *s2, uint32_t n);
@@ -74,16 +75,16 @@ void io_echo(void);
 
 #ifdef __arm__
 #ifdef ENABLE_UART
-#define dbg_send_str(a,b) uart_send_str(a,b)
-#define dbg_send_str2(a) uart_send_str2(a)
-#define dbg_send_str3(a,b) uart_send_str3(a,b)
-#define dbg_send_str4(a) uart_send_str4(a)
-#define dbg_send_int(a) uart_send_int(a)
-#define dbg_send_int2(a,b) uart_send_int2(a,b)
-#define dbg_send_hex(a) uart_send_hex(a)
-#define dbg_send_hex2(a,b) uart_send_hex2(a,b)
-#define dbg_send_hex3(a,b,c) uart_send_hex3(a,b,c)
-#define dbg_send_hex4(a,b,c) uart_send_hex4(a,b,c)
+#define dbg_send_str(a,b) uart_send_str((char*)a,b)
+#define dbg_send_str2(a) uart_send_str2((char*)a)
+#define dbg_send_str3(a,b) uart_send_str3((char*)a,b)
+#define dbg_send_str4(a) uart_send_str4((char*)a)
+#define dbg_send_int(a) uart_send_int((char*)a)
+#define dbg_send_int2(a,b) uart_send_int2((char*)a,b)
+#define dbg_send_hex(a) uart_send_hex((char*)a)
+#define dbg_send_hex2(a,b) uart_send_hex2((char*)a,b)
+#define dbg_send_hex3(a,b,c) uart_send_hex3(char(a),b,c)
+#define dbg_send_hex4(a,b,c) uart_send_hex4((char*)a,b,c)
 #else
 #define dbg_send_str(a,b) 0
 #define dbg_send_str2(a) 0

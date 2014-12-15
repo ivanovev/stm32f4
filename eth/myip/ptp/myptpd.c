@@ -511,8 +511,8 @@ static void prepare_ptp_frm(ETH_FRAME *frm, uint8_t msg_id, uint16_t msg_len)
         dst_ip_addr = p2p_ipaddr;
     myip_make_ip_frame((IP_FRAME*)frm, dst_ip_addr, IPH_SZ + UDPH_SZ + msg_len, ip_counter++, UDP_PROTO);
     mymemcpy(p->dst, mcast_macaddr, 6);
-    ufrm->p.src_port = HTONS_16(UDP_PORT_PTP_EVT);
-    ufrm->p.dst_port = HTONS_16(UDP_PORT_PTP_EVT);
+    ufrm->p.src_port = HTONS_16(PTP_EVT_PORT);
+    ufrm->p.dst_port = HTONS_16(PTP_EVT_PORT);
     ufrm->p.ttl = 1;
     ufrm->len = HTONS_16(UDPH_SZ + msg_len);
     ufrm->cksum = 0;

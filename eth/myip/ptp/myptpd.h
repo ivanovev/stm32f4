@@ -17,6 +17,9 @@
 #define PTP_P2P_MASTER  (PTP_P2P | PTP_MASTER)
 #define PTP_P2P_SLAVE   (PTP_P2P | PTP_SLAVE)
 
+#define PTP_EVT_PORT    319
+#define PTP_MSG_PORT    320
+
 enum
 {
     CTRL_SYNC = 0x00,

@@ -9,7 +9,6 @@
 #ifdef ENABLE_ETH
 #include "eth/mdio.h"
 #include "eth/eth.h"
-#include "eth/myip/mydatad.h"
 #endif
 
 #ifdef ENABLE_FLASH
@@ -66,66 +65,44 @@ static USART_TypeDef *get_uartx(char *a)
 
 #ifdef ENABLE_FLASH
 COMMAND(flash) {
-    ARITY(argc >= 2, "flash mr|mw addr ...");
-    uint32_t *ptr = (uint32_t*)str2int(argv[2]);
+    ARITY(argc >= 2, "flash cmd [addr]");
     uint32_t sz = 0;
 #if 1
+    if(argc >= 3)
+    {
+        uint32_t *ptr = (uint32_t*)str2int(argv[2]);
+        if(SUBCMD1("mr"))
+            return picolSetHex4Result(i, *ptr);
+        if(argc >= 4)
+        {
+            if(SUBCMD1("mw"))
+                return picolSetIntResult(i, flash_write((uint32_t)ptr, str2int(argv[3])));
+        }
+    }
     if(SUBCMD1("unlock"))
         return picolSetHexResult(i, HAL_FLASH_Unlock());
     if(SUBCMD1("lock"))
         return picolSetHexResult(i, HAL_FLASH_Lock());
-    if(SUBCMD1("mr"))
-        return picolSetHexResult(i, *ptr);
-    if(SUBCMD1("mw"))
-        return picolSetIntResult(i, flash_write((uint32_t)ptr, str2int(argv[3])));
     if(SUBCMD1("fsz0"))
-    {
         return picolSetIntResult(i, flash_fsz0());
-    }
     if(SUBCMD1("fsz1"))
         return picolSetIntResult(i, flash_fsz1());
     if(SUBCMD1("crc0"))
     {
         if(argc >= 3)
             sz = str2int(argv[2]);
-        return picolSetHexResult(i, flash_crc0(sz));
+        return picolSetHex4Result(i, flash_crc0(sz));
     }
     if(SUBCMD1("crc1"))
     {
         if(argc >= 3)
             sz = str2int(argv[2]);
-        return picolSetHexResult(i, flash_crc1(sz));
+        return picolSetHex4Result(i, flash_crc1(sz));
     }
     if(SUBCMD1("erase1"))
         return picolSetIntResult(i, flash_erase1());
     if(SUBCMD1("pclupd"))
-        return picolSetHexResult(i, pcl_load());
-#endif
-#ifdef ENABLE_ETH
-    if(SUBCMD1("tx0"))
-    {
-        sz = flash_fsz0();
-        myip_datad_io_flash_tx(sz, 0);
-        return picolSetIntResult(i, sz);
-    }
-    if(SUBCMD1("tx1"))
-    {
-        sz = flash_fsz1();
-        myip_datad_io_flash_tx(sz, USER_FLASH_SZ/2);
-        return picolSetIntResult(i, sz);
-    }
-    if(SUBCMD1("rx1"))
-    {
-        uint32_t sz = str2int(argv[2]);
-        flash_erase1();
-        if(SUBCMD3("fw"))
-            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, RESET_FWUPG);
-        else if(SUBCMD3("pcl"))
-            myip_datad_io_flash_rx(sz, USER_FLASH_SZ/2, 0);
-        else
-            return PICOL_ERR;
-        return picolSetResult(i, argv[2]);
-    }
+        return picolSetHex4Result(i, pcl_load());
 #endif
     return PICOL_ERR;
 }
@@ -207,10 +184,10 @@ COMMAND(eeprom) {
         {
             if(j)
                 buf[k++] = ' ';
-            itoh(buf1[j], &(buf[k]), 1);
+            itoh(buf1[j], (char*)&(buf[k]), 1);
             k += 4;
         }
-        return picolSetResult(i, buf);
+        return picolSetResult(i, (char*)buf);
     }
     if(SUBCMD1("write")) {
         sz = argc - 3;

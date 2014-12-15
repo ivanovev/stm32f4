@@ -6,6 +6,8 @@
 #include "mytcp.h"
 #include "util/queue.h"
 
+#define TELNET_PORT     23
+
 #pragma pack(1)
 typedef struct {
     Queue qi;

@@ -21,22 +21,26 @@ void flash_erase_img1(void)
 
 static uint32_t flash_fsz(uint32_t *start, uint32_t *end)
 {
+    //dbg_send_hex2("flash_start", (uint32_t)start);
+    //dbg_send_hex2("flash_end", (uint32_t)end);
     static uint32_t start_addr = 0;
     if(start_addr == 0)
         start_addr = (uint32_t)start;
     if((end - start) <= 4)
     {
-        //uart_send_hex2("start", start);
-        //uart_send_hex2("end", end);
+        //dbg_send_hex2("start", (uint32_t)start);
+        //dbg_send_hex2("end", (uint32_t)end);
         uint8_t *ptr8 = (uint8_t*)end + 1;
-        while(--ptr8 > start)
+        //dbg_send_hex2("ptr8", (uint32_t)ptr8);
+        while(--ptr8 > (uint8_t*)start)
         {
             if(*(ptr8-1) != 0xFF)
                 break;
         }
-        end = ptr8 - start_addr;
+        //dbg_send_hex2("ptr8", (uint32_t)ptr8);
+        uint32_t ret = (uint32_t)ptr8 - start_addr;
         start_addr = 0;
-        return end;
+        return ret;
     }
     uint32_t *mid = (uint32_t*)(((uint32_t)start + (uint32_t)end)/2);
     if((*mid == 0xFFFFFFFF) && (*(end-1) == 0xFFFFFFFF))
@@ -47,26 +51,21 @@ static uint32_t flash_fsz(uint32_t *start, uint32_t *end)
 
 uint32_t flash_fsz0(void)
 {
-    return flash_fsz(USER_FLASH_START_ADDR, USER_FLASH_MID_ADDR - 0x100);
+    return flash_fsz((uint32_t*)USER_FLASH_START_ADDR, (uint32_t*)USER_FLASH_MID_ADDR - 0x100);
 }
 
 uint32_t flash_fsz1(void)
 {
-    return flash_fsz(USER_FLASH_MID_ADDR, USER_FLASH_END_ADDR - 0x100);
+    //dbg_send_str3("flash_fsz1", 1);
+    return flash_fsz((uint32_t*)USER_FLASH_MID_ADDR, (uint32_t*)USER_FLASH_END_ADDR - 0x100);
 }
 
 #if 1
 uint32_t flash_write(uint32_t addr, uint32_t data)
 {
-    uint32_t status = 0;
     HAL_FLASH_Unlock();
     if((USER_FLASH_START_ADDR <= addr) && (addr <= (USER_FLASH_END_ADDR - 4)))
-    {
-        status = HAL_FLASH_Program(TYPEPROGRAM_WORD, addr & 0xFFFFFFFC, data);
-    }
-    else
-        status = HAL_ERROR;
-    HAL_FLASH_Lock();
+        HAL_FLASH_Program(TYPEPROGRAM_WORD, addr & 0xFFFFFFFC, data);
     return 0;
 }
 #endif
@@ -95,20 +94,24 @@ uint32_t flash_erase1(void)
         return SectorError;
     if(FLASH_WaitForLastOperation((uint32_t)HAL_FLASH_TIMEOUT_VALUE) != HAL_OK)
         return 1;
-    HAL_FLASH_Lock();
 
     return 0;
 }
 
 uint32_t flash_write_array(uint32_t addr, uint8_t *data, uint16_t sz)
 {
+    if((addr < USER_FLASH_START_ADDR) || (addr > USER_FLASH_END_ADDR))
+    {
+        dbg_send_hex2("bad addr", addr);
+        return 0;
+    }
     uint16_t i;
     for(i = 0; i < sz; i++)
     {
         if(HAL_FLASH_Program(TYPEPROGRAM_BYTE, addr + i, data[i]) != HAL_OK)
-            return 1;
+            return i;
     }
-    return 0;
+    return sz;
 }
 
 uint32_t revbit(uint32_t data)

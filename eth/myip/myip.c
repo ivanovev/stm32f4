@@ -1,6 +1,5 @@
 
 #include "eth.h"
-#include "mydatad.h"
 #ifdef ENABLE_ICMP
 #include "icmp/icmp.h"
 #endif
@@ -9,6 +8,9 @@
 #endif
 #ifdef ENABLE_PTP
 #include "telnet/mytelnetd.h"
+#endif
+#ifdef ENABLE_TFTP
+#include "tftp/tftpd.h"
 #endif
 
 ARP_ENTRY arp_table[ARP_TABLE_SZ];
@@ -39,16 +41,19 @@ void myip_init(void)
 #endif
 #ifdef ENABLE_PTP
     myip_ptpd_init();
-    myip_con_add(myip_ptpd_frm_handler, myip_ptpd_evt_io, UDP_PROTO, UDP_PORT_PTP_EVT);
-    myip_con_add(myip_ptpd_frm_handler, myip_ptpd_msg_io, UDP_PROTO, UDP_PORT_PTP_MSG);
+    myip_con_add(myip_ptpd_frm_handler, myip_ptpd_evt_io, UDP_PROTO, PTP_EVT_PORT);
+    myip_con_add(myip_ptpd_frm_handler, myip_ptpd_msg_io, UDP_PROTO, PTP_MSG_PORT);
     myip_con_add(myip_ptpd_frm_handler, 0, UDP_PROTO, 0);
 #endif
     myip_tcp_init();
 #ifdef ENABLE_TELNET
-    myip_con_add(myip_tcp_frm_handler, myip_telnetd_con_handler, TCP_PROTO, TCP_PORT_TELNET);
+    myip_con_add(myip_tcp_frm_handler, myip_telnetd_con_handler, TCP_PROTO, TELNET_PORT);
+#endif
+#ifdef ENABLE_TFTP
+    myip_tftpd_init();
+    myip_con_add(myip_tftpd_frm_handler, myip_tftpd_con_handler, UDP_PROTO, TFTP_PORT);
 #endif
     //myip_con_add(dbg_con_handler, UDP_PROTO);
-    //myip_con_add(myip_datad_io, TCP_PROTO);
 }
 
 uint16_t dbg_con_handler(uint8_t *data, uint16_t sz)
@@ -296,9 +301,9 @@ uint16_t myip_udp_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
     if(data_sz)
     {
         myip_udp_update_ip_mac_port(&ufrm->p, ufrm->p.src_ip_addr, HTONS_16(ufrm->p.src_port), HTONS_16(ufrm->p.dst_port));
-        sz = UDPH_SZ + data_sz;
-        ufrm->len = HTONS_16(sz);
-        return MACH_SZ + IPH_SZ + sz;
+        ufrm->len = HTONS_16(UDPH_SZ + data_sz);
+        ufrm->p.total_len = HTONS_16(IPH_SZ + UDPH_SZ + data_sz);
+        return MACH_SZ + IPH_SZ + UDPH_SZ + data_sz;
     }
     return 0;
 }

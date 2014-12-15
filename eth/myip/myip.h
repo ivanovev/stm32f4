@@ -12,6 +12,8 @@ typedef struct
     uint16_t type;
 } preamble1;
 
+//typedef struct preamble1 MAC_HDR;
+
 typedef struct
 {
     uint8_t dst[6];
@@ -152,12 +154,7 @@ typedef struct
 #define UDP_PROTO           0x11
 
 #define UDP_PORT_DBG        1234
-#define TCP_PORT_TELNET     23
 #define TCP_PORT_DATA       8888
-#ifdef ENABLE_PTP
-#define UDP_PORT_PTP_EVT    319
-#define UDP_PORT_PTP_MSG    320
-#endif
 
 void        myip_init(void);
 void        myip_con_add(frm_handler frm_handler_ptr, con_handler con_handler_ptr, uint8_t proto, uint16_t port);
