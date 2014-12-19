@@ -48,8 +48,6 @@
 void        eth_init(void);
 void        eth_deinit(void);
 void        eth_reset(void);
-//uint16_t    eth_input(ETH_FRAME *frm);
-//void        eth_output(ETH_FRAME *frm, uint16_t sz);
 uint8_t     eth_io(void);
 
 #endif

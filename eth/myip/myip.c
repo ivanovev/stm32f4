@@ -4,40 +4,46 @@
 #include "icmp/icmp.h"
 #endif
 #ifdef ENABLE_PTP
-#include "ptp/myptpd.h"
+#include "ptp/ptpd.h"
 #endif
-#ifdef ENABLE_PTP
-#include "telnet/mytelnetd.h"
+#ifdef ENABLE_TELNET
+#include "telnet/telnetd.h"
 #endif
 #ifdef ENABLE_TFTP
 #include "tftp/tftpd.h"
 #endif
+#ifdef ENABLE_DBG
+#include "dbg/dbg.h"
+#endif
+
+#define IP_VER_IHL          0x45
+#define IP_TTL              0x80
+#define FRAG_MASK           0xFFBF
+#define FRAG_FLAG           0x0020
+
+#define ARP_HTYPE           0x0100
+#define ARP_PTYPE           0x0008
+#define ARP_HLEN            0x06
+#define ARP_PLEN            0x04
 
 ARP_ENTRY arp_table[ARP_TABLE_SZ];
 CON_ENTRY con_table[CON_TABLE_SZ];
 
 uint8_t local_ipaddr[4] = {IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3};
 uint8_t local_macaddr[6] = {MAC_ADDR0, MAC_ADDR1, MAC_ADDR2, MAC_ADDR3, MAC_ADDR4, MAC_ADDR5};
-uint16_t ip_counter = 0;
-
-uint16_t dbg_con_handler(uint8_t *data, uint16_t sz);
 
 void myip_init(void)
 {
-    uint32_t i;
-    for(i = 0; i < ARP_TABLE_SZ; i++)
-    {
-        mymemset(&arp_table[i], 0, sizeof(ARP_ENTRY));
-    }
-    for (i = 0; i < CON_TABLE_SZ; i++)
-    {
-        con_table[i].port = 0;
-        con_table[i].state = 0;
-        con_table[i].con_handler_ptr = 0;
-    }
+    mymemset(&arp_table, 0, ARP_TABLE_SZ*sizeof(ARP_ENTRY));
+    mymemset(&con_table, 0, CON_TABLE_SZ*sizeof(CON_ENTRY));
+    myip_tcp_init();
 #ifdef ENABLE_ICMP
     myip_icmp_init();
     myip_con_add(myip_icmp_frm_handler, myip_icmp_con_handler, ICMP_PROTO, 0);
+#endif
+#ifdef ENABLE_TFTP
+    myip_tftpd_init();
+    myip_con_add(myip_udp_frm_handler, myip_tftpd_con_handler, UDP_PROTO, TFTP_PORT);
 #endif
 #ifdef ENABLE_PTP
     myip_ptpd_init();
@@ -45,29 +51,13 @@ void myip_init(void)
     myip_con_add(myip_ptpd_frm_handler, myip_ptpd_msg_io, UDP_PROTO, PTP_MSG_PORT);
     myip_con_add(myip_ptpd_frm_handler, 0, UDP_PROTO, 0);
 #endif
-    myip_tcp_init();
+#ifdef ENABLE_DBG
+    myip_con_add(myip_udp_frm_handler, myip_dbg_con_handler, UDP_PROTO, DBG_PORT);
+#endif
 #ifdef ENABLE_TELNET
+    myip_telnetd_init();
     myip_con_add(myip_tcp_frm_handler, myip_telnetd_con_handler, TCP_PROTO, TELNET_PORT);
 #endif
-#ifdef ENABLE_TFTP
-    myip_tftpd_init();
-    myip_con_add(myip_tftpd_frm_handler, myip_tftpd_con_handler, UDP_PROTO, TFTP_PORT);
-#endif
-    //myip_con_add(dbg_con_handler, UDP_PROTO);
-}
-
-uint16_t dbg_con_handler(uint8_t *data, uint16_t sz)
-{
-    uint16_t i;
-    uint32_t *ptr1, *ptr2;
-    for(i = 0; i < sz; i += 4)
-    {
-        ptr1 = (uint32_t*)&data[i];
-        ptr2 = (uint32_t*)(HTONS_32(*ptr1));
-        dbg_send_hex2("addr", (uint32_t)ptr2);
-        *ptr1 = HTONS_32(*ptr2);
-    }
-    return sz;
 }
 
 void myip_con_add(frm_handler frm_handler_ptr, con_handler con_handler_ptr, uint8_t proto, uint16_t port)
@@ -80,13 +70,15 @@ void myip_con_add(frm_handler frm_handler_ptr, con_handler con_handler_ptr, uint
     i++;
 }
 
-uint16_t myip_udp_data(UDP_FRAME *ufrm, uint16_t sz, uint8_t **ptr)
+uint16_t myip_udp_data(udpfrm_t *ufrm, uint16_t sz, uint8_t **ptr)
 {
-    uint32_t tmp2 = (uint32_t)&ufrm->p.src_port;
+    iphdr_t *ip = &ufrm->ip;
+    udphdr_t *udp = &ufrm->udp;
+    uint32_t tmp2 = (uint32_t)udp->src_port;
     tmp2 += UDPH_SZ;
     *ptr = (uint8_t*)tmp2;
     if(sz)
-        return HTONS_16(ufrm->p.total_len) - IPH_SZ - UDPH_SZ;
+        return HTONS_16(ip->total_len) - IPH_SZ - UDPH_SZ;
     //return ETH_MAX_PACKET_SIZE - IPH_SZ - UDPH_SZ;
     return 0;
 }
@@ -113,68 +105,79 @@ uint16_t myip_con_find(uint16_t port, uint8_t proto)
     return i;
 }
 
-void myip_update_ip_mac_addr(preamble2 *p, const uint8_t *dst_ip_addr)
+void myip_update_mac_hdr(machdr_t *mac, const uint8_t *dst_ip_addr)
 {
     uint16_t i = myip_arp_find(dst_ip_addr);
-    mymemcpy(p->src, local_macaddr, 6);
-    mymemcpy(p->dst_ip_addr, dst_ip_addr, 4);
-    mymemcpy(p->src_ip_addr, local_ipaddr, 4);
+    mymemcpy(mac->src, local_macaddr, 6);
     if(i != ARP_TABLE_SZ)
-        mymemcpy(p->dst, arp_table[i].mac_addr, 6);
+        mymemcpy(mac->dst, arp_table[i].mac_addr, 6);
+    mac->type = ipfrm_t_TYPE;
 }
 
-void myip_make_arp_frame(ARP_FRAME *afrm, uint8_t *dst_ip_addr, uint16_t oper)
+void myip_update_ip_hdr(iphdr_t *ip, const uint8_t *dst_ip_addr, uint16_t sz, uint16_t proto)
 {
-    mymemset(&afrm->p.dst, 0xFF, 6);
-    mymemcpy(&afrm->p.src, local_macaddr, 6);
-    afrm->p.type = ARP_FRAME_TYPE;
-    afrm->htype = ARP_HTYPE;
-    afrm->ptype = ARP_PTYPE;
-    afrm->hlen = ARP_HLEN;
-    afrm->plen = ARP_PLEN;
-    afrm->oper = oper;
-    mymemcpy(&afrm->src_mac_addr, local_macaddr, 6);
-    mymemcpy(&afrm->src_ip_addr, local_ipaddr, 4);
-    mymemset(&afrm->dst_mac_addr, 0, 6);
-    mymemcpy(&afrm->dst_ip_addr, dst_ip_addr, 4);
+    static uint16_t ip_counter = 0;
+    ip->ver_ihl = IP_VER_IHL;
+    ip->dscp_ecn = 0x00;
+    ip->total_len = HTONS_16(IPH_SZ + sz);
+    //ip->id = HTONS_16(id);
+    ip->id = HTONS_16(ip_counter);
+    ip_counter++;
+    ip->frag = HTONS_16(0x4000);
+    ip->ttl = IP_TTL;
+    ip->proto = proto;
+    ip->header_cksum = 0;
+    mymemcpy(ip->dst_ip_addr, dst_ip_addr, 4);
+    mymemcpy(ip->src_ip_addr, local_ipaddr, 4);
 }
 
-void myip_make_ip_frame(IP_FRAME *ifrm, const uint8_t *dst_ip_addr, uint16_t hsz, uint16_t id, uint16_t proto)
+void myip_update_udp_hdr(udphdr_t *udp, uint16_t dst_port, uint16_t src_port, uint16_t sz)
 {
-    preamble2 *p = &ifrm->p;
-    myip_update_ip_mac_addr(p, dst_ip_addr);
-
-    p->type = IP_FRAME_TYPE;
-    p->ver_ihl = IP_VER_IHL;
-    p->dscp_ecn = 0x00;
-    p->total_len = HTONS_16(hsz);
-    p->id = HTONS_16(id);
-    p->frag = HTONS_16(0x4000);
-    p->ttl = IP_TTL;
-    p->proto = proto;
-    p->header_cksum = 0;
+    udp->dst_port = dst_port;
+    udp->src_port = src_port;
+    udp->len = HTONS_16(UDPH_SZ + sz);
+    udp->cksum = 0;
 }
 
-void myip_swap_addr(preamble3 *p)
+void myip_update_arp_hdr(arphdr_t *arp, uint8_t *dst_ip_addr, uint16_t oper)
 {
-    mymemcpy(p->dst, p->src, 6);
-    mymemcpy(p->src, local_macaddr, 6);
-    mymemcpy(p->dst_ip_addr, p->src_ip_addr, 4);
-    mymemcpy(p->src_ip_addr, local_ipaddr, 4);
-
-    uint16_t dst_port = p->dst_port;
-    p->dst_port = p->src_port;
-    p->src_port = dst_port;
+    arp->htype = ARP_HTYPE;
+    arp->ptype = ARP_PTYPE;
+    arp->hlen = ARP_HLEN;
+    arp->plen = ARP_PLEN;
+    arp->oper = oper;
+    mymemcpy(arp->dst_ip_addr, dst_ip_addr, 4);
+    uint16_t i = myip_arp_find(dst_ip_addr);
+    if(i != ARP_TABLE_SZ)
+        mymemcpy(arp->dst_mac_addr, arp_table[i].mac_addr, 6);
+    else
+        mymemset(arp->dst_mac_addr, 0, 6);
+    mymemcpy(arp->src_ip_addr, local_ipaddr, 4);
+    mymemcpy(arp->src_mac_addr, local_macaddr, 6);
 }
 
-void myip_udp_update_ip_mac_port(preamble3 *p, const uint8_t *dst_ip_addr, uint16_t dst_port, uint16_t src_port)
+void myip_make_ip_frame(ipfrm_t *ifrm, const uint8_t *dst_ip_addr, uint16_t sz, uint16_t proto)
 {
-    myip_update_ip_mac_addr((preamble2*)p, dst_ip_addr);
-    p->dst_port = HTONS_16(dst_port);
-    p->src_port = HTONS_16(src_port);
+    myip_update_mac_hdr(&ifrm->mac, dst_ip_addr);
+    myip_update_ip_hdr(&ifrm->ip, dst_ip_addr, sz, proto);
 }
 
-void myip_arp_table_update(uint8_t *ip_addr, uint8_t *mac_addr)
+void myip_make_arp_frame(arpfrm_t *afrm, uint8_t *dst_ip_addr, uint16_t oper)
+{
+    mymemcpy(afrm->mac.src, local_macaddr, 6);
+    mymemset(afrm->mac.dst, 0xFF, 6);
+    afrm->mac.type = arpfrm_t_TYPE;
+    myip_update_arp_hdr(&afrm->arp, dst_ip_addr, oper);
+}
+
+void myip_make_udp_frame(udpfrm_t *ufrm, const uint8_t *dst_ip_addr, uint16_t src_port, uint16_t dst_port, uint16_t sz)
+{
+    myip_update_mac_hdr(&ufrm->mac, dst_ip_addr);
+    myip_update_ip_hdr(&ufrm->ip, dst_ip_addr, UDPH_SZ + sz, UDP_PROTO);
+    myip_update_udp_hdr(&ufrm->udp, ufrm->udp.src_port, ufrm->udp.dst_port, sz);
+}
+
+static void myip_arp_table_update(uint8_t *ip_addr, uint8_t *mac_addr)
 {
     uint16_t i = myip_arp_find(ip_addr);
     if(i < ARP_TABLE_SZ)
@@ -197,22 +200,17 @@ void myip_arp_table_update(uint8_t *ip_addr, uint8_t *mac_addr)
     arp_table[max_time_index].time = 0;
 }
 
-uint16_t myip_eth_frm_handler(ETH_FRAME *frm, uint16_t sz)
+uint16_t myip_eth_frm_handler(ethfrm_t *frm, uint16_t sz)
 {
-    IP_FRAME* ipfrm = (IP_FRAME*)frm;
+    ipfrm_t* ipfrm = (ipfrm_t*)frm;
     if(sz)
     {
-        if(frm->e.p.type == ARP_FRAME_TYPE)
+        if(frm->e.mac.type == arpfrm_t_TYPE)
             return myip_arp_frm_handler(frm, sz);
 
-        if ((ipfrm->p.ver_ihl != IP_VER_IHL) || ((ipfrm->p.frag & FRAG_MASK) != 0))
+        if ((ipfrm->ip.ver_ihl != IP_VER_IHL) || ((ipfrm->ip.frag & FRAG_MASK) != 0))
             return 0;
-        myip_arp_table_update(ipfrm->p.src_ip_addr, ipfrm->p.src);
-
-#if 0
-        if(ipfrm->p.proto == ICMP_PROTO)
-            return myip_icmp_frm_handler(frm, sz);
-#endif
+        myip_arp_table_update(ipfrm->ip.src_ip_addr, ipfrm->mac.src);
     }
     static uint8_t i = 0;
     uint16_t sz1 = 0;
@@ -228,82 +226,54 @@ uint16_t myip_eth_frm_handler(ETH_FRAME *frm, uint16_t sz)
             break;
         if(sz)
         {
-            if(con_table[i].proto != ipfrm->p.proto)
+            if(con_table[i].proto != ipfrm->ip.proto)
                 continue;
         }
         sz1 = con_table[i].frm_handler_ptr(frm, sz, i);
         if(sz1)
             break;
-#if 0
-        if(con_table[i].proto == ICMP_PROTO)
-        {
-            sz1 = myip_icmp_frm_handler(frm, sz, i);
-            if(sz1)
-                break;
-        }
-        if(con_table[i].proto == UDP_PROTO)
-        {
-            sz1 = myip_udp_frm_handler(frm, sz, i);
-            if(sz1)
-                break;
-        }
-        if(con_table[i].proto == TCP_PROTO)
-        {
-            sz1 = myip_tcp_frm_handler(frm, sz, i);
-            if(sz1)
-                break;
-        }
-#endif
     }
     return sz1;
 }
 
-uint16_t myip_arp_frm_handler(ETH_FRAME *frm, uint16_t sz)
+uint16_t myip_arp_frm_handler(ethfrm_t *frm, uint16_t sz)
 {
-    ARP_FRAME *afrm = (ARP_FRAME*)frm;
-    if((afrm->htype != ARP_HTYPE) || (afrm->ptype != ARP_PTYPE) || \
-      ((afrm->hlen) != ARP_HLEN) || ((afrm->plen) != ARP_PLEN)) {
+    arpfrm_t *afrm = (arpfrm_t*)frm;
+    arphdr_t *arp = &afrm->arp;
+    if((arp->htype != ARP_HTYPE) || (arp->ptype != ARP_PTYPE) || \
+      ((arp->hlen) != ARP_HLEN) || ((arp->plen) != ARP_PLEN)) {
         return 0;
     }
-    if(mymemcmp(afrm->dst_ip_addr, local_ipaddr, 4))
+    if(mymemcmp(arp->dst_ip_addr, local_ipaddr, 4))
         return 0;
-    myip_arp_table_update(afrm->src_ip_addr, afrm->src_mac_addr);
-    if(afrm->oper == ARP_OPER_REQ)
+    myip_arp_table_update(arp->src_ip_addr, arp->src_mac_addr);
+    if(arp->oper == ARP_OPER_REQ)
     {
-        mymemcpy(afrm->dst_mac_addr, afrm->src_mac_addr, 6);
-        mymemcpy(afrm->src_mac_addr, local_macaddr, 6);
-        mymemcpy(afrm->dst_ip_addr, afrm->src_ip_addr, 4);
-        mymemcpy(afrm->src_ip_addr, local_ipaddr, 4);
-        afrm->oper = ARP_OPER_REPL;
-        return sizeof(ARP_FRAME);
+        myip_make_arp_frame(afrm, arp->dst_ip_addr, ARP_OPER_REPL);
+        return MACH_SZ + ARPH_SZ;
     }
     return 0;
 }
 
-uint16_t myip_udp_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
+uint16_t myip_udp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
 {
-    UDP_FRAME* ufrm = (UDP_FRAME*)frm;
+    udpfrm_t* ufrm = (udpfrm_t*)frm;
     if(con_index >= CON_TABLE_SZ)
         return 0;
     if(sz)
     {
-        if(ufrm->p.proto != UDP_PROTO)
+        if(ufrm->ip.proto != UDP_PROTO)
             return 0;
         if(con_table[con_index].proto != UDP_PROTO)
             return 0;
-        if(con_table[con_index].port != HTONS_16(ufrm->p.dst_port))
+        if(con_table[con_index].port != HTONS_16(ufrm->udp.dst_port))
             return 0;
     }
-    uint8_t *data_ptr;
-    uint16_t data_sz = myip_udp_data(ufrm, sz, &data_ptr);
-    //dbg_send_int2("myip_udp_con_handler", data_sz);
-    data_sz = con_table[con_index].con_handler_ptr(data_ptr, data_sz);
-    if(data_sz)
+    sz = con_table[con_index].con_handler_ptr(ufrm->data, sz - MACH_SZ - IPH_SZ - UDPH_SZ);
+    if(sz)
     {
-        myip_udp_update_ip_mac_port(&ufrm->p, ufrm->p.src_ip_addr, HTONS_16(ufrm->p.src_port), HTONS_16(ufrm->p.dst_port));
-        ufrm->len = HTONS_16(UDPH_SZ + data_sz);
-        ufrm->p.total_len = HTONS_16(IPH_SZ + UDPH_SZ + data_sz);
-        return MACH_SZ + IPH_SZ + UDPH_SZ + data_sz;
+        myip_make_udp_frame(ufrm, ufrm->ip.src_ip_addr, HTONS_16(ufrm->udp.src_port), HTONS_16(ufrm->udp.dst_port), sz);
+        return MACH_SZ + IPH_SZ + UDPH_SZ + sz;
     }
     return 0;
 }

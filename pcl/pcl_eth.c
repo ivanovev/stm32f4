@@ -14,20 +14,19 @@
 #endif
 
 #ifdef ENABLE_PTP
-#include "eth/myip/ptp/myptpd.h"
+#include "eth/myip/ptp/ptpd.h"
 #endif
 
-extern TCP_CON tcp_con;
 extern volatile uint8_t reset;
 extern uint8_t local_ipaddr[4];
 extern ARP_ENTRY arp_table[ARP_TABLE_SZ];
 
 COMMAND(exit) {
-    tcp_con.state = TCP_CON_CLOSE;
+    myip_tcp_con_close();
     return picolSetIntResult(i, 0);
 }
 COMMAND(reset) {
-    tcp_con.state = TCP_CON_CLOSE;
+    myip_tcp_con_close();
     reset = RESET_REBOOT;
     return picolSetIntResult(i, 0);
 }
@@ -180,21 +179,7 @@ COMMAND(ptp) {
     {
         myip_ptpd_get_offset(&dt);
         char *ptr = buf;
-#if 1
         format_delay(&dt, ptr, sizeof(buf)-1);
-#else
-        if(dt.s)
-        {
-            ptr += mysnprintf(ptr, sizeof(buf)-1, "%d", dt.s);
-            *ptr++ = 's';
-        }
-        else
-        {
-            ptr += mysnprintf(ptr, sizeof(buf)-1, "%d", dt.ns);
-            *ptr++ = 'n';
-            *ptr++ = 's';
-        }
-#endif
         return picolSetResult(i, buf);
     }
     if(SUBCMD1("off"))

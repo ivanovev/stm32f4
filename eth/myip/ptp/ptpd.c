@@ -1,6 +1,6 @@
 
 #include "eth/eth.h"
-#include "ptp/myptpd.h"
+#include "ptp/ptpd.h"
 #include "util/system_msp.h"
 
 #define PTP_SYNC        0
@@ -19,6 +19,16 @@
 #define PTP_LEN_PDELAY_RESP  54
 #define PTP_LEN_PDELAY_RESP_FOLLOW_UP  54
 
+enum
+{
+    CTRL_SYNC = 0x00,
+    CTRL_DELAY_REQ,
+    CTRL_FOLLOW_UP,
+    CTRL_DELAY_RESP,
+    CTRL_MANAGEMENT,
+    CTRL_OTHER,
+};
+
 extern CON_ENTRY con_table[CON_TABLE_SZ];
 
 struct ptpclk_t
@@ -34,12 +44,12 @@ struct ptpclk_t
     ptpts_t* save_ts;
     uint32_t sync_ts;
     ptpdt_t delay, offset;
-    ptpmsg_delay_resp_t req;
+    uint8_t req_clock_id[8];
+    uint16_t req_source_port_id;
 } pc;
 
 extern uint8_t local_ipaddr[4];
 extern uint8_t local_macaddr[6];
-extern uint16_t ip_counter;
 const uint8_t mcast_ipaddr[4] = {224, 0, 0, 107};
 const uint8_t mcast_macaddr[6] = {0x01, 0x1B, 0x19, 0x00, 0x00, 0x00};
 const uint8_t p2p_ipaddr[4] = {224, 0, 0, 107};
@@ -97,34 +107,32 @@ void myip_ptpd_set_state(uint16_t state)
         pc.next_msg_id = PTP_SYNC;
 }
 
-static void prepare_ptp_msg(ptpmsg_t *msg, uint8_t msg_id, uint16_t msg_len, uint8_t ctrl, ptpts_t *pts)
+static void myip_update_ptp_hdr(ptphdr_t *ptp, uint8_t msg_id, uint16_t msg_len, uint8_t ctrl, ptpts_t *pts)
 {
-    mymemset((char*)msg, 0, msg_len);
-    msg->msg_id = 0x80 | msg_id;
-    msg->ptp_version = (uint8_t)0x02;
-    msg->msg_len = HTONS_16(msg_len);
-    msg->correction[0] = 0;
-    msg->correction[1] = 0;
-    mymemcpy(msg->clock_id, pc.clock_id, 8);
-    msg->source_port_id = HTONS_16(pc.source_port_id);
-    msg->sequence_id = HTONS_16(pc.sequence_id);
-    msg->control_field = ctrl;
-    msg->log_msg_interval = pc.log_msg;
-    msg->s0 = 0;
+    mymemset((char*)ptp, 0, msg_len);
+    ptp->msg_id = 0x80 | msg_id;
+    ptp->ptp_version = (uint8_t)0x02;
+    ptp->msg_len = HTONS_16(msg_len);
+    ptp->correction[0] = 0;
+    ptp->correction[1] = 0;
+    mymemcpy(ptp->clock_id, pc.clock_id, 8);
+    ptp->source_port_id = HTONS_16(pc.source_port_id);
+    ptp->sequence_id = HTONS_16(pc.sequence_id);
+    ptp->control_field = ctrl;
+    ptp->log_msg_interval = pc.log_msg;
+    ptp->s0 = 0;
     if(pts == 0)
     {
         ptpts_t ts;
         eth_ptpclk_time(&ts);
         pts = &ts;
     }
-    msg->s = HTONS_32(pts->s);
-    msg->ns = HTONS_32(pts->ns);
+    ptp->s = HTONS_32(pts->s);
+    ptp->ns = HTONS_32(pts->ns);
     if(msg_id == PTP_DELAY_RESP)
     {
-        uint8_t *ptr = (uint8_t*)msg;
-        ptpmsg_delay_resp_t *resp = (ptpmsg_delay_resp_t*)(ptr + sizeof(ptpmsg_t));
-        mymemcpy(resp->clock_id, pc.req.clock_id, 8);
-        resp->source_port_id = HTONS_16(pc.req.source_port_id);
+        mymemcpy(ptp->req_clock_id, pc.req_clock_id, 8);
+        ptp->req_source_port_id = HTONS_16(pc.req_source_port_id);
     }
 }
 
@@ -140,22 +148,17 @@ void myip_ptpd_save_ts(ptpts_t *t)
     return;
 }
 
-static uint16_t handle_pdelay_req(ptpmsg_t *msg, uint16_t sz)
+static uint16_t handle_pdelay_req(ptphdr_t *ptp, uint16_t sz)
 {
-    uint8_t *ptr = (uint8_t*)msg;
-    ptpmsg_delay_resp_t *resp = (ptpmsg_delay_resp_t*)(ptr + sizeof(ptpmsg_t));
+    mymemcpy((uint8_t*)ptp->req_clock_id, (uint8_t*)ptp->clock_id, 8);
+    ptp->req_source_port_id = HTONS_16(ptp->source_port_id);
 
-    mymemcpy((uint8_t*)pc.req.clock_id, (uint8_t*)msg->clock_id, 8);
-    pc.req.source_port_id = msg->source_port_id;
-    mymemcpy(resp->clock_id, pc.req.clock_id, 8);
-    resp->source_port_id = pc.req.source_port_id;
-
-    pc.sequence_id = HTONS_16(msg->sequence_id);
-    prepare_ptp_msg(msg, PTP_PDELAY_RESP, PTP_LEN_PDELAY_RESP, CTRL_OTHER, &pc.t2);
+    pc.sequence_id = HTONS_16(ptp->sequence_id);
+    myip_update_ptp_hdr(ptp, PTP_PDELAY_RESP, PTP_LEN_PDELAY_RESP, CTRL_OTHER, &pc.t2);
     return PTP_LEN_PDELAY_RESP;
 }
 
-static uint16_t handle_pdelay_resp(ptpmsg_t *msg, uint16_t sz)
+static uint16_t handle_pdelay_resp(ptphdr_t *msg, uint16_t sz)
 {
     eth_ptpts_get(&pc.t4, 0);
     pc.t2.s = HTONS_32(msg->s);
@@ -164,7 +167,7 @@ static uint16_t handle_pdelay_resp(ptpmsg_t *msg, uint16_t sz)
     return 0;
 }
 
-static uint16_t handle_pdelay_resp_follow_up(ptpmsg_t *msg, uint16_t sz)
+static uint16_t handle_pdelay_resp_follow_up(ptphdr_t *msg, uint16_t sz)
 {
     pc.t3.s = HTONS_32(msg->s);
     pc.t3.ns = HTONS_32(msg->ns);
@@ -194,20 +197,20 @@ static uint16_t ptpmsg_handle(uint8_t *data, uint16_t sz)
 {
     if(!sz)
         return 0;
-    ptpmsg_t *msg = (ptpmsg_t*)data;
-    uint8_t msg_id = msg->msg_id & 0x0F;
+    ptphdr_t *ptp = (ptphdr_t*)data;
+    uint8_t msg_id = ptp->msg_id & 0x0F;
     if(pc.state == PTP_E2E_MASTER)
     {
         if(msg_id == PTP_DELAY_REQ)
         {
-            if(pc.sequence_id != HTONS_16(msg->sequence_id))
+            if(pc.sequence_id != HTONS_16(ptp->sequence_id))
                 return 0;
 
-            mymemcpy(pc.req.clock_id, msg->clock_id, 8);
-            pc.req.source_port_id = HTONS_16(msg->source_port_id);
-            dbg_send_hex2("source_port_id", pc.req.source_port_id);
+            mymemcpy(pc.req_clock_id, ptp->clock_id, 8);
+            pc.req_source_port_id = HTONS_16(ptp->source_port_id);
+            dbg_send_hex2("source_port_id", pc.req_source_port_id);
             eth_ptpts_get(&pc.t4, 0);
-            prepare_ptp_msg(msg, PTP_DELAY_RESP, PTP_LEN_DELAY_RESP, CTRL_OTHER, &pc.t4);
+            myip_update_ptp_hdr(ptp, PTP_DELAY_RESP, PTP_LEN_DELAY_RESP, CTRL_OTHER, &pc.t4);
             return PTP_LEN_DELAY_RESP;
         }
     }
@@ -216,36 +219,35 @@ static uint16_t ptpmsg_handle(uint8_t *data, uint16_t sz)
         if(msg_id == PTP_SYNC)
         {
             eth_ptpts_get(&pc.t2, 0);
-            pc.sequence_id = HTONS_16(msg->sequence_id);
+            pc.sequence_id = HTONS_16(ptp->sequence_id);
             pc.next_msg_id = PTP_FOLLOW_UP;
-            mymemcpy((char*)pc.req.clock_id, (char*)msg->clock_id, 8);
-            pc.req.source_port_id = HTONS_16(msg->source_port_id);
+            mymemcpy((char*)pc.req_clock_id, (char*)ptp->clock_id, 8);
+            pc.req_source_port_id = HTONS_16(ptp->source_port_id);
             return 0;
         }
         if(msg_id != pc.next_msg_id)
             return 0;
-        if(pc.req.source_port_id != HTONS_16(msg->source_port_id))
+        if(pc.req_source_port_id != HTONS_16(ptp->source_port_id))
             return 0;
-        if(mymemcmp((char*)pc.req.clock_id, (char*)msg->clock_id, 8))
+        if(mymemcmp((char*)pc.req_clock_id, (char*)ptp->clock_id, 8))
             return 0;
         if(msg_id == PTP_FOLLOW_UP)
         {
-            pc.t1.s = HTONS_32(msg->s);
-            pc.t1.ns = HTONS_32(msg->ns);
+            pc.t1.s = HTONS_32(ptp->s);
+            pc.t1.ns = HTONS_32(ptp->ns);
             pc.save_ts = &pc.t3;
-            prepare_ptp_msg(msg, PTP_DELAY_REQ, PTP_LEN_DELAY_REQ, CTRL_DELAY_REQ, 0);
+            myip_update_ptp_hdr(ptp, PTP_DELAY_REQ, PTP_LEN_DELAY_REQ, CTRL_DELAY_REQ, 0);
             pc.next_msg_id = PTP_DELAY_RESP;
             return PTP_LEN_DELAY_REQ;
         }
         if(msg_id == PTP_DELAY_RESP)
         {
-            ptpmsg_delay_resp_t *resp = (ptpmsg_delay_resp_t*)(data + sizeof(ptpmsg_t));
-            if(pc.source_port_id != HTONS_16(resp->source_port_id))
+            if(pc.source_port_id != HTONS_16(ptp->req_source_port_id))
                 return 0;
-            if(mymemcmp((char*)pc.clock_id, (char*)resp->clock_id, 8))
+            if(mymemcmp((char*)pc.clock_id, (char*)ptp->req_clock_id, 8))
                 return 0;
-            pc.t4.s = HTONS_32(msg->s);
-            pc.t4.ns = HTONS_32(msg->ns);
+            pc.t4.s = HTONS_32(ptp->s);
+            pc.t4.ns = HTONS_32(ptp->ns);
             ptp_calculate_delay_and_offset();
             pc.next_msg_id = PTP_SYNC;
             return 0;
@@ -259,7 +261,7 @@ static uint16_t ptpmsg_handle(uint8_t *data, uint16_t sz)
             if(msg_id == PTP_PDELAY_REQ)
             {
                 pc.next_msg_id = PTP_PDELAY_RESP_FOLLOW_UP;
-                return handle_pdelay_req(msg, sz);
+                return handle_pdelay_req(ptp, sz);
             }
             return 0;
         }
@@ -268,12 +270,12 @@ static uint16_t ptpmsg_handle(uint8_t *data, uint16_t sz)
             if(msg_id == PTP_PDELAY_RESP)
             {
                 pc.next_msg_id = PTP_PDELAY_RESP_FOLLOW_UP;
-                return handle_pdelay_resp(msg, sz);
+                return handle_pdelay_resp(ptp, sz);
             }
             if(msg_id == PTP_PDELAY_RESP_FOLLOW_UP)
             {
                 pc.next_msg_id = PTP_SYNC;
-                return handle_pdelay_resp_follow_up(msg, sz);
+                return handle_pdelay_resp_follow_up(ptp, sz);
             }
             return 0;
         }
@@ -502,53 +504,41 @@ uint16_t myip_ptpd_pdelay(uint8_t *ipaddr, ptpdt_t *dt)
     return 1;
 }
 
-static void prepare_ptp_frm(ETH_FRAME *frm, uint8_t msg_id, uint16_t msg_len)
+static void myip_make_ptp_frame(ptpfrm_t *pfrm, uint8_t msg_id, uint16_t msg_len)
 {
-    UDP_FRAME* ufrm = (UDP_FRAME*)frm;
-    preamble3 *p = &ufrm->p;
     const uint8_t *dst_ip_addr = mcast_ipaddr;
     if((msg_id == PTP_PDELAY_REQ) || (msg_id == PTP_PDELAY_RESP) || (msg_id == PTP_PDELAY_RESP_FOLLOW_UP))
         dst_ip_addr = p2p_ipaddr;
-    myip_make_ip_frame((IP_FRAME*)frm, dst_ip_addr, IPH_SZ + UDPH_SZ + msg_len, ip_counter++, UDP_PROTO);
-    mymemcpy(p->dst, mcast_macaddr, 6);
-    ufrm->p.src_port = HTONS_16(PTP_EVT_PORT);
-    ufrm->p.dst_port = HTONS_16(PTP_EVT_PORT);
-    ufrm->p.ttl = 1;
-    ufrm->len = HTONS_16(UDPH_SZ + msg_len);
-    ufrm->cksum = 0;
-
+    myip_make_udp_frame((udpfrm_t*)pfrm, dst_ip_addr, PTP_EVT_PORT, PTP_EVT_PORT, msg_len);
+    mymemcpy(pfrm->mac.dst, mcast_macaddr, 6);
+    pfrm->ip.ttl = 1;
 }
-static void prepare_ptp_frm_msg(ETH_FRAME *frm, uint8_t msg_id, uint16_t msg_len, uint8_t ctrl, ptpts_t *pts)
+static void myip_make_ptp_frame_msg(ptpfrm_t *pfrm, uint8_t msg_id, uint16_t msg_len, uint8_t ctrl, ptpts_t *pts)
 {
-    prepare_ptp_frm(frm, msg_id, msg_len);
-
-    char *ptr = (char*)frm;
-    ptr += MACH_SZ + IPH_SZ + UDPH_SZ;
-    ptpmsg_t *msg = (ptpmsg_t*)ptr;
-    prepare_ptp_msg(msg, msg_id, msg_len, ctrl, pts);
+    myip_make_ptp_frame(pfrm, msg_id, msg_len);
+    myip_update_ptp_hdr(&pfrm->ptp, msg_id, msg_len, ctrl, pts);
 }
 
-uint16_t myip_ptpd_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
+uint16_t myip_ptpd_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
 {
+    ptpfrm_t* pfrm = (ptpfrm_t*)frm;
     if(sz)
     {
-        UDP_FRAME* ufrm = (UDP_FRAME*)frm;
+        udpfrm_t* ufrm = (udpfrm_t*)frm;
         if(con_index >= CON_TABLE_SZ)
             return 0;
-        if(ufrm->p.proto != UDP_PROTO)
+        if(ufrm->ip.proto != UDP_PROTO)
             return 0;
         if(con_table[con_index].proto != UDP_PROTO)
             return 0;
-        if(con_table[con_index].port != HTONS_16(ufrm->p.dst_port))
+        if(con_table[con_index].port != HTONS_16(ufrm->udp.dst_port))
             return 0;
-        uint8_t *data_ptr;
-        uint16_t data_sz = myip_udp_data(ufrm, sz, &data_ptr);
-        ptpmsg_t *msg = (ptpmsg_t*)data_ptr;
-        data_sz = con_table[con_index].con_handler_ptr(data_ptr, data_sz);
-        if(data_sz)
+        ptphdr_t *ptp = (ptphdr_t*)ufrm->data;
+        sz = con_table[con_index].con_handler_ptr(ufrm->data, sz - MACH_SZ - IPH_SZ - UDPH_SZ);
+        if(sz)
         {
-            prepare_ptp_frm(frm, msg->msg_id, data_sz);
-            return MACH_SZ + IPH_SZ + UDPH_SZ + data_sz;
+            myip_make_ptp_frame(pfrm, ptp->msg_id, sz);
+            return MACH_SZ + IPH_SZ + UDPH_SZ + sz;
         }
         return 0;
     }
@@ -558,7 +548,7 @@ uint16_t myip_ptpd_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
         {
             if(pc.next_msg_id == PTP_PDELAY_REQ)
             {
-                prepare_ptp_frm_msg(frm, PTP_PDELAY_REQ, PTP_LEN_PDELAY_REQ, CTRL_OTHER, 0);
+                myip_make_ptp_frame_msg(pfrm, PTP_PDELAY_REQ, PTP_LEN_PDELAY_REQ, CTRL_OTHER, 0);
 
                 pc.next_msg_id = PTP_PDELAY_RESP;
                 pc.save_ts = &pc.t1;
@@ -576,7 +566,7 @@ uint16_t myip_ptpd_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
 
             pc.sequence_id += 1;
 
-            prepare_ptp_frm_msg(frm, PTP_SYNC, PTP_LEN_SYNC, CTRL_SYNC, 0);
+            myip_make_ptp_frame_msg(pfrm, PTP_SYNC, PTP_LEN_SYNC, CTRL_SYNC, 0);
 
             pc.next_msg_id = PTP_FOLLOW_UP;
             pc.save_ts = &pc.t1;
@@ -585,7 +575,7 @@ uint16_t myip_ptpd_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
         }
         if(pc.next_msg_id == PTP_FOLLOW_UP)
         {
-            prepare_ptp_frm_msg(frm, PTP_FOLLOW_UP, PTP_LEN_FOLLOW_UP, CTRL_FOLLOW_UP, &pc.t1);
+            myip_make_ptp_frame_msg(pfrm, PTP_FOLLOW_UP, PTP_LEN_FOLLOW_UP, CTRL_FOLLOW_UP, &pc.t1);
 
             pc.next_msg_id = PTP_SYNC;
             pc.save_ts = 0;
@@ -594,13 +584,10 @@ uint16_t myip_ptpd_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
     }
     if((pc.wait == 0) && (pc.next_msg_id == PTP_PDELAY_RESP_FOLLOW_UP))
     {
-        prepare_ptp_frm_msg(frm, PTP_PDELAY_RESP_FOLLOW_UP, PTP_LEN_PDELAY_RESP_FOLLOW_UP, CTRL_OTHER, &pc.t3);
+        myip_make_ptp_frame_msg(pfrm, PTP_PDELAY_RESP_FOLLOW_UP, PTP_LEN_PDELAY_RESP_FOLLOW_UP, CTRL_OTHER, &pc.t3);
 
-        char *ptr = (char*)frm;
-        ptr += MACH_SZ + IPH_SZ + UDPH_SZ + sizeof(ptpmsg_t);
-        ptpmsg_delay_resp_t *resp = (ptpmsg_delay_resp_t*)(ptr);
-        mymemcpy(resp->clock_id, pc.req.clock_id, 8);
-        resp->source_port_id = pc.req.source_port_id;
+        mymemcpy(pfrm->ptp.req_clock_id, pc.req_clock_id, 8);
+        pfrm->ptp.req_source_port_id = HTONS_16(pc.req_source_port_id);
 
         pc.next_msg_id = PTP_PDELAY_REQ;
         pc.save_ts = 0;

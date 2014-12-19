@@ -1,18 +1,12 @@
 
-#ifndef __MYTELNETD_H__
-#define __MYTELNETD_H__
+#ifndef __TELNETD_H__
+#define __TELNETD_H__
 
 #include "myip.h"
 #include "mytcp.h"
 #include "util/queue.h"
 
 #define TELNET_PORT     23
-
-#pragma pack(1)
-typedef struct {
-    Queue qi;
-    Queue qo;
-} TELNETD_STATE;
 
 void        myip_telnetd_init(void);
 uint16_t    myip_telnetd_con_handler(uint8_t *data, uint16_t sz);

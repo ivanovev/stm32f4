@@ -24,3 +24,14 @@ PROJ = $(shell basename $(PWD))
 ROOT_DIR = ..
 UTIL_DIR = $(ROOT_DIR)/util
 
+LDSCRIPT_RAM = $(UTIL_DIR)/stm32f4_ram.ld
+LDSCRIPT_FLASH = $(UTIL_DIR)/stm32f4_flash.ld
+LDSCRIPT = $(LDSCRIPT_RAM)
+#LDSCRIPT = $(LDSCRIPT_FLASH)
+ifeq ($(LDSCRIPT), $(LDSCRIPT_RAM))
+    CFLAGS += -DVECT_TAB_SRAM
+endif
+
+#CFLAGS += -O0 -g -Wall
+CFLAGS += -O1 -Wall
+

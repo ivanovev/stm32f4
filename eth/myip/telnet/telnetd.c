@@ -1,6 +1,6 @@
 
 #include "eth/eth.h"
-#include "mytelnetd.h"
+#include "telnetd.h"
 
 #define STATE_NORMAL 0
 #define STATE_IAC    1
@@ -16,8 +16,11 @@
 #define TELNET_DO    253
 #define TELNET_DONT  254
 
-TELNETD_STATE tds;
-extern TCP_CON tcp_con;
+struct {
+    Queue qi;
+    Queue qo;
+} tds;
+
 uint8_t telnetd_prompt[] = "#> ";
 uint8_t buf[IO_BUF_SZ];
 
@@ -35,7 +38,7 @@ uint16_t myip_telnetd_con_handler(uint8_t *data, uint16_t sz)
 #ifndef ENABLE_PCL
     if(!mystrncmp((char*)data, "exit", 4))
     {
-        tcp_con.state = TCP_CON_CLOSE;
+        myip_tcp_con_close();
         return 0;
     }
     else if(sz > 0)

@@ -39,8 +39,6 @@ INCDIR += $(UTIL_DIR)
 MCPU = -mcpu=cortex-m4
 MTHUMB = -mthumb
 #MTHUMB += -mthumb-interwork
-#CFLAGS += -O0 -g -Wall
-CFLAGS += -O1 -Wall
 #CFLAGS += -dD
 CFLAGS += $(MCPU)
 CFLAGS += $(MTHUMB)
@@ -53,14 +51,6 @@ CFLAGS += -I$(PWD)
 CFLAGS += -DSTM32F407xx
 IINCDIR = $(patsubst %,-I%,$(INCDIR))
 CFLAGS += $(IINCDIR)
-
-LDSCRIPT_RAM = $(UTIL_DIR)/stm32f4_ram.ld
-LDSCRIPT_FLASH = $(UTIL_DIR)/stm32f4_flash.ld
-#LDSCRIPT = $(LDSCRIPT_RAM)
-LDSCRIPT = $(LDSCRIPT_FLASH)
-ifeq ($(LDSCRIPT), $(LDSCRIPT_RAM))
-    CFLAGS += -DVECT_TAB_SRAM
-endif
 
 LDFLAGS += $(MCPU)
 LDFLAGS += $(MTHUMB)

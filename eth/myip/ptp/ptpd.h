@@ -1,6 +1,6 @@
 
-#ifndef __MYPTPD_H__
-#define __MYPTPD_H__
+#ifndef __PTPD_H__
+#define __PTPD_H__
 
 #include <main.h>
 
@@ -20,18 +20,8 @@
 #define PTP_EVT_PORT    319
 #define PTP_MSG_PORT    320
 
-enum
-{
-    CTRL_SYNC = 0x00,
-    CTRL_DELAY_REQ,
-    CTRL_FOLLOW_UP,
-    CTRL_DELAY_RESP,
-    CTRL_MANAGEMENT,
-    CTRL_OTHER,
-};
-
 #pragma pack(1)
-typedef struct ptpmsg_t
+typedef struct ptphdr_t
 {
     uint8_t msg_id;
     uint8_t ptp_version;
@@ -49,13 +39,16 @@ typedef struct ptpmsg_t
     uint16_t s0;
     uint32_t s;
     uint32_t ns;
-} ptpmsg_t;
+    uint8_t req_clock_id[8];
+    uint16_t req_source_port_id;
+} ptphdr_t;
 
-typedef struct ptpmsg_delay_resp_t
-{
-    uint8_t clock_id[8];
-    uint16_t source_port_id;
-} ptpmsg_delay_resp_t;
+typedef struct {
+    machdr_t mac;
+    iphdr_t ip;
+    udphdr_t udp;
+    ptphdr_t ptp;
+} ptpfrm_t;
 
 typedef struct ptpts_t {
     uint32_t s;
@@ -81,7 +74,7 @@ void        myip_ptpd_set_state(uint16_t state);
 void        myip_ptpd_save_ts(ptpts_t *t);
 void        myip_ptpd_adjust_freq(ptpdt_t *dt);
 
-uint16_t    myip_ptpd_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index);
+uint16_t    myip_ptpd_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index);
 uint16_t    myip_ptpd_pdelay(uint8_t *ipaddr, ptpdt_t *dt);
 
 uint32_t    ptp_ss2ns(uint32_t ss);

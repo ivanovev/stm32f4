@@ -30,8 +30,8 @@ static void ___print_list(picolList *l)
 #endif
 
 /* ----------------------------------------------------- parser functions */
-void picolInitParser(picolParser *p, char *text) {
-    p->text  = p->p = text;
+void picolInitParser(picolParser *p, const char *text) {
+    p->text  = p->p = (char*)text;
     p->len   = mystrnlen(text, MAXSTR);
     p->start = 0; p->end = 0; p->insidequote = 0;
     p->type  = PT_EOL;
@@ -83,30 +83,6 @@ int picolParseEol(picolParser *p) {
     while(myisspace(*p->p) || *p->p == ';') { p->p++; p->len--; }
     RETURN_PARSED(PT_EOL);
 }
-int picolParseVar(picolParser *p) {
-    int parened = 0;
-    p->start = ++p->p; p->len--; /* skip the $ */
-    if (*p->p == '{') {
-        picolParseBrace(p);
-        p->type = PT_VAR;
-        return PICOL_OK;
-    }
-    if(COLONED(p->p)) {p->p += 2; p->len -= 2;}
-    /*  while(isalnum(*p->p) || strchr("()_",*p->p)) { p->p++; p->len--; }*/
-#if 1
-    while(myisalnum(*p->p) || *p->p == '_' || *p->p=='('||*p->p==')') {
-        if(*p->p=='(') parened = 1;
-        p->p++; p->len--;
-    }
-    if(!parened && *(p->p-1)==')') {p->p--; p->len++;}
-#endif
-    if (p->start == p->p) { /* It's just a single char string "$" */
-        picolParseString(p);
-        p->start--; p->len++; /* back to the $ sign */
-        p->type = PT_VAR;
-        return PICOL_OK;
-    } else RETURN_PARSED(PT_VAR);
-}
 int picolParseString(picolParser *p) {
   int newword = (p->type == PT_SEP || p->type == PT_EOL || p->type == PT_STR);
   if(p->len >= 3 && !mystrncmp(p->p,"{*}",3)) {
@@ -137,6 +113,30 @@ int picolParseString(picolParser *p) {
       break;
     }
   }
+}
+int picolParseVar(picolParser *p) {
+    int parened = 0;
+    p->start = ++p->p; p->len--; /* skip the $ */
+    if (*p->p == '{') {
+        picolParseBrace(p);
+        p->type = PT_VAR;
+        return PICOL_OK;
+    }
+    if(COLONED(p->p)) {p->p += 2; p->len -= 2;}
+    /*  while(isalnum(*p->p) || strchr("()_",*p->p)) { p->p++; p->len--; }*/
+#if 1
+    while(myisalnum(*p->p) || *p->p == '_' || *p->p=='('||*p->p==')') {
+        if(*p->p=='(') parened = 1;
+        p->p++; p->len--;
+    }
+    if(!parened && *(p->p-1)==')') {p->p--; p->len++;}
+#endif
+    if (p->start == p->p) { /* It's just a single char string "$" */
+        picolParseString(p);
+        p->start--; p->len++; /* back to the $ sign */
+        p->type = PT_VAR;
+        return PICOL_OK;
+    } else RETURN_PARSED(PT_VAR);
 }
 /*------------------------------------ General functions: variables, errors */
 void picolInitInterp(picolInterp *i) {

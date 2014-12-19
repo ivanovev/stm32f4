@@ -6,7 +6,7 @@
 extern void eth_reset(void);
 extern ETH_HandleTypeDef heth;
 #ifdef ENABLE_PTP
-#include "eth/myip/ptp/myptpd.h"
+#include "eth/myip/ptp/ptpd.h"
 #endif
 
 #pragma message "ETH_MDC_GPIO: GPIO" STR(ETH_MDC_GPIO) " PIN" STR(ETH_MDC_PIN)

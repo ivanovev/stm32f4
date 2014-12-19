@@ -1,5 +1,5 @@
 
-#include "myptpd.h"
+#include "ptpd.h"
 
 #define ADJ_FREQ_INC            43
 #define ADJ_FREQ_ADDEND         0x4C19EF00

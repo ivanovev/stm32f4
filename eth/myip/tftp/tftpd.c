@@ -46,7 +46,13 @@ static struct errmsg {
     {-1,            0}
 };
 
-TFTPD_STATE tfs;
+struct {
+    uint16_t port;
+    uint16_t ackn;
+    uint16_t mode;
+    uint32_t crc;
+    uint32_t start, end;
+} tfs;
 
 void myip_tftpd_init(void)
 {
@@ -216,16 +222,5 @@ uint16_t myip_tftpd_con_handler(uint8_t *data, uint16_t sz)
     else if(HTONS_16(pkt->opcode) == TFTP_ACK)
         return tftpd_data_out(data, sz);
     return 0;
-}
-
-uint16_t myip_tftpd_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index)
-{
-    sz = myip_udp_frm_handler(frm, sz, con_index);
-    if(sz)
-    {
-        //UDP_FRAME *ufrm = (UDP_FRAME*)frm;
-        //ufrm->p.src_port = HTONS_16(tfs.port);
-    }
-    return sz;
 }
 

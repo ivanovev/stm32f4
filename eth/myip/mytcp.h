@@ -13,7 +13,8 @@
 
 #pragma pack(1)
 typedef struct {
-    preamble3 p;
+    uint16_t src_port;
+    uint16_t dst_port;
 
     uint32_t seqn;
     uint32_t ackn;
@@ -24,25 +25,20 @@ typedef struct {
 
     uint16_t cksum;
     uint16_t urg;
+} tcphdr_t;
 
-    uint8_t data[];
-} TCP_FRAME;
+#define TCPH_SZ     sizeof(tcphdr_t)
 
 typedef struct {
-    volatile uint8_t state;
-    uint8_t remote_mac_addr[6];
-    uint8_t remote_ip_addr[4];
-    uint16_t remote_port;
-    uint16_t local_port;
-    uint16_t id;
-
-    uint32_t seqn;
-    uint32_t ackn;
-    uint32_t rxseqn0;
-} TCP_CON;
+    machdr_t mac;
+    iphdr_t ip;
+    tcphdr_t tcp;
+    uint8_t data[];
+} tcpfrm_t;
 
 void        myip_tcp_init(void);
-uint16_t    myip_tcp_frm_handler(ETH_FRAME *frm, uint16_t sz, uint16_t con_index);
+void        myip_tcp_con_close(void);
+uint16_t    myip_tcp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index);
 uint16_t    myip_tcp_con_closed(void);
 
 #endif

@@ -4,7 +4,7 @@
 #include "eth/myip/mytcp.h"
 
 #ifdef ENABLE_PTP
-#include "eth/myip/ptp/myptpd.h"
+#include "eth/myip/ptp/ptpd.h"
 #endif
 
 #pragma message "PHY_ADDRESS: " STR(PHY_ADDRESS)
@@ -18,7 +18,7 @@ __ALIGN_BEGIN uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __ALIGN_END; /* Ethe
 
 __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethernet Transmit Buffer */
 
-__ALIGN_BEGIN static ETH_FRAME iofrm __ALIGN_END;
+__ALIGN_BEGIN static ethfrm_t iofrm __ALIGN_END;
 
 ETH_HandleTypeDef heth;
 extern uint8_t local_ipaddr[4];
@@ -74,7 +74,7 @@ void eth_reset(void)
     HAL_GPIO_WritePin(GPIO(ETH_RESET_GPIO), PIN(ETH_RESET_PIN), GPIO_PIN_SET);
 }
 
-uint16_t eth_input(ETH_FRAME *frm)
+uint16_t eth_input(ethfrm_t *frm)
 {
     if(HAL_ETH_GetReceivedFrame(&heth) != HAL_OK)
         return 0;
@@ -127,7 +127,7 @@ uint16_t eth_input(ETH_FRAME *frm)
     return sz;
 }
 
-void eth_output(ETH_FRAME *frm, uint16_t sz)
+void eth_output(ethfrm_t *frm, uint16_t sz)
 {
     //io_send_int2("send_sz", sz);
     __IO ETH_DMADescTypeDef *dmatxdesc = heth.TxDesc;
@@ -136,17 +136,11 @@ void eth_output(ETH_FRAME *frm, uint16_t sz)
     dmatxdesc->Status |= ETH_DMATXDESC_TTSE | ETH_DMATXDESC_IC;
     //dmatxdesc->Status &= ~ETH_DMATXDESC_TCH;
     HAL_ETH_TransmitFrame(&heth, sz);
-    //uint16_t i;
-#if 0
-    ptpts_t time;
-    eth_ptpts_get(&time, dmatxdesc);
-    myip_ptpd_save_t3(&time);
-#endif
 }
 
 uint8_t eth_io(void)
 {
-    iofrm.e.p.type = 0;
+    iofrm.e.mac.type = 0;
     uint16_t sz = eth_input(&iofrm);
     sz = myip_eth_frm_handler(&iofrm, sz);
     if(sz)
@@ -170,11 +164,6 @@ void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef *pheth)
 {
     uint16_t i;
     ptpts_t time;
-#if 0
-    eth_ptpts_now(&time);
-    dbg_send_int2("now.s", time.s);
-    dbg_send_int2("now.ns", time.ns);
-#endif
 #if 1
     __IO ETH_DMADescTypeDef *dmatxdesc = 0;
     for(i = 0; i < ETH_TXBUFNB; i++)

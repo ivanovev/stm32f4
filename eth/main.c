@@ -3,7 +3,7 @@
 #include "eth/eth.h"
 #include "eth/myip/mytcp.h"
 #ifdef ENABLE_TELNET
-#include "eth/myip/telnet/mytelnetd.h"
+#include "eth/myip/telnet/telnetd.h"
 #endif
 #include "core_cm4.h"
 #include "flash/flash.h"

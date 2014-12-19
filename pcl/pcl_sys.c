@@ -32,12 +32,12 @@ int32_t pcl_get_chunksz(uint8_t *ptr, int32_t fsz)
 #ifdef ENABLE_FLASH
 uint16_t pcl_load(picolInterp *i, uint32_t addr)
 {
-    uint8_t *ptr = addr;
+    uint8_t *ptr = (uint8_t*)addr;
     dbg_send_hex2("pcl_load.addr", (uint32_t)ptr);
     int32_t fsz = (int32_t)flash_fsz1();
     uint32_t len = 0;
     uint16_t rc = PICOL_OK;
-    uint8_t buf[MAXSTR];
+    char buf[MAXSTR];
     if(!fsz)
         return rc;
     while(1)
@@ -56,7 +56,7 @@ uint16_t pcl_load(picolInterp *i, uint32_t addr)
         {
             dbg_send_int2("chunk too big", len);
             dbg_send_int2("fsz", fsz);
-            dbg_send_int2("ptr", ptr - addr);
+            dbg_send_int2("ptr", (int32_t)(ptr - addr));
             break;
         }
         mymemcpy(buf, ptr, len);
