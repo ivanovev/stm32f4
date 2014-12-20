@@ -7,6 +7,7 @@
 #include "util/util.h"
 #include "led.h"
 #include "btn.h"
+#include "mco.h"
 
 #endif
 

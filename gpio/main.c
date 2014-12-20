@@ -4,6 +4,7 @@
 int main(void)
 {
     myinit();
+    mco_init();
     //led_on();
     //btn_init();
 //    led_toggle();
