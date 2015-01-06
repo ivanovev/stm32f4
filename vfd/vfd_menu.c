@@ -3,6 +3,7 @@
 #include "vfd.h"
 #include "vfd_menu.h"
 #include "pcl/pcl.h"
+#include "util/heap1.h"
 
 typedef struct vfd_menu_state_t {
     uint8_t lvl;
@@ -42,14 +43,15 @@ typedef struct vfd_menu_item_t {
     struct vfd_menu_item_t *parent;
 } vfd_menu_item_t;
 
+static vfd_menu_state_t   *pstate = NULL;
+static vfd_menu_item_t    *pmain = NULL;
+#if 0
 typedef struct vfd_words_t {
     char **en_ru;
     int len;
 } vfd_words_t;
-
-static vfd_menu_state_t   *pstate = NULL;
-static vfd_menu_item_t    *pmain = NULL;
 static vfd_words_t        *pwords = NULL;
+#endif
 
 static uint16_t vfd_menu_flag(vfd_menu_item_t *item, uint16_t flag)
 {
@@ -70,6 +72,7 @@ static vfd_menu_item_t* vfd_menu_new_item(char *name, char *cmd)
     return item;
 }
 
+#if 0
 static vfd_menu_item_t* vfd_menu_last(vfd_menu_item_t *item)
 {
     while(item->next)
@@ -101,13 +104,16 @@ static uint8_t vfd_menu_index(vfd_menu_item_t *item)
         i1 = i1->next;
     return j;
 }
+#endif
 
 static vfd_menu_item_t* vfd_menu_append(vfd_menu_item_t *i1, char *name, char *cmd)
 {
     vfd_menu_item_t *item = vfd_menu_new_item(name, cmd);
     if(!i1)
         return item;
-    vfd_menu_item_t *last = vfd_menu_last(i1);
+    vfd_menu_item_t *last = i1;
+    while(last->next)
+        last = last->next;
     last->next = item;
     item->prev = last;
     item->parent = last->parent;
@@ -155,7 +161,7 @@ static void vfd_menu_item_data_set(vfd_menu_item_t* item)
 #endif
 }
 
-static uint16_t vfd_menu_make_edit_int(vfd_menu_item_t* item, int v1, int v2, int step, uint16_t flags)
+static void vfd_menu_make_edit_int(vfd_menu_item_t* item, int v1, int v2, int step, uint16_t flags)
 {
     vfd_menu_edit_int_t *d_i = &(item->edit->data.d_i);
     item->edit->flags = flags | VFD_FLAG_EDIT_INT;
@@ -189,13 +195,13 @@ void vfd_menu_init(void)
     vfd_menu_append_child(pparent, "MAC address", "sys macaddr");
 #ifdef ENABLE_PTP
     pparent = vfd_menu_append_child(psys, "PTP", 0);
-    item = vfd_menu_append_child(pparent, "Time", "sys ptp time");
+    item = vfd_menu_append_child(pparent, "Time", "ptp time");
     item->edit->flags |= VFD_FLAG_TIM_UPD;
-    item = vfd_menu_append_child(pparent, "Offset", "sys ptp offset");
+    item = vfd_menu_append_child(pparent, "Offset", "ptp offset");
     item->edit->flags |= VFD_FLAG_TIM_UPD;
-    item = vfd_menu_append_child(pparent, "Clock id", "sys ptp clkid");
-    item = vfd_menu_append_child(pparent, "Port id", "sys ptp portid");
-    item = vfd_menu_append_child(pparent, "PPS", "sys ptp pps");
+    item = vfd_menu_append_child(pparent, "Clock id", "ptp clkid");
+    item = vfd_menu_append_child(pparent, "Port id", "ptp portid");
+    item = vfd_menu_append_child(pparent, "PPS", "ptp pps");
     vfd_menu_make_edit_int(item, 0, 15, 1, VFD_FLAG_IMMEDIATE);
 #endif
 #endif
@@ -214,12 +220,14 @@ void vfd_menu_init(void)
     vfd_menu_draw();
 }
 
+#if 0
 static void vfd_reverse(uint8_t r)
 {
     char buf[16];
     mysnprintf(buf, sizeof(buf), "0x1F72%02X", r);
     vfd_str(buf);
 }
+#endif
 
 #define VFD_LINE_SZ 16
 void vfd_menu_line(char *buf, uint16_t num)

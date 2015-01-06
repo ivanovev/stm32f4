@@ -44,6 +44,7 @@ int main(void)
     }
 #endif
     NVIC_SystemReset();
+    return 0;
 }
 
 #if 0

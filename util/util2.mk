@@ -47,6 +47,7 @@ CFLAGS += -mlittle-endian
 CFLAGS += -mfloat-abi=soft
 #CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 CFLAGS += -funsigned-char
+CFLAGS += -fno-diagnostics-show-caret
 CFLAGS += -I$(PWD)
 CFLAGS += -DSTM32F407xx
 IINCDIR = $(patsubst %,-I%,$(INCDIR))

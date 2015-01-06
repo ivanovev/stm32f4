@@ -134,8 +134,8 @@ void vfd_send_str(const char *str, uint16_t len)
 
 void vfd_str(const char *str)
 {
-    int j;
 #if 0
+    int j;
     if(pwords)
     {
         for(j = 0; j < pwords->len/2; j++)
@@ -153,7 +153,7 @@ void vfd_str(const char *str)
     if(!mystrncmp(str, "0x", 2))
     {
         len = str2bytes(str, tx, sizeof(tx));
-        vfd_send_str(tx, len);
+        vfd_send_str((char*)tx, len);
         return;
     }
     vfd_send_str(str, mystrnlen(str, 32));

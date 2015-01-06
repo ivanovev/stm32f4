@@ -61,7 +61,7 @@ static uint16_t parse_eth_addr(char *in, uint8_t *out, char delim, uint8_t len, 
 }
 
 COMMAND(eth) {
-    ARITY(argc >= 2, "eth subcmd ...");
+    ARITY(argc >= 2, "eth ipaddr|macaddr ...");
     char buf[MAXSTR];
     if(SUBCMD1("reset")) {
         eth_reset();

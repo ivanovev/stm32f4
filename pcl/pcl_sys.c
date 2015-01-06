@@ -92,7 +92,7 @@ uint16_t pcl_load(picolInterp *i, uint32_t addr)
 
 COMMAND(sys) {
     char buf[MAXSTR] = "";
-    ARITY(argc >= 2 || argc == 3, "sys ram|version|ipaddr|... ...");
+    ARITY(argc >= 2 || argc == 3, "sys ram|version|...");
     if(SUBCMD1("ram"))
     {
         return picolSetIntResult(i, mymemory());

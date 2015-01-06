@@ -19,50 +19,6 @@
 #include "i2c/eeprom.h"
 #endif
 
-#ifdef ENABLE_GPIO
-static GPIO_TypeDef *get_gpiox(char *a)
-{
-    char x = to_upper(a[0]);
-    if(x == 'A')
-        return GPIOA;
-    if(x == 'B')
-        return GPIOB;
-    if(x == 'C')
-        return GPIOC;
-    if(x == 'D')
-        return GPIOD;
-    if(x == 'E')
-        return GPIOE;
-    if(x == 'F')
-        return GPIOF;
-    if(x == 'G')
-        return GPIOG;
-    if(x == 'H')
-        return GPIOH;
-    return 0;
-}
-#endif
-
-#ifdef ENABLE_UART
-static USART_TypeDef *get_uartx(char *a)
-{
-    char x = a[0];
-    if(x == '1')
-        return USART1;
-    if(x == '2')
-        return USART2;
-    if(x == '3')
-        return USART3;
-    if(x == '4')
-        return UART4;
-    if(x == '5')
-        return UART5;
-    if(x == '6')
-        return USART6;
-    return 0;
-}
-#endif
-
 #ifdef ENABLE_FLASH
 COMMAND(flash) {
     ARITY(argc >= 2, "flash cmd [addr]");
@@ -116,6 +72,28 @@ COMMAND(mw) {
 }
 
 #ifdef ENABLE_GPIO
+static GPIO_TypeDef *get_gpiox(char *a)
+{
+    char x = to_upper(a[0]);
+    if(x == 'A')
+        return GPIOA;
+    if(x == 'B')
+        return GPIOB;
+    if(x == 'C')
+        return GPIOC;
+    if(x == 'D')
+        return GPIOD;
+    if(x == 'E')
+        return GPIOE;
+    if(x == 'F')
+        return GPIOF;
+    if(x == 'G')
+        return GPIOG;
+    if(x == 'H')
+        return GPIOH;
+    return 0;
+}
+
 COMMAND(gpio) {
     ARITY(argc >= 3, "gpio a|b|c... num [val]");
     GPIO_TypeDef *gpiox = get_gpiox(argv[1]);
@@ -150,6 +128,24 @@ COMMAND(gpio) {
 #endif
 
 #ifdef ENABLE_UART
+static USART_TypeDef *get_uartx(char *a)
+{
+    char x = a[0];
+    if(x == '1')
+        return USART1;
+    if(x == '2')
+        return USART2;
+    if(x == '3')
+        return USART3;
+    if(x == '4')
+        return UART4;
+    if(x == '5')
+        return UART5;
+    if(x == '6')
+        return USART6;
+    return 0;
+}
+
 COMMAND(uart) {
     ARITY((argc >= 3), "uart 1|2|3 str");
     USART_TypeDef *uartx = get_uartx(argv[1]);
