@@ -170,11 +170,12 @@ void myip_make_arp_frame(arpfrm_t *afrm, uint8_t *dst_ip_addr, uint16_t oper)
     myip_update_arp_hdr(&afrm->arp, dst_ip_addr, oper);
 }
 
-void myip_make_udp_frame(udpfrm_t *ufrm, const uint8_t *dst_ip_addr, uint16_t src_port, uint16_t dst_port, uint16_t sz)
+uint16_t myip_make_udp_frame(udpfrm_t *ufrm, const uint8_t *dst_ip_addr, uint16_t src_port, uint16_t dst_port, uint16_t sz)
 {
     myip_update_mac_hdr(&ufrm->mac, dst_ip_addr);
     myip_update_ip_hdr(&ufrm->ip, dst_ip_addr, UDPH_SZ + sz, UDP_PROTO);
     myip_update_udp_hdr(&ufrm->udp, ufrm->udp.src_port, ufrm->udp.dst_port, sz);
+    return MACH_SZ + IPH_SZ + UDPH_SZ + sz;
 }
 
 static void myip_arp_table_update(uint8_t *ip_addr, uint8_t *mac_addr)
@@ -268,12 +269,13 @@ uint16_t myip_udp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
             return 0;
         if(con_table[con_index].port != HTONS_16(ufrm->udp.dst_port))
             return 0;
+        sz = HTONS_16(ufrm->ip.total_len) - IPH_SZ - UDPH_SZ;
     }
-    sz = con_table[con_index].con_handler_ptr(ufrm->data, sz - MACH_SZ - IPH_SZ - UDPH_SZ);
+    sz = con_table[con_index].con_handler_ptr(ufrm->data, sz);
     if(sz)
     {
-        myip_make_udp_frame(ufrm, ufrm->ip.src_ip_addr, HTONS_16(ufrm->udp.src_port), HTONS_16(ufrm->udp.dst_port), sz);
-        return MACH_SZ + IPH_SZ + UDPH_SZ + sz;
+        return myip_make_udp_frame(ufrm, ufrm->ip.src_ip_addr, HTONS_16(ufrm->udp.src_port), HTONS_16(ufrm->udp.dst_port), sz);
+        //return MACH_SZ + IPH_SZ + UDPH_SZ + sz;
     }
     return 0;
 }

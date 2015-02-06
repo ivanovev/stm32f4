@@ -504,7 +504,7 @@ uint16_t myip_ptpd_pdelay(uint8_t *ipaddr, ptpdt_t *dt)
     return 1;
 }
 
-static void myip_make_ptp_frame(ptpfrm_t *pfrm, uint8_t msg_id, uint16_t msg_len)
+static uint16_t myip_make_ptp_frame(ptpfrm_t *pfrm, uint8_t msg_id, uint16_t msg_len)
 {
     const uint8_t *dst_ip_addr = mcast_ipaddr;
     if((msg_id == PTP_PDELAY_REQ) || (msg_id == PTP_PDELAY_RESP) || (msg_id == PTP_PDELAY_RESP_FOLLOW_UP))
@@ -512,6 +512,7 @@ static void myip_make_ptp_frame(ptpfrm_t *pfrm, uint8_t msg_id, uint16_t msg_len
     myip_make_udp_frame((udpfrm_t*)pfrm, dst_ip_addr, PTP_EVT_PORT, PTP_EVT_PORT, msg_len);
     mymemcpy(pfrm->mac.dst, mcast_macaddr, 6);
     pfrm->ip.ttl = 1;
+    return MACH_SZ + IPH_SZ + UDPH_SZ + msg_len;
 }
 static void myip_make_ptp_frame_msg(ptpfrm_t *pfrm, uint8_t msg_id, uint16_t msg_len, uint8_t ctrl, ptpts_t *pts)
 {
@@ -537,8 +538,7 @@ uint16_t myip_ptpd_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
         sz = con_table[con_index].con_handler_ptr(ufrm->data, sz - MACH_SZ - IPH_SZ - UDPH_SZ);
         if(sz)
         {
-            myip_make_ptp_frame(pfrm, ptp->msg_id, sz);
-            return MACH_SZ + IPH_SZ + UDPH_SZ + sz;
+            return myip_make_ptp_frame(pfrm, ptp->msg_id, sz);
         }
         return 0;
     }

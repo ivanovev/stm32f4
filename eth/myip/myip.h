@@ -133,7 +133,7 @@ uint16_t    myip_udp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
 
 void        myip_make_ip_frame(ipfrm_t *ifrm, const uint8_t *dst_ip_addr, uint16_t hsz, uint16_t proto);
 void        myip_make_arp_frame(arpfrm_t *afrm, uint8_t *dst_ip_addr, uint16_t oper);
-void        myip_make_udp_frame(udpfrm_t *ufrm, const uint8_t *dst_ip_addr, uint16_t src_port, uint16_t dst_port, uint16_t data_sz);
+uint16_t    myip_make_udp_frame(udpfrm_t *ufrm, const uint8_t *dst_ip_addr, uint16_t src_port, uint16_t dst_port, uint16_t data_sz);
 
 #endif
 
