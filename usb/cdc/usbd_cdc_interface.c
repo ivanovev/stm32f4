@@ -28,7 +28,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include <main.h>
 #include "usbd_cdc_interface.h"
-#include "tim/tim.h"
+#include "usb/usb.h"
 #include "util/queue.h"
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -91,7 +91,7 @@ static int8_t CDC_Itf_Init(void)
     qcdco.head = 0;
     qcdco.tail = 0;
     USBD_CDC_SetRxBuffer(&USBD_Device, cdci_rx_buf);
-    tim_init();
+    usb_tim_init();
     g_VCPInitialized = 1;
     return (USBD_OK);
 }
@@ -170,22 +170,20 @@ static int8_t CDC_Itf_Control (uint8_t cmd, uint8_t* pbuf, uint16_t length)
     return (USBD_OK);
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+void CDC_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *)USBD_Device.pClassData;
     if(pCDC->TxState)
         return;
-    static uint32_t buf1[IO_BUF_SZ/4];
-    uint8_t *buf2 = (uint8_t*)buf1;
-    int sz = dequeue(&qcdco, buf2, 0);
+    uint8_t buf[IO_BUF_SZ];
+    int sz = dequeue(&qcdco, buf, 0);
     if(sz)
     {
-        USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *)buf2, sz);
+        USBD_CDC_SetTxBuffer(&USBD_Device, buf, sz);
         USBD_CDC_TransmitPacket(&USBD_Device);
     }
     else
     {
-        USBD_CDC_SetRxBuffer(&USBD_Device, cdci_rx_buf);
         USBD_CDC_ReceivePacket(&USBD_Device);
     }
 }

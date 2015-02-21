@@ -172,14 +172,18 @@ int32_t str2int(const char *str)
     return atoi(str);
 }
 
-int str2bytes(const char *in, uint8_t *out, int maxlen)
+int str2bytes(const char *in, uint8_t *out, int maxbytes)
 {
     int len;
     char ch[3] = {0, 0, 0};
     const char *tmp;
-    if(!mystrncmp(in, "0x", 2)) in += 2;
+    if(!mystrncmp(in, "0x", 2))
+        in += 2;
     tmp = in;
-    for(len = 0; (tmp - in) < (2*maxlen); tmp++)
+    len = mystrnlen(tmp, 2*maxbytes);
+    if(maxbytes > len/2)
+        maxbytes = len/2;
+    for(len = 0; (tmp - in) < (2*maxbytes); tmp++)
     {
         ch[0] = tmp[0];
         ch[1] = tmp[1];
@@ -192,11 +196,11 @@ int str2bytes(const char *in, uint8_t *out, int maxlen)
         else
             break;
     }
-    out[len++] = 0;
-    return len - 1;
+    out[len] = 0;
+    return len;
 }
 
-uint16_t bytes2str(const char *in, uint8_t *out, uint16_t sz)
+uint16_t bytes2str(const char *in, char *out, uint16_t sz)
 {
     uint16_t i = 0;
     out[0] = '0';
@@ -492,10 +496,18 @@ void io_newline(void)
     io_send_str("\n\r", 2);
 }
 
-void io_prompt(uint8_t newline)
+void io_prompt(uint8_t newline, const char *prefix)
 {
     if(newline)
         io_newline();
+    if(prefix)
+    {
+        if(prefix[0])
+        {
+            io_send_str(prefix, mystrnlen(prefix, 32));
+            io_send_str(" ", 1);
+        }
+    }
     io_send_str("#> ", 3);
 }
 
@@ -508,10 +520,10 @@ void io_echo(void)
         if(!myisnewline(buf[0]))
         {
             io_send_str4(buf);
-            io_prompt(1);
+            io_prompt(1, 0);
         }
         else
-            io_prompt(0);
+            io_prompt(0, 0);
     }
 }
 

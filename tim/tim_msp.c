@@ -3,12 +3,20 @@
 
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 {
-#ifdef TIMx
+#ifdef TIMn
     if(htim->Instance == TIMx)
     {
         TIMx_CLK_ENABLE();
         HAL_NVIC_SetPriority(TIMx_IRQn, 0xF, 0);
         HAL_NVIC_EnableIRQ(TIMx_IRQn);
+    }
+#endif
+#ifdef PTP_TIMx
+    if(htim->Instance == PTP_TIMx)
+    {
+        PTP_TIMx_CLK_ENABLE();
+        HAL_NVIC_SetPriority(PTP_TIMx_IRQn, 0xF, 0);
+        HAL_NVIC_EnableIRQ(PTP_TIMx_IRQn);
     }
 #endif
 #ifdef VFD_TIMx
@@ -19,12 +27,12 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
         HAL_NVIC_EnableIRQ(VFD_TIMx_IRQn);
     }
 #endif
-#ifdef PTP_TIMx
-    if(htim->Instance == PTP_TIMx)
+#ifdef USB_TIMx
+    if(htim->Instance == USB_TIMx)
     {
-        PTP_TIMx_CLK_ENABLE();
-        HAL_NVIC_SetPriority(PTP_TIMx_IRQn, 0xF, 0);
-        HAL_NVIC_EnableIRQ(PTP_TIMx_IRQn);
+        USB_TIMx_CLK_ENABLE();
+        HAL_NVIC_SetPriority(USB_TIMx_IRQn, 0xF, 0);
+        HAL_NVIC_EnableIRQ(USB_TIMx_IRQn);
     }
 #endif
 }
@@ -40,35 +48,11 @@ void HAL_TIM_OC_MspInit(TIM_HandleTypeDef *htim)
 
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
 {
-#ifdef TIMx
+#ifdef TIMn
     if(htim->Instance == TIMx)
     {
         TIMx_FORCE_RESET();
         TIMx_RELEASE_RESET();
-    }
-#endif
-#ifdef ENABLE_VFD
-    if(htim->Instance == VFD_TIMx)
-    {
-        VFD_TIMx_FORCE_RESET();
-        VFD_TIMx_RELEASE_RESET();
-    }
-#endif
-}
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-#ifdef TIMx
-    if(htim->Instance == TIMx)
-    {
-        led_toggle();
-    }
-#endif
-#ifdef ENABLE_VFD
-    if(htim->Instance == VFD_TIMx)
-    {
-        led_toggle();
-        vfd_tim_upd();
     }
 #endif
 }

@@ -1,5 +1,5 @@
 
-#include "eth.h"
+#include "eth/eth.h"
 #include "dbg.h"
 
 uint16_t myip_dbg_con_handler(uint8_t *data, uint16_t sz)

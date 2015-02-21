@@ -9,7 +9,9 @@ int main(void)
     dbg_send_str3("uart_test", 1);
     for (;;)
     {
+        //dbg_send_str3("uart_test", 1);
         io_echo();
+        //HAL_Delay(1000);
     }
 }
 

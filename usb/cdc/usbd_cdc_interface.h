@@ -37,6 +37,7 @@ extern USBD_CDC_ItfTypeDef  USBD_CDC_fops;
 uint16_t VCP_read(char *buf);
 void VCP_write(const char *buf, uint16_t sz);
 extern volatile char g_VCPInitialized;
+void CDC_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */

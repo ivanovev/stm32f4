@@ -7,7 +7,6 @@
 #include "util/system_msp.h"
 
 #define TIMn                2
-#define TIMx                JOIN(TIM, TIMn)
 #define TIMx_INTERVAL       1000
 
 #endif

@@ -8,6 +8,7 @@
 void        pcl_init(void);
 uint16_t    pcl_exec(char *cmd);
 void        pcl_io(void);
+struct picolInterp* pcl_get_interp(void);
 
 #endif
 

@@ -47,7 +47,7 @@ void USBD_static_free(void *p)
 }
 
 #if 0
-#ifdef HAL_UART_MODULE_ENABLED
+#ifdef ENABLE_UART
 void uart_print_request(USBD_HandleTypeDef *pdev)
 {
     if(pdev->request.bRequest == 0x00)

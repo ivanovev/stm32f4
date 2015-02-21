@@ -103,7 +103,7 @@ $(BUILDDIR) $(OBJDIR):
 
 $(C_OBJS) : $(OBJDIR)/%.o : %.c Makefile *.h
 	@echo $<
-	$(CC) $< ${CFLAGS} -c -o $@
+	@$(CC) $< ${CFLAGS} -c -o $@
 
 $(A_OBJS) : $(OBJDIR)/%.o : %.s Makefile
 	@echo $<

@@ -2,7 +2,7 @@
 include ../util/util1.mk
 C_SRCS += main.c
 include $(ROOT_DIR)/gpio/gpio.mk
-#include $(ROOT_DIR)/uart/uart.mk
+include $(ROOT_DIR)/tim/tim.mk
 include usb.mk
 include $(ROOT_DIR)/util/util2.mk
 

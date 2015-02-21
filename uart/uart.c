@@ -1,9 +1,12 @@
 
 #include "uart/uart.h"
 #include "util/queue.h"
+#include "gpio/led.h"
 
+#ifdef UARTn
 #pragma message "UART: UART" STR(UARTn)
 #pragma message "UART_BAUDRATE: " STR(UART_BAUDRATE)
+#endif
 
 UART_HandleTypeDef huart;
 Queue quart;
@@ -14,14 +17,15 @@ uint16_t uart_recv_str(char *buf)
     return dequeue(&quart, (uint8_t*)buf, 1);
 }
 
-#if UART_RX_ENABLE
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+#ifndef UART_RX_DISABLE
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *phuart)
 {
+    led_toggle();
     uint8_t ch = uart_rx_buf[0];
     if(ch != '\r')
         enqueue(&quart, ch);
-    HAL_UART_Transmit(huart, uart_rx_buf, 1, 0);
-    HAL_UART_Receive_IT(huart, uart_rx_buf, 1);
+    HAL_UART_Transmit(phuart, uart_rx_buf, 1, 0);
+    HAL_UART_Receive_IT(phuart, uart_rx_buf, 1);
 }
 #endif
 
@@ -31,6 +35,7 @@ void uart_init(void)
 {
     quart.head = 0;
     quart.tail = 0;
+#ifdef UARTn
     huart.Instance        = UARTx;
     huart.Init.BaudRate   = UART_BAUDRATE;
     huart.Init.WordLength = UART_WORDLENGTH_8B;
@@ -44,12 +49,45 @@ void uart_init(void)
         Error_Handler();
     }
 
-#if UART_RX_ENABLE
+#ifndef UART_RX_DISABLE
     if(HAL_UART_Receive_IT(&huart, uart_rx_buf, 1) != HAL_OK)
     {
         Error_Handler();
     }
 #endif
+#endif
+}
+
+USART_TypeDef* uart_get_instance(uint8_t n)
+{
+    if(n == 1)
+        return USART1;
+    if(n == 2)
+        return USART2;
+    if(n == 3)
+        return USART3;
+    if(n == 4)
+        return UART4;
+    if(n == 5)
+        return UART5;
+    if(n == 6)
+        return USART6;
+    return 0;
+}
+
+void uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n)
+{
+    phuart->Instance        = uart_get_instance(n);
+#ifdef UART_BAUDRATE
+    phuart->Init.BaudRate   = UART_BAUDRATE;
+#endif
+    phuart->Init.WordLength = UART_WORDLENGTH_8B;
+    phuart->Init.StopBits   = UART_STOPBITS_1;
+    phuart->Init.Parity     = UART_PARITY_NONE;
+    phuart->Init.Mode       = UART_MODE_TX_RX;
+    phuart->Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+    phuart->ErrorCode       = HAL_UART_ERROR_NONE;
+    phuart->State           = HAL_UART_STATE_READY;
 }
 
 void uart_send_str(const char *str, uint16_t len)
@@ -135,7 +173,7 @@ volatile uint32_t* uart_get_reg_ptr(USART_TypeDef *uartx, const char *reg)
         return &(uartx->CR2);
     if(!mystrncmp(reg, "cr3", 3))
         return &(uartx->CR3);
-    if(!mystrncmp(reg, "GTPR", 4))
+    if(!mystrncmp(reg, "gtpr", 4))
         return &(uartx->GTPR);
     return 0;
 

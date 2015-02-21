@@ -41,13 +41,16 @@
 #ifdef ENABLE_ETH
 #include "eth/eth.h"
 #endif
+
 #ifdef ENABLE_USB
-extern void usb_init();
+#include "usb/usb.h"
 #endif
 
 #define RESET_REBOOT 1
 #define RESET_FWUPG 2
 #define RESET_PCLUPD 3
+
+extern void Error_Handler(void);
 
 void        myinit(void);
 void        mydeinit(void);

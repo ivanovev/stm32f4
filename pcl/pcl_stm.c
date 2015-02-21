@@ -6,9 +6,11 @@
 #include "gpio/gpio.h"
 #endif
 
+#if 0
 #ifdef ENABLE_ETH
 #include "eth/mdio.h"
 #include "eth/eth.h"
+#endif
 #endif
 
 #ifdef ENABLE_FLASH
@@ -72,7 +74,7 @@ COMMAND(mw) {
 }
 
 #ifdef ENABLE_GPIO
-static GPIO_TypeDef *get_gpiox(char *a)
+static GPIO_TypeDef *get_gpio_instance(char *a)
 {
     char x = to_upper(a[0]);
     if(x == 'A')
@@ -96,7 +98,9 @@ static GPIO_TypeDef *get_gpiox(char *a)
 
 COMMAND(gpio) {
     ARITY(argc >= 3, "gpio a|b|c... num [val]");
-    GPIO_TypeDef *gpiox = get_gpiox(argv[1]);
+    GPIO_TypeDef *gpiox = get_gpio_instance(argv[1]);
+    if(gpiox == 0)
+        return PICOL_ERR;
     ARITY(gpiox, "gpio a|b|c... num [val]");
     uint32_t pin = 0, value = 0;
     volatile uint32_t *reg_ptr = gpio_get_reg_ptr(gpiox, argv[2]);
@@ -128,29 +132,34 @@ COMMAND(gpio) {
 #endif
 
 #ifdef ENABLE_UART
-static USART_TypeDef *get_uartx(char *a)
-{
-    char x = a[0];
-    if(x == '1')
-        return USART1;
-    if(x == '2')
-        return USART2;
-    if(x == '3')
-        return USART3;
-    if(x == '4')
-        return UART4;
-    if(x == '5')
-        return UART5;
-    if(x == '6')
-        return USART6;
-    return 0;
-}
-
 COMMAND(uart) {
-    ARITY((argc >= 3), "uart 1|2|3 str");
-    USART_TypeDef *uartx = get_uartx(argv[1]);
-    ARITY(uartx, "uart 1|2|3 str");
-    int32_t value = 0;
+    ARITY((argc >= 2), "uart 1|2|3... str");
+    char buf[IO_BUF_SZ];
+    uint32_t value = 0, j = 0;
+    static uint32_t timeout = 500;
+    static char append[4] = {0, 0, 0, 0};
+    if(SUBCMD1("timeout"))
+    {
+        if(argc == 3)
+            timeout = str2int(argv[2]);
+        return picolSetIntResult(i, timeout);
+    }
+    if(SUBCMD1("append"))
+    {
+        if(argc == 3)
+        {
+            append[0] = 0;
+            str2bytes(argv[2], (uint8_t*)append, 4);
+        }
+        if(append[0] == 0)
+            return picolSetIntResult(i, 0);
+        bytes2str(append, buf, mystrnlen(append, sizeof(append)));
+        return picolSetResult(i, buf);
+    }
+    USART_TypeDef *uartx = uart_get_instance((uint8_t)str2int(argv[1]));
+    ARITY(uartx, "uart 1|2|3... str");
+
+    ARITY((argc >= 3), "uart 1|2|3... str");
     volatile uint32_t *reg_ptr = uart_get_reg_ptr(uartx, argv[2]);
     if(reg_ptr)
     {
@@ -158,9 +167,27 @@ COMMAND(uart) {
             value = uart_get_reg(uartx, argv[2]);
         else if(argc == 4)
             value = uart_set_reg(uartx, argv[2], str2int(argv[3]));
+        return picolSetHexResult(i, value);
     }
-    else
-        return PICOL_ERR;
+    if(uartx)
+    {
+        UART_HandleTypeDef huart;
+        uart_get_handle(&huart, 0);
+        huart.Instance = uartx;
+        buf[0] = 0;
+        for(j = 2; j < argc; j++)
+        {
+            mystrncat(buf, argv[j], IO_BUF_SZ);
+            if(j != (argc - 1))
+                mystrncat(buf, " ", IO_BUF_SZ);
+        }
+        HAL_UART_Transmit(&huart, (uint8_t*)buf, mystrnlen(buf, IO_BUF_SZ), timeout);
+        if(append[0] != 0)
+            HAL_UART_Transmit(&huart, (uint8_t*)append, mystrnlen(append, sizeof(append)), timeout);
+        mymemset(buf, 0, IO_BUF_SZ);
+        HAL_UART_Receive(&huart, (uint8_t*)buf, IO_BUF_SZ, timeout);
+        return picolSetResult(i, buf);
+    }
     return picolSetHexResult(i,value);
 }
 #endif

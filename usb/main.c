@@ -1,5 +1,6 @@
 
-#include "main.h"
+#include <main.h>
+#include "usb.h"
 
 int main(void)
 {
@@ -10,5 +11,11 @@ int main(void)
     {
         io_echo();
     }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    led_toggle();
+    usb_tim_cb(htim);
 }
 

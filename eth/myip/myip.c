@@ -1,5 +1,5 @@
 
-#include "eth.h"
+#include "eth/eth.h"
 #ifdef ENABLE_ICMP
 #include "icmp/icmp.h"
 #endif
@@ -36,11 +36,9 @@ void myip_init(void)
 {
     mymemset(&arp_table, 0, ARP_TABLE_SZ*sizeof(ARP_ENTRY));
     mymemset(&con_table, 0, CON_TABLE_SZ*sizeof(CON_ENTRY));
-    myip_tcp_init();
 #ifdef ENABLE_ICMP
     myip_icmp_init();
     myip_con_add(myip_icmp_frm_handler, myip_icmp_con_handler, ICMP_PROTO, 0);
-#endif
 #ifdef ENABLE_TFTP
     myip_tftpd_init();
     myip_con_add(myip_udp_frm_handler, myip_tftpd_con_handler, UDP_PROTO, TFTP_PORT);
@@ -55,11 +53,14 @@ void myip_init(void)
     myip_con_add(myip_udp_frm_handler, myip_dbg_con_handler, UDP_PROTO, DBG_PORT);
 #endif
 #ifdef ENABLE_TELNET
+    myip_tcp_init();
     myip_telnetd_init();
     myip_con_add(myip_tcp_frm_handler, myip_telnetd_con_handler, TCP_PROTO, TELNET_PORT);
 #endif
+#endif
 }
 
+#ifdef ENABLE_ICMP
 void myip_con_add(frm_handler frm_handler_ptr, con_handler con_handler_ptr, uint8_t proto, uint16_t port)
 {
     static uint8_t i = 0;
@@ -279,4 +280,10 @@ uint16_t myip_udp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
     }
     return 0;
 }
+#else
+uint16_t myip_eth_frm_handler(ethfrm_t *frm, uint16_t sz)
+{
+    return 0;
+}
+#endif
 

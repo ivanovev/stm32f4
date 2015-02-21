@@ -154,4 +154,10 @@ void OTG_HS_IRQHandler(void)
   HAL_PCD_IRQHandler(&hpcd);
 }
 
+extern TIM_HandleTypeDef husbtim;
+void USB_TIMx_IRQHandler(void)
+{
+    HAL_TIM_IRQHandler(&husbtim);
+}
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

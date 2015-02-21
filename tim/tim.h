@@ -2,6 +2,9 @@
 #ifndef __TIM_H__
 #define __TIM_H__
 
+#include <main.h>
+
+#define TIMx                JOIN(TIM, TIMn)
 #define TIMx_CLK_ENABLE     JOIN3(__TIM, TIMn, _CLK_ENABLE)
 #define TIMx_IRQn           JOIN3(TIM, TIMn, _IRQn)
 #define TIMx_FORCE_RESET JOIN3(__TIM, TIMn, _FORCE_RESET)

@@ -1,6 +1,8 @@
 
 #include "uart.h"
 
+#ifdef UARTn
+
 #pragma message "UART_TX: GPIO" STR(UART_TX_GPIO) " PIN" STR(UART_TX_PIN)
 #pragma message "UART_RX: GPIO" STR(UART_RX_GPIO) " PIN" STR(UART_RX_PIN)
 
@@ -29,3 +31,4 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 #endif
 }
 
+#endif

@@ -9,9 +9,7 @@
 #include "usb.h"
 #include "util/macro.h"
 #include "util/util.h"
-
-#define TIMn                3
-#define TIMx_INTERVAL       5
+#include "util/system_msp.h"
 
 #endif
 

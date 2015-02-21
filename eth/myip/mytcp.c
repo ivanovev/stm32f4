@@ -1,4 +1,6 @@
 
+#ifdef ENABLE_TELNET
+
 #include "mytcp.h"
 
 #ifdef ENABLE_TELNET
@@ -220,3 +222,4 @@ uint16_t myip_tcp_con_closed(void)
     return tcp_con.state == TCP_CON_CLOSED;
 }
 
+#endif

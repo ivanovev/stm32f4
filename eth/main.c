@@ -1,8 +1,9 @@
 
 #include <main.h>
 #include "eth/eth.h"
-#include "eth/myip/mytcp.h"
+#include "eth/mdio.h"
 #ifdef ENABLE_TELNET
+#include "eth/myip/mytcp.h"
 #include "eth/myip/telnet/telnetd.h"
 #endif
 #include "core_cm4.h"
@@ -13,6 +14,7 @@ volatile uint8_t reset = 0;
 int main(void)
 {
     myinit();
+    //mdio_read(0);
 #ifdef ENABLE_TELNET
     io_recv_str_ptr = telnetd_recv_str;
     io_send_str_ptr = telnetd_send_str;
@@ -26,7 +28,7 @@ int main(void)
         vfd_upd();
 #endif
         eth_io();
-#if 1
+#ifdef ENABLE_TELNET
         if(myip_tcp_con_closed())
         {
             if((reset == RESET_FWUPG) || (reset == RESET_REBOOT))

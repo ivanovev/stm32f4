@@ -8,6 +8,7 @@
 #include "util/heap1.h"
 
 static struct picolInterp *pcl_interp = 0;
+static char pcl_prefix[32];
 
 void pcl_clear(void)
 {
@@ -20,6 +21,14 @@ COMMAND(clear) {
     if(i->level == 0)
         pcl_clear();
     return PICOL_OK;
+}
+
+COMMAND(prefix) {
+    if(argc == 2)
+        mystrncpy(pcl_prefix, argv[1], mystrnlen(argv[1], sizeof(pcl_prefix)));
+    else
+        pcl_prefix[0] = 0;
+    return picolSetResult(i, pcl_prefix);
 }
 
 void pcl_init(void)
@@ -37,8 +46,15 @@ void pcl_init(void)
         pcl_eth_init(pcl_interp);
 #endif
         picolRegisterCmd(pcl_interp, "clear", picol_clear, 0);
+        picolRegisterCmd(pcl_interp, "prefix", picol_prefix, 0);
         dbg_send_str3("pcl_init", 1);
+        pcl_prefix[0] = 0;
     }
+}
+
+struct picolInterp* pcl_get_interp(void)
+{
+    return pcl_interp;
 }
 
 uint16_t pcl_exec(char *buf)
@@ -55,6 +71,7 @@ uint16_t pcl_exec(char *buf)
 void pcl_io(void)
 {
     static char buf[IO_BUF_SZ];
+    char buf2[IO_BUF_SZ];
     uint16_t sz = io_recv_str(buf);
     uint16_t rc = PICOL_WAIT;
     uint32_t wait = pcl_interp->wait;
@@ -64,12 +81,20 @@ void pcl_io(void)
     {
         if(!myisempty(buf))
         {
-            dbg_send_str3("pcl_exec", 1);
+            //dbg_send_str3("pcl_exec", 1);
+            if(pcl_prefix[0] && mystrncmp(buf, "prefix", 6))
+            {
+                buf2[0] = 0;
+                mystrncat(buf2, pcl_prefix, sizeof(pcl_prefix));
+                mystrncat(buf2, " ", 1);
+                mystrncat(buf2, buf, sz - sizeof(pcl_prefix));
+                mystrncpy(buf, buf2, mystrnlen(buf2, IO_BUF_SZ));
+            }
             rc = pcl_exec(buf);
         }
         else
         {
-            io_prompt(0);
+            io_prompt(0, pcl_prefix);
             wait = 0;
             return;
         }
@@ -91,7 +116,7 @@ void pcl_io(void)
     if(rc != PICOL_WAIT)
     {
         io_send_str4(buf);
-        io_prompt(1);
+        io_prompt(1, pcl_prefix);
         pcl_interp->wait = 0;
     }
     else if(wait == 0)

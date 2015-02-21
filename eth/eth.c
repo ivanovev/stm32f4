@@ -3,8 +3,10 @@
 #include "eth.h"
 #include "eth/myip/mytcp.h"
 
+#ifdef ENABLE_MYIP
 #ifdef ENABLE_PTP
 #include "eth/myip/ptp/ptpd.h"
+#endif
 #endif
 
 #pragma message "PHY_ADDRESS: " STR(PHY_ADDRESS)
@@ -21,11 +23,14 @@ __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethe
 __ALIGN_BEGIN static ethfrm_t iofrm __ALIGN_END;
 
 ETH_HandleTypeDef heth;
+#ifdef ENABLE_MYIP
 extern uint8_t local_ipaddr[4];
 extern uint8_t local_macaddr[6];
+#endif
 
 void eth_init(void)
 {
+#ifdef ENABLE_MYIP
 #ifdef ENABLE_I2C
     eeprom_ipaddr_read(local_ipaddr);
     eeprom_macaddr_read(local_macaddr);
@@ -51,6 +56,7 @@ void eth_init(void)
     {
         dbg_send_str3("HAL_ETH_Init = err", 1);
     }
+#ifndef ENABLE_CPTR
     /* Initialize Tx Descriptors list: Chain Mode */
     HAL_ETH_DMATxDescListInit(&heth, DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);
     /* Initialize Rx Descriptors list: Chain Mode  */
@@ -59,6 +65,8 @@ void eth_init(void)
     eth_ptp_start(&heth, PTP_FINE);
 #endif
     HAL_ETH_Start(&heth);
+#endif
+#endif
 }
 
 void eth_deinit(void)
@@ -142,12 +150,14 @@ uint8_t eth_io(void)
 {
     iofrm.e.mac.type = 0;
     uint16_t sz = eth_input(&iofrm);
+#ifdef ENABLE_MYIP
     sz = myip_eth_frm_handler(&iofrm, sz);
     if(sz)
     {
         eth_output(&iofrm, sz);
         return 1;
     }
+#endif
     return 0;
 }
 
@@ -164,7 +174,6 @@ void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef *pheth)
 {
     uint16_t i;
     ptpts_t time;
-#if 1
     __IO ETH_DMADescTypeDef *dmatxdesc = 0;
     for(i = 0; i < ETH_TXBUFNB; i++)
     {
@@ -176,7 +185,6 @@ void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef *pheth)
     }
     eth_ptpts_get(&time, dmatxdesc);
     myip_ptpd_save_ts(&time);
-#endif
 }
 #endif
 

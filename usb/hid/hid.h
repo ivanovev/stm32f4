@@ -1,4 +1,7 @@
 
+#ifndef __USB_HID_H__
+#define __USB_HID_H__
+
 #include "usbd_desc.h"
 //#include "usbd_cdc.h"
 //#include "usbd_cdc_interface.h"
@@ -15,5 +18,6 @@
 #define USB_VBUSON_PIN 0
 #endif
 
-void usb_init(void);
+void usb_hid_init(void);
 
+#endif

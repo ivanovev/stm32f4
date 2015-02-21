@@ -9,6 +9,7 @@
 #include "i2c/eeprom.h"
 #endif
 
+#ifdef ENABLE_MYIP
 #ifdef ENABLE_ICMP
 #include "eth/myip/icmp/icmp.h"
 #endif
@@ -16,11 +17,14 @@
 #ifdef ENABLE_PTP
 #include "eth/myip/ptp/ptpd.h"
 #endif
-
-extern volatile uint8_t reset;
 extern uint8_t local_ipaddr[4];
 extern ARP_ENTRY arp_table[ARP_TABLE_SZ];
+#endif
 
+extern volatile uint8_t reset;
+
+#ifdef ENABLE_MYIP
+#ifdef ENABLE_TELNET
 COMMAND(exit) {
     myip_tcp_con_close();
     return picolSetIntResult(i, 0);
@@ -30,16 +34,17 @@ COMMAND(reset) {
     reset = RESET_REBOOT;
     return picolSetIntResult(i, 0);
 }
+#endif
+#endif
 
 COMMAND(mdio) {
-    ARITY(argc >= 2, "mdio ...");
-    uint32_t reg, value = 0;
-    reg = str2int(argv[1]);
+    ARITY(argc >= 2, "mdio reg [val]");
+    uint16_t reg = (uint16_t)str2int(argv[1]), val;
     if(argc == 2)
-    {
-        value = mdio_read(reg);
-    }
-    return picolSetHex4Result(i,value);
+        val = (uint16_t)mdio_read(reg);
+    if(argc == 3)
+        val = (uint16_t)mdio_write(reg, val);
+    return picolSetHex2Result(i, val);
 }
 
 static uint16_t parse_eth_addr(char *in, uint8_t *out, char delim, uint8_t len, uint16_t base)
@@ -121,6 +126,7 @@ COMMAND(eth) {
     return PICOL_OK;
 }
 
+#ifdef ENABLE_MYIP
 #ifdef ENABLE_PTP
 static char* format_delay(ptpdt_t *dt, char *ptr, uint32_t sz)
 {
@@ -302,17 +308,24 @@ COMMAND(arp) {
     *ptr = 0;
     return picolSetResult(i, buf);
 }
+#endif
 
 void pcl_eth_init(picolInterp *i)
 {
-    picolRegisterCmd(i, "exit", picol_exit, 0);
-    picolRegisterCmd(i, "reset", picol_reset, 0);
     picolRegisterCmd(i, "mdio", picol_mdio, 0);
     picolRegisterCmd(i, "eth", picol_eth, 0);
-    picolRegisterCmd(i, "ping", picol_ping, 0);
+#ifdef ENABLE_MYIP
+#ifdef ENABLE_TELNET
+    picolRegisterCmd(i, "exit", picol_exit, 0);
+    picolRegisterCmd(i, "reset", picol_reset, 0);
     picolRegisterCmd(i, "arp", picol_arp, 0);
+#ifdef ENABLE_ICMP
+    picolRegisterCmd(i, "ping", picol_ping, 0);
+#endif
 #ifdef ENABLE_PTP
     picolRegisterCmd(i, "ptp", picol_ptp, 0);
+#endif
+#endif
 #endif
 }
 

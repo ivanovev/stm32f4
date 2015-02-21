@@ -25,8 +25,8 @@ uint8_t     itoa(int32_t i, char *b);
 uint32_t    htoi(char *myArray);
 uint8_t     itoh(uint32_t v, char *buf, uint8_t bytes);
 int32_t     str2int(const char *buf);
-int         str2bytes(const char *in, uint8_t *out, int maxlen);
-uint16_t    bytes2str(const char *in, uint8_t *out, uint16_t sz);
+int         str2bytes(const char *in, uint8_t *out, int maxbytes);
+uint16_t    bytes2str(const char *in, char *out, uint16_t sz);
 uint8_t     int2str(int32_t i, char *buf, uint8_t base);
 void        strip_str(char *str);
 
@@ -70,7 +70,7 @@ void io_send_hex2(const char *str, uint32_t h);
 void io_send_hex3(const char *str, int n, uint32_t h);
 void io_send_hex4(const char *str, const uint8_t *bytes, uint32_t n);
 void io_newline(void);
-void io_prompt(uint8_t newline);
+void io_prompt(uint8_t newline, const char *prefix);
 void io_echo(void);
 
 #ifdef __arm__
