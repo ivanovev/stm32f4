@@ -196,15 +196,25 @@
 
 /* Section 2: PHY configuration section */
 
-/* DP83848 PHY Address*/ 
+/* PHY Address*/ 
+#ifndef ENABLE_CPTR
+#define PHY_ADDRESS             0x0
+#else
 #define PHY_ADDRESS             0x1
+#endif
 /* PHY Reset delay these values are based on a 1 ms Systick interrupt*/ 
 #define PHY_RESET_DELAY                 ((uint32_t)0x000000FF)
 /* PHY Configuration delay */
 #define PHY_CONFIG_DELAY                ((uint32_t)0x00000FFF)
 
+#if 0
 #define PHY_READ_TO                     ((uint32_t)0x0000FFFF)
 #define PHY_WRITE_TO                    ((uint32_t)0x0000FFFF)
+#else
+// 1 second mdio timeouts
+#define PHY_READ_TO                     ((uint32_t)1000)
+#define PHY_WRITE_TO                    ((uint32_t)1000)
+#endif
 
 /* Section 3: Common PHY Registers */
 

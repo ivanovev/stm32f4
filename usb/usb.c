@@ -13,7 +13,7 @@ void usb_init(void)
     usb_cdc_init();
 #else
 #ifdef ENABLE_USB_HID
-    usb_cdc_init();
+    usb_hid_init();
 #endif
 #endif
 }

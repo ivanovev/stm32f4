@@ -6,13 +6,6 @@
 #include "gpio/gpio.h"
 #endif
 
-#if 0
-#ifdef ENABLE_ETH
-#include "eth/mdio.h"
-#include "eth/eth.h"
-#endif
-#endif
-
 #ifdef ENABLE_FLASH
 #include "flash/flash.h"
 #endif
@@ -103,13 +96,12 @@ COMMAND(gpio) {
         return PICOL_ERR;
     ARITY(gpiox, "gpio a|b|c... num [val]");
     uint32_t pin = 0, value = 0;
-    volatile uint32_t *reg_ptr = gpio_get_reg_ptr(gpiox, argv[2]);
-    if(reg_ptr)
+    volatile uint32_t *preg = gpio_get_reg_ptr(gpiox, argv[2]);
+    if(preg)
     {
-        if(argc == 3)
-            value = gpio_get_reg(gpiox, argv[2]);
-        else if(argc == 4)
-            value = gpio_set_reg(gpiox, argv[2], str2int(argv[3]));
+        if(argc == 4)
+            *preg = str2int(argv[3]);
+        return picolSetHex4Result(i,*preg);
     }
     else if(('0' <= argv[2][0]) && (argv[2][0] <= '9'))
     {

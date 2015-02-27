@@ -19,15 +19,24 @@
 #include "uart/uart.h"
 #endif
 
+#ifdef ENABLE_ETH
+#include "eth/eth.h"
+#include "eth/mdio.h"
+#endif
+
 volatile uint8_t reset = 0;
 
 int main(void)
 {
     myinit();
     cptr_init();
-    //char buf[IO_BUF_SZ];
+#ifdef ENABLE_ETH
+    //mdio_read(3);
+#endif
+#ifdef ENABLE_USB
     io_recv_str_ptr = VCP_read;
     io_send_str_ptr = VCP_write;
+#endif
     for (;;)
     {
 #ifdef ENABLE_PCL
@@ -38,6 +47,7 @@ int main(void)
     }
 }
 
+#ifdef ENABLE_TIM
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     led_toggle();
@@ -45,4 +55,5 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     usb_tim_cb(htim);
 #endif
 }
+#endif
 

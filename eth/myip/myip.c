@@ -26,6 +26,7 @@
 #define ARP_HLEN            0x06
 #define ARP_PLEN            0x04
 
+#ifdef ENABLE_ICMP
 ARP_ENTRY arp_table[ARP_TABLE_SZ];
 CON_ENTRY con_table[CON_TABLE_SZ];
 
@@ -36,7 +37,6 @@ void myip_init(void)
 {
     mymemset(&arp_table, 0, ARP_TABLE_SZ*sizeof(ARP_ENTRY));
     mymemset(&con_table, 0, CON_TABLE_SZ*sizeof(CON_ENTRY));
-#ifdef ENABLE_ICMP
     myip_icmp_init();
     myip_con_add(myip_icmp_frm_handler, myip_icmp_con_handler, ICMP_PROTO, 0);
 #ifdef ENABLE_TFTP
@@ -57,8 +57,8 @@ void myip_init(void)
     myip_telnetd_init();
     myip_con_add(myip_tcp_frm_handler, myip_telnetd_con_handler, TCP_PROTO, TELNET_PORT);
 #endif
-#endif
 }
+#endif
 
 #ifdef ENABLE_ICMP
 void myip_con_add(frm_handler frm_handler_ptr, con_handler con_handler_ptr, uint8_t proto, uint16_t port)

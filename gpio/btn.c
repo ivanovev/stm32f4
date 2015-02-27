@@ -17,13 +17,5 @@ uint16_t btn_state(void)
     return HAL_GPIO_ReadPin(GPIO(BTN_GPIO), PIN(BTN_PIN));
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t pin)
-{
-    if(pin == PIN(BTN_PIN))
-    {
-        led_toggle();
-    }
-}
-
 #endif
 

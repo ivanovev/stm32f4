@@ -2,6 +2,7 @@
 #include <main.h>
 #include "eth.h"
 #include "eth/myip/mytcp.h"
+#include "gpio/led.h"
 
 #ifdef ENABLE_MYIP
 #ifdef ENABLE_PTP
@@ -23,22 +24,24 @@ __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethe
 __ALIGN_BEGIN static ethfrm_t iofrm __ALIGN_END;
 
 ETH_HandleTypeDef heth;
-#ifdef ENABLE_MYIP
+#ifdef ENABLE_ICMP
 extern uint8_t local_ipaddr[4];
 extern uint8_t local_macaddr[6];
 #endif
 
 void eth_init(void)
 {
-#ifdef ENABLE_MYIP
 #ifdef ENABLE_I2C
     eeprom_ipaddr_read(local_ipaddr);
     eeprom_macaddr_read(local_macaddr);
 #endif
+
+#ifdef ENABLE_ICMP
     myip_init();
+    heth.Init.MACAddr = local_macaddr;
+#endif
 
     heth.Instance = ETH;
-    heth.Init.MACAddr = local_macaddr;
     heth.Init.AutoNegotiation = ETH_AUTONEGOTIATION_ENABLE;
     heth.Init.Speed = ETH_SPEED_100M;
     heth.Init.DuplexMode = ETH_MODE_FULLDUPLEX;
@@ -56,7 +59,6 @@ void eth_init(void)
     {
         dbg_send_str3("HAL_ETH_Init = err", 1);
     }
-#ifndef ENABLE_CPTR
     /* Initialize Tx Descriptors list: Chain Mode */
     HAL_ETH_DMATxDescListInit(&heth, DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);
     /* Initialize Rx Descriptors list: Chain Mode  */
@@ -65,8 +67,6 @@ void eth_init(void)
     eth_ptp_start(&heth, PTP_FINE);
 #endif
     HAL_ETH_Start(&heth);
-#endif
-#endif
 }
 
 void eth_deinit(void)
@@ -148,6 +148,7 @@ void eth_output(ethfrm_t *frm, uint16_t sz)
 
 uint8_t eth_io(void)
 {
+    led_toggle();
     iofrm.e.mac.type = 0;
     uint16_t sz = eth_input(&iofrm);
 #ifdef ENABLE_MYIP

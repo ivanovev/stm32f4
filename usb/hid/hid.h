@@ -13,7 +13,7 @@
 #define USB_DM_PIN 11
 #define USB_DP_PIN 12
 
-#ifdef BOARD_OLIMEX
+#ifdef BOARD_E407
 #define USB_VBUSON_GPIO B
 #define USB_VBUSON_PIN 0
 #endif

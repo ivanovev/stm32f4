@@ -6,6 +6,10 @@
 #include "usb/cdc/cdc.h"
 #endif
 
+#ifdef ENABLE_USB_HID
+#include "usb/hid/hid.h"
+#endif
+
 #define USB_TIMn                3
 #define USB_TIMx                JOIN(TIM, USB_TIMn)
 #define USB_TIMx_INTERVAL       5

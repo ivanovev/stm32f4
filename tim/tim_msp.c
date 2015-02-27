@@ -31,7 +31,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
     if(htim->Instance == USB_TIMx)
     {
         USB_TIMx_CLK_ENABLE();
-        HAL_NVIC_SetPriority(USB_TIMx_IRQn, 0xF, 0);
+        HAL_NVIC_SetPriority(USB_TIMx_IRQn, 0x5, 0);
         HAL_NVIC_EnableIRQ(USB_TIMx_IRQn);
     }
 #endif

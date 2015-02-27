@@ -9,21 +9,19 @@
 #include "i2c/eeprom.h"
 #endif
 
-#ifdef ENABLE_MYIP
 #ifdef ENABLE_ICMP
 #include "eth/myip/icmp/icmp.h"
+
+extern uint8_t local_ipaddr[4];
+extern ARP_ENTRY arp_table[ARP_TABLE_SZ];
 #endif
 
 #ifdef ENABLE_PTP
 #include "eth/myip/ptp/ptpd.h"
 #endif
-extern uint8_t local_ipaddr[4];
-extern ARP_ENTRY arp_table[ARP_TABLE_SZ];
-#endif
 
 extern volatile uint8_t reset;
 
-#ifdef ENABLE_MYIP
 #ifdef ENABLE_TELNET
 COMMAND(exit) {
     myip_tcp_con_close();
@@ -35,15 +33,14 @@ COMMAND(reset) {
     return picolSetIntResult(i, 0);
 }
 #endif
-#endif
 
 COMMAND(mdio) {
     ARITY(argc >= 2, "mdio reg [val]");
-    uint16_t reg = (uint16_t)str2int(argv[1]), val;
+    uint16_t reg = (uint16_t)str2int(argv[1]), val = 0;
     if(argc == 2)
         val = (uint16_t)mdio_read(reg);
     if(argc == 3)
-        val = (uint16_t)mdio_write(reg, val);
+        val = (uint16_t)mdio_write(reg, (uint16_t)str2int(argv[2]));
     return picolSetHex2Result(i, val);
 }
 
@@ -72,7 +69,7 @@ COMMAND(eth) {
         eth_reset();
         return PICOL_OK;
     }
-    if(SUBCMD1("ipaddr"))
+    else if(SUBCMD1("ipaddr"))
     {
         uint8_t ipaddr[4] = {IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3};
         if(argc == 2)
@@ -92,7 +89,7 @@ COMMAND(eth) {
         mysnprintf(buf, sizeof(buf), "%d.%d.%d.%d", ipaddr[0], ipaddr[1], ipaddr[2], ipaddr[3]);
         return picolSetResult(i, buf);
     }
-    if(SUBCMD1("macaddr"))
+    else if(SUBCMD1("macaddr"))
     {
         uint8_t macaddr[6] = {MAC_ADDR0, MAC_ADDR1, MAC_ADDR2, MAC_ADDR3, MAC_ADDR4, MAC_ADDR5};
         if(argc == 2)
@@ -121,12 +118,16 @@ COMMAND(eth) {
         mysnprintf(buf, sizeof(buf), "%02X:%02X:%02X:%02X:%02X:%02X", macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
         return picolSetResult(i, buf);
     }
+    else if(SUBCMD1("init"))
+    {
+        eth_init();
+        return PICOL_OK;
+    }
     else
         return PICOL_ERR;
     return PICOL_OK;
 }
 
-#ifdef ENABLE_MYIP
 #ifdef ENABLE_PTP
 static char* format_delay(ptpdt_t *dt, char *ptr, uint32_t sz)
 {
@@ -288,7 +289,6 @@ COMMAND(ping) {
     }
     return PICOL_ERR;
 }
-#endif
 
 COMMAND(arp) {
     char buf[MAXSTR];
@@ -314,18 +314,16 @@ void pcl_eth_init(picolInterp *i)
 {
     picolRegisterCmd(i, "mdio", picol_mdio, 0);
     picolRegisterCmd(i, "eth", picol_eth, 0);
-#ifdef ENABLE_MYIP
 #ifdef ENABLE_TELNET
     picolRegisterCmd(i, "exit", picol_exit, 0);
     picolRegisterCmd(i, "reset", picol_reset, 0);
-    picolRegisterCmd(i, "arp", picol_arp, 0);
+#endif
 #ifdef ENABLE_ICMP
+    picolRegisterCmd(i, "arp", picol_arp, 0);
     picolRegisterCmd(i, "ping", picol_ping, 0);
 #endif
 #ifdef ENABLE_PTP
     picolRegisterCmd(i, "ptp", picol_ptp, 0);
-#endif
-#endif
 #endif
 }
 

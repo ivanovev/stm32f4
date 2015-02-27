@@ -37,14 +37,14 @@ void myinit(void)
     i2c_init();
 #endif
 
+#ifdef ENABLE_TIM
+#pragma message "tim_init()"
+    tim_init();
+#endif
+
 #ifdef ENABLE_FLASH
 #pragma message "flash_erase_img1()"
     flash_erase_img1();
-#endif
-
-#ifdef ENABLE_PCL
-#pragma message "pcl_init()"
-    pcl_init();
 #endif
 
 #ifdef ENABLE_ETH
@@ -57,9 +57,9 @@ void myinit(void)
     usb_init();
 #endif
 
-#ifdef ENABLE_TIM
-#pragma message "tim_init()"
-    tim_init();
+#ifdef ENABLE_PCL
+#pragma message "pcl_init()"
+    pcl_init();
 #endif
 
 #ifdef ENABLE_VFD

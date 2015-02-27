@@ -14,7 +14,8 @@ volatile uint8_t reset = 0;
 int main(void)
 {
     myinit();
-    //mdio_read(0);
+    mdio_read(2);
+    mdio_read(3);
 #ifdef ENABLE_TELNET
     io_recv_str_ptr = telnetd_recv_str;
     io_send_str_ptr = telnetd_send_str;

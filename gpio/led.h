@@ -17,6 +17,8 @@
 #define LED_PIN 11
 #endif
 
+#define LED_CLK_ENABLE JOIN3(__GPIO, LED_GPIO, _CLK_ENABLE)
+
 void led_init(void);
 void led_on(void);
 void led_off(void);
