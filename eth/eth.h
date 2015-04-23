@@ -10,7 +10,7 @@
 void        eth_init(void);
 void        eth_deinit(void);
 void        eth_reset(void);
-uint8_t     eth_io(void);
+void        eth_io(void);
 
 #endif
 

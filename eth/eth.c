@@ -82,6 +82,7 @@ void eth_reset(void)
     HAL_GPIO_WritePin(GPIO(ETH_RESET_GPIO), PIN(ETH_RESET_PIN), GPIO_PIN_SET);
 }
 
+#if 0
 uint16_t eth_input(ethfrm_t *frm)
 {
     if(HAL_ETH_GetReceivedFrame(&heth) != HAL_OK)
@@ -92,25 +93,6 @@ uint16_t eth_input(ethfrm_t *frm)
     ETH_DMADescTypeDef *dmarxdesc = heth.RxFrameInfos.LSRxDesc;
 #ifdef ENABLE_PTP
     eth_ptpts_get(0, dmarxdesc);
-    //eth_ptpts_rx(0, dmarxdesc);
-#if 0
-    if((dmarxdesc->Status & ETH_DMARXDESC_MAMPCE) && (dmarxdesc->ExtendedStatus & ETH_DMAPTPRXDESC_PTPMT))
-    {
-        //dmarxdesc = heth.RxFrameInfos.LSRxDesc;
-        //dbg_send_hex2("rx status", dmarxdesc->Status);
-        //dbg_send_hex2("rx ext status", dmarxdesc->ExtendedStatus);
-        //uint16_t i;
-        ptpts_t time;
-        //eth_ptpts_now(&time);
-        for(i = 0; i < ETH_RXBUFNB; i++)
-        {
-            eth_ptpts_get(&time, &DMARxDscrTab[i]);
-            dbg_send_int2("rx.s", time.s);
-            dbg_send_int2("rx.ns", time.ns);
-        }
-        eth_ptpts_get(0, dmarxdesc);
-    }
-#endif
 #endif
     mymemcpy(frm->packet, (uint8_t*)heth.RxFrameInfos.buffer, sz);
 
@@ -146,7 +128,7 @@ void eth_output(ethfrm_t *frm, uint16_t sz)
     HAL_ETH_TransmitFrame(&heth, sz);
 }
 
-uint8_t eth_io(void)
+void eth_io(void)
 {
     led_toggle();
     iofrm.e.mac.type = 0;
@@ -156,17 +138,99 @@ uint8_t eth_io(void)
     if(sz)
     {
         eth_output(&iofrm, sz);
-        return 1;
     }
 #endif
-    return 0;
 }
+#else
+static uint16_t eth_input(uint8_t **ptr)
+{
+    if(HAL_ETH_GetReceivedFrame(&heth) != HAL_OK)
+        return 0;
+    *ptr = (uint8_t*)heth.RxFrameInfos.buffer;
+    return heth.RxFrameInfos.length;
+}
+
+static void eth_input_cleanup(void)
+{
+    uint16_t i;
+    /* Set Own bit in Rx descriptors: gives the buffers back to DMA */
+    ETH_DMADescTypeDef *dmarxdesc = heth.RxFrameInfos.FSRxDesc;
+    for(i = 0; i< (heth.RxFrameInfos).SegCount; i++)
+    {
+        dmarxdesc->Status = ETH_DMARXDESC_OWN;
+        dmarxdesc = (ETH_DMADescTypeDef *)(dmarxdesc->Buffer2NextDescAddr);
+    }
+    /* Clear Segment_Count */
+    (heth.RxFrameInfos).SegCount = 0;
+
+    /* When Rx Buffer unavailable flag is set: clear it and resume reception */
+    if (((heth.Instance)->DMASR & ETH_DMASR_RBUS) != (uint32_t)RESET)
+    {
+        /* Clear RBUS ETHERNET DMA flag */
+        (heth.Instance)->DMASR = ETH_DMASR_RBUS;
+        /* Resume DMA reception */
+        (heth.Instance)->DMARPDR = 0;
+    }
+}
+
+uint16_t eth_output(uint8_t *ptr, uint16_t sz)
+{
+    __IO ETH_DMADescTypeDef *dmatxdesc = heth.TxDesc;
+    if((dmatxdesc->Status & ETH_DMATXDESC_OWN) != (uint32_t)RESET)
+        return 0;
+#ifdef ENABLE_PTP
+    dmatxdesc->Status |= ETH_DMATXDESC_TTSE;
+#endif
+    if(heth.Init.RxMode == ETH_RXINTERRUPT_MODE)
+        dmatxdesc->Status |= ETH_DMATXDESC_IC;
+    dmatxdesc->Buffer1Addr = ptr;
+    if(HAL_ETH_TransmitFrame(&heth, sz) != HAL_OK)
+        return 0;
+    uint16_t i;
+    for(i = 0; i < ETH_TXBUFNB; i++)
+    {
+        if((DMATxDscrTab[i].Status & ETH_DMATXDESC_OWN) == (uint32_t)RESET)
+        {
+            DMATxDscrTab[i].Buffer1Addr = Tx_Buff[i];
+        }
+    }
+    return sz;
+}
+
+void eth_io(void)
+{
+    uint8_t *rxbuf = 0;
+    static uint8_t *txbuf = 0;
+    static uint16_t sz = 0;
+    __IO ETH_DMADescTypeDef *dmatxdesc = heth.TxDesc;
+
+    if(txbuf == 0)
+    {
+        sz = eth_input(&rxbuf);
+        dmatxdesc = heth.TxDesc;
+        txbuf = dmatxdesc->Buffer1Addr;
+        sz = myip_eth_frm_handler2((ethfrm_t*)rxbuf, sz, &txbuf);
+    }
+
+    if(rxbuf != 0)
+        eth_input_cleanup();
+
+    if(sz)
+    {
+        led_toggle();
+        if(eth_output(txbuf, sz) != sz)
+            return;
+    }
+
+    sz = 0;
+    txbuf = 0;
+}
+#endif
 
 #ifdef ENABLE_PTP
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *pheth)
 {
     (void)pheth;
-    //dbg_send_str3("HAL_ETH_RxCpltCallback", 1);
     if(pheth->Init.RxMode == ETH_RXINTERRUPT_MODE)
         eth_io();
 }

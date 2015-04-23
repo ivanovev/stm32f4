@@ -238,6 +238,14 @@ uint16_t myip_eth_frm_handler(ethfrm_t *frm, uint16_t sz)
     return sz1;
 }
 
+uint16_t    myip_eth_frm_handler2(ethfrm_t *frm, uint16_t sz, uint8_t **out)
+{
+    sz = myip_eth_frm_handler(frm, sz);
+    if(sz)
+        mymemcpy(*out, frm->packet, sz);
+    return sz;
+}
+
 uint16_t myip_arp_frm_handler(ethfrm_t *frm, uint16_t sz)
 {
     arpfrm_t *afrm = (arpfrm_t*)frm;
