@@ -202,6 +202,7 @@ static void myip_arp_table_update(uint8_t *ip_addr, uint8_t *mac_addr)
     arp_table[max_time_index].time = 0;
 }
 
+#if 0
 uint16_t myip_eth_frm_handler(ethfrm_t *frm, uint16_t sz)
 {
     ipfrm_t* ipfrm = (ipfrm_t*)frm;
@@ -237,15 +238,47 @@ uint16_t myip_eth_frm_handler(ethfrm_t *frm, uint16_t sz)
     }
     return sz1;
 }
-
-uint16_t    myip_eth_frm_handler2(ethfrm_t *frm, uint16_t sz, uint8_t **out)
+#else
+uint16_t myip_eth_frm_handler2(ethfrm_t *frm, uint16_t sz, uint8_t **out)
 {
-    sz = myip_eth_frm_handler(frm, sz);
+    ipfrm_t* ipfrm = (ipfrm_t*)frm;
     if(sz)
-        mymemcpy(*out, frm->packet, sz);
-    return sz;
-}
+    {
+        if(frm->e.mac.type == arpfrm_t_TYPE)
+            return myip_arp_frm_handler(frm, sz);
 
+        if ((ipfrm->ip.ver_ihl != IP_VER_IHL) || ((ipfrm->ip.frag & FRAG_MASK) != 0))
+            return 0;
+        myip_arp_table_update(ipfrm->ip.src_ip_addr, ipfrm->mac.src);
+    }
+    static uint8_t i = 0;
+    uint16_t sz1 = 0;
+    if(sz)
+        i = 0;
+    if(i >= CON_TABLE_SZ)
+        i = 0;
+    if(!con_table[i].con_handler_ptr)
+        i = 0;
+    for(; i < CON_TABLE_SZ; i++)
+    {
+        if(!con_table[i].frm_handler_ptr)
+            break;
+        if(sz)
+        {
+            if(con_table[i].proto != ipfrm->ip.proto)
+                continue;
+        }
+        sz1 = con_table[i].frm_handler_ptr(frm, sz, i);
+        if(sz1)
+            break;
+    }
+    if(sz1)
+        mymemcpy(*out, frm->packet, sz1);
+    return sz1;
+}
+#endif
+
+#if 0
 uint16_t myip_arp_frm_handler(ethfrm_t *frm, uint16_t sz)
 {
     arpfrm_t *afrm = (arpfrm_t*)frm;
@@ -264,6 +297,26 @@ uint16_t myip_arp_frm_handler(ethfrm_t *frm, uint16_t sz)
     }
     return 0;
 }
+#else
+static uint16_t myip_arp_frm_handler2(ethfrm_t *frm, uint16_t sz, uint8_t **out)
+{
+    arpfrm_t *afrm = (arpfrm_t*)frm;
+    arphdr_t *arp = &afrm->arp;
+    if((arp->htype != ARP_HTYPE) || (arp->ptype != ARP_PTYPE) || \
+      ((arp->hlen) != ARP_HLEN) || ((arp->plen) != ARP_PLEN)) {
+        return 0;
+    }
+    if(mymemcmp(arp->dst_ip_addr, local_ipaddr, 4))
+        return 0;
+    myip_arp_table_update(arp->src_ip_addr, arp->src_mac_addr);
+    if(arp->oper == ARP_OPER_REQ)
+    {
+        myip_make_arp_frame(afrm, arp->dst_ip_addr, ARP_OPER_REPL);
+        return MACH_SZ + ARPH_SZ;
+    }
+    return 0;
+}
+#endif
 
 uint16_t myip_udp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
 {

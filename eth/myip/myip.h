@@ -128,7 +128,7 @@ void        myip_con_add(frm_handler frm_handler_ptr, con_handler con_handler_pt
 uint16_t    myip_arp_find(const uint8_t *ip_addr);
 
 uint16_t    myip_eth_frm_handler(ethfrm_t *frm, uint16_t sz);
-uint16_t    myip_eth_frm_handler2(ethfrm_t *frm, uint16_t sz, uint8_t **out);
+uint16_t    myip_eth_frm_handler2(ethfrm_t *in, uint16_t sz, uint8_t **out);
 uint16_t    myip_arp_frm_handler(ethfrm_t *frm, uint16_t sz);
 uint16_t    myip_udp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index);
 
