@@ -38,7 +38,7 @@ typedef struct {
 
 void        myip_tcp_init(void);
 void        myip_tcp_con_close(void);
-uint16_t    myip_tcp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index);
+uint16_t    myip_tcp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out);
 uint16_t    myip_tcp_con_closed(void);
 
 #endif

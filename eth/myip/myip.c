@@ -50,7 +50,7 @@ void myip_init(void)
     myip_con_add(myip_ptpd_frm_handler, 0, UDP_PROTO, 0);
 #endif
 #ifdef ENABLE_DBG
-    myip_con_add(myip_udp_frm_handler, myip_dbg_con_handler, UDP_PROTO, DBG_PORT);
+    myip_con_add(myip_udp_frm_handler2, myip_dbg_con_handler, UDP_PROTO, DBG_PORT);
 #endif
 #ifdef ENABLE_TELNET
     myip_tcp_init();
@@ -239,13 +239,13 @@ uint16_t myip_eth_frm_handler(ethfrm_t *frm, uint16_t sz)
     return sz1;
 }
 #else
-uint16_t myip_eth_frm_handler2(ethfrm_t *frm, uint16_t sz, uint8_t **out)
+uint16_t myip_eth_frm_handler2(ethfrm_t *in, uint16_t sz, ethfrm_t *out)
 {
-    ipfrm_t* ipfrm = (ipfrm_t*)frm;
+    ipfrm_t* ipfrm = (ipfrm_t*)in;
     if(sz)
     {
-        if(frm->e.mac.type == arpfrm_t_TYPE)
-            return myip_arp_frm_handler(frm, sz);
+        if(in->e.mac.type == arpfrm_t_TYPE)
+            return myip_arp_frm_handler2(in, sz, out);
 
         if ((ipfrm->ip.ver_ihl != IP_VER_IHL) || ((ipfrm->ip.frag & FRAG_MASK) != 0))
             return 0;
@@ -268,12 +268,12 @@ uint16_t myip_eth_frm_handler2(ethfrm_t *frm, uint16_t sz, uint8_t **out)
             if(con_table[i].proto != ipfrm->ip.proto)
                 continue;
         }
-        sz1 = con_table[i].frm_handler_ptr(frm, sz, i);
+        sz1 = con_table[i].frm_handler_ptr(in, sz, i, out);
         if(sz1)
             break;
     }
-    if(sz1)
-        mymemcpy(*out, frm->packet, sz1);
+    //if(sz1)
+        //mymemcpy(out->packet, in->packet, sz1);
     return sz1;
 }
 #endif
@@ -298,9 +298,9 @@ uint16_t myip_arp_frm_handler(ethfrm_t *frm, uint16_t sz)
     return 0;
 }
 #else
-static uint16_t myip_arp_frm_handler2(ethfrm_t *frm, uint16_t sz, uint8_t **out)
+uint16_t myip_arp_frm_handler2(ethfrm_t *in, uint16_t sz, ethfrm_t *out)
 {
-    arpfrm_t *afrm = (arpfrm_t*)frm;
+    arpfrm_t *afrm = (arpfrm_t*)in;
     arphdr_t *arp = &afrm->arp;
     if((arp->htype != ARP_HTYPE) || (arp->ptype != ARP_PTYPE) || \
       ((arp->hlen) != ARP_HLEN) || ((arp->plen) != ARP_PLEN)) {
@@ -311,32 +311,33 @@ static uint16_t myip_arp_frm_handler2(ethfrm_t *frm, uint16_t sz, uint8_t **out)
     myip_arp_table_update(arp->src_ip_addr, arp->src_mac_addr);
     if(arp->oper == ARP_OPER_REQ)
     {
-        myip_make_arp_frame(afrm, arp->dst_ip_addr, ARP_OPER_REPL);
+        myip_make_arp_frame((arpfrm_t*)out, arp->dst_ip_addr, ARP_OPER_REPL);
         return MACH_SZ + ARPH_SZ;
     }
     return 0;
 }
 #endif
 
-uint16_t myip_udp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
+uint16_t myip_udp_frm_handler2(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out)
 {
-    udpfrm_t* ufrm = (udpfrm_t*)frm;
+    udpfrm_t* ufrmi = (udpfrm_t*)in;
+    udpfrm_t* ufrmo = (udpfrm_t*)out;
     if(con_index >= CON_TABLE_SZ)
         return 0;
     if(sz)
     {
-        if(ufrm->ip.proto != UDP_PROTO)
+        if(ufrmi->ip.proto != UDP_PROTO)
             return 0;
         if(con_table[con_index].proto != UDP_PROTO)
             return 0;
-        if(con_table[con_index].port != HTONS_16(ufrm->udp.dst_port))
+        if(con_table[con_index].port != HTONS_16(ufrmi->udp.dst_port))
             return 0;
-        sz = HTONS_16(ufrm->ip.total_len) - IPH_SZ - UDPH_SZ;
+        sz = HTONS_16(ufrmi->ip.total_len) - IPH_SZ - UDPH_SZ;
     }
-    sz = con_table[con_index].con_handler_ptr(ufrm->data, sz);
+    sz = con_table[con_index].con_handler_ptr(ufrmi->data, sz, ufrmo->data);
     if(sz)
     {
-        return myip_make_udp_frame(ufrm, ufrm->ip.src_ip_addr, HTONS_16(ufrm->udp.src_port), HTONS_16(ufrm->udp.dst_port), sz);
+        return myip_make_udp_frame(ufrmo, ufrmi->ip.src_ip_addr, HTONS_16(ufrmi->udp.src_port), HTONS_16(ufrmi->udp.dst_port), sz);
         //return MACH_SZ + IPH_SZ + UDPH_SZ + sz;
     }
     return 0;

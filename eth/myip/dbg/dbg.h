@@ -6,7 +6,7 @@
 
 #define DBG_PORT        12345
 
-uint16_t    myip_dbg_con_handler(uint8_t *data, uint16_t sz);
+uint16_t    myip_dbg_con_handler(uint8_t *in, uint16_t sz, uint8_t *out);
 
 #endif
 

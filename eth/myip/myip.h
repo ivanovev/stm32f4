@@ -78,8 +78,8 @@ typedef struct {
     uint8_t data[];
 } udpfrm_t;
 
-typedef uint16_t (*frm_handler)(ethfrm_t *frm, uint16_t sz, uint16_t con_index);
-typedef uint16_t (*con_handler)(uint8_t* data, uint16_t sz);
+typedef uint16_t (*frm_handler)(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out);
+typedef uint16_t (*con_handler)(uint8_t* in, uint16_t sz, uint8_t *out);
 
 typedef struct {
     uint16_t port;
@@ -127,10 +127,9 @@ void        myip_init(void);
 void        myip_con_add(frm_handler frm_handler_ptr, con_handler con_handler_ptr, uint8_t proto, uint16_t port);
 uint16_t    myip_arp_find(const uint8_t *ip_addr);
 
-uint16_t    myip_eth_frm_handler(ethfrm_t *frm, uint16_t sz);
-uint16_t    myip_eth_frm_handler2(ethfrm_t *in, uint16_t sz, uint8_t **out);
-uint16_t    myip_arp_frm_handler(ethfrm_t *frm, uint16_t sz);
-uint16_t    myip_udp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index);
+uint16_t    myip_eth_frm_handler2(ethfrm_t *in, uint16_t sz, ethfrm_t *out);
+uint16_t    myip_arp_frm_handler2(ethfrm_t *in, uint16_t sz, ethfrm_t *out);
+uint16_t    myip_udp_frm_handler2(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out);
 
 void        myip_make_ip_frame(ipfrm_t *ifrm, const uint8_t *dst_ip_addr, uint16_t hsz, uint16_t proto);
 void        myip_make_arp_frame(arpfrm_t *afrm, uint8_t *dst_ip_addr, uint16_t oper);

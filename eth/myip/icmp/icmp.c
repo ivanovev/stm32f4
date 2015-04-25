@@ -13,41 +13,42 @@ void myip_icmp_init(void)
     ping_state = PING_STATE_NONE;
 }
 
-uint16_t myip_icmp_con_handler(uint8_t *data, uint16_t sz)
+uint16_t myip_icmp_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
 {
     return 0;
 }
 
-void myip_make_icmp_frame(icmpfrm_t *ifrm, uint8_t *dst_ipaddr, uint8_t type, uint8_t code)
+void myip_make_icmp_frame(icmpfrm_t *ifrm, uint8_t *dst_ipaddr, uint8_t type, uint8_t code, uint16_t id, uint16_t seq)
 {
     myip_make_ip_frame((ipfrm_t*)ifrm, dst_ipaddr, ICMPH_SZ, ICMP_PROTO);
     ifrm->icmp.type = type;
     ifrm->icmp.code = code;
     ifrm->icmp.cksum = 0;
+    ifrm->icmp.id = id;
+    ifrm->icmp.seq = seq;
 }
 
-uint16_t myip_icmp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
+uint16_t myip_icmp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out)
 {
-    icmpfrm_t *ifrm = (icmpfrm_t*)frm;
-    icmphdr_t *icmp = &ifrm->icmp;
+    icmpfrm_t *ifrmi = (icmpfrm_t*)in;
+    icmpfrm_t *ifrmo = (icmpfrm_t*)out;
     if(sz)
     {
-        if(mymemcmp(ifrm->ip.dst_ip_addr, local_ipaddr, 4))
+        if(mymemcmp(ifrmi->ip.dst_ip_addr, local_ipaddr, 4))
             return 0;
         uint8_t ipaddr[4];
-        mymemcpy(ipaddr, ifrm->ip.src_ip_addr, 4);
-        if(ifrm->icmp.type == ICMP_ECHO_REQUEST)
+        mymemcpy(ipaddr, ifrmi->ip.src_ip_addr, 4);
+        if(ifrmi->icmp.type == ICMP_ECHO_REQUEST)
         {
-            uint8_t ttl = ifrm->ip.ttl;
-            myip_make_icmp_frame(ifrm, ipaddr, ICMP_ECHO_REPLY, 0);
-            ifrm->ip.ttl = ttl;
+            myip_make_icmp_frame(ifrmo, ipaddr, ICMP_ECHO_REPLY, 0, ifrmi->icmp.id, ifrmi->icmp.seq);
+            ifrmo->ip.ttl = ifrmi->ip.ttl;
             return MACH_SZ + IPH_SZ + ICMPH_SZ;
         }
-        if(icmp->type == ICMP_ECHO_REPLY)
+        if(ifrmi->icmp.type == ICMP_ECHO_REPLY)
         {
             if(ping_state == PING_STATE_WAIT_REPLY)
             {
-                if(!mymemcmp(ifrm->ip.src_ip_addr, ping_ipaddr, 4))
+                if(!mymemcmp(ifrmi->ip.src_ip_addr, ping_ipaddr, 4))
                     ping_state = PING_STATE_OK;
             }
         }
@@ -63,7 +64,7 @@ uint16_t myip_icmp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
             uint16_t i = myip_arp_find(ping_ipaddr);
             if(i == ARP_TABLE_SZ)
             {
-                myip_make_arp_frame((arpfrm_t*)frm, ping_ipaddr, ARP_OPER_REQ);
+                myip_make_arp_frame((arpfrm_t*)out, ping_ipaddr, ARP_OPER_REQ);
                 ping_state = PING_STATE_WAIT_ARP;
                 return MACH_SZ + ARPH_SZ;
             }
@@ -75,7 +76,7 @@ uint16_t myip_icmp_frm_handler(ethfrm_t *frm, uint16_t sz, uint16_t con_index)
             if(i == ARP_TABLE_SZ)
                 return 0;
 
-            myip_make_icmp_frame(ifrm, ping_ipaddr, ICMP_ECHO_REQUEST, 0);
+            myip_make_icmp_frame(ifrmo, ping_ipaddr, ICMP_ECHO_REQUEST, 0, 0, 0);
             ping_state = PING_STATE_WAIT_REPLY;
             return MACH_SZ + IPH_SZ + ICMPH_SZ;
         }

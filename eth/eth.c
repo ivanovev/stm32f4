@@ -81,11 +81,10 @@ void eth_reset(void)
     HAL_GPIO_WritePin(GPIO(ETH_RESET_GPIO), PIN(ETH_RESET_PIN), GPIO_PIN_SET);
 }
 
-static uint16_t eth_input(uint8_t **ptr)
+static uint16_t eth_input(void)
 {
     if(HAL_ETH_GetReceivedFrame(&heth) != HAL_OK)
         return 0;
-    *ptr = (uint8_t*)heth.RxFrameInfos.buffer;
     return heth.RxFrameInfos.length;
 }
 
@@ -112,7 +111,7 @@ static void eth_input_cleanup(void)
     }
 }
 
-uint16_t eth_output(uint8_t *ptr, uint16_t sz)
+uint16_t eth_output(uint16_t sz)
 {
     __IO ETH_DMADescTypeDef *dmatxdesc = heth.TxDesc;
     if((dmatxdesc->Status & ETH_DMATXDESC_OWN) != (uint32_t)RESET)
@@ -122,9 +121,9 @@ uint16_t eth_output(uint8_t *ptr, uint16_t sz)
 #endif
     if(heth.Init.RxMode == ETH_RXINTERRUPT_MODE)
         dmatxdesc->Status |= ETH_DMATXDESC_IC;
-    dmatxdesc->Buffer1Addr = (uint32_t)ptr;
     if(HAL_ETH_TransmitFrame(&heth, sz) != HAL_OK)
         return 0;
+#if 0
     uint16_t i;
     for(i = 0; i < ETH_TXBUFNB; i++)
     {
@@ -133,6 +132,7 @@ uint16_t eth_output(uint8_t *ptr, uint16_t sz)
             DMATxDscrTab[i].Buffer1Addr = (uint32_t)Tx_Buff[i];
         }
     }
+#endif
     return sz;
 }
 
@@ -145,10 +145,14 @@ void eth_io(void)
 
     if(txbuf == 0)
     {
-        sz = eth_input(&rxbuf);
+        sz = eth_input();
+        if(sz)
+            rxbuf = (uint8_t*)heth.RxFrameInfos.buffer;
+        if(heth.RxFrameInfos.SegCount > 1)
+            dbg_send_int2("fragmented packet? segcount", heth.RxFrameInfos.SegCount);
         dmatxdesc = heth.TxDesc;
         txbuf = (uint8_t*)dmatxdesc->Buffer1Addr;
-        sz = myip_eth_frm_handler2((ethfrm_t*)rxbuf, sz, &txbuf);
+        sz = myip_eth_frm_handler2((ethfrm_t*)rxbuf, sz, (ethfrm_t*)txbuf);
     }
 
     if(rxbuf != 0)
@@ -156,8 +160,7 @@ void eth_io(void)
 
     if(sz)
     {
-        led_toggle();
-        if(eth_output(txbuf, sz) != sz)
+        if(eth_output(sz) != sz)
             return;
     }
 

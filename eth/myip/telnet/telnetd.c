@@ -22,7 +22,6 @@ struct {
 } tds;
 
 uint8_t telnetd_prompt[] = "#> ";
-uint8_t buf[IO_BUF_SZ];
 
 void myip_telnetd_init(void)
 {
@@ -33,32 +32,32 @@ void myip_telnetd_init(void)
     enqueue_str(&tds.qo, telnetd_prompt, sizeof(telnetd_prompt));
 }
 
-uint16_t myip_telnetd_con_handler(uint8_t *data, uint16_t sz)
+uint16_t myip_telnetd_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
 {
 #ifndef ENABLE_PCL
-    if(!mystrncmp((char*)data, "exit", 4))
+    if(!mystrncmp((char*)in, "exit", 4))
     {
         myip_tcp_con_close();
         return 0;
     }
     else if(sz > 0)
     {
-        if(data[0] != TELNET_IAC)
+        if(in[0] != TELNET_IAC)
             enqueue_str(&tds.qo, telnetd_prompt, sizeof(telnetd_prompt));
     }
 #else
     uint16_t i;
     for(i = 0; i < sz; i++)
     {
-        if(data[i] == TELNET_IAC)
+        if(in[i] == TELNET_IAC)
         {
             i += 2;
             continue;
         }
-        enqueue(&tds.qi, data[i]);
+        enqueue(&tds.qi, in[i]);
     }
 #endif
-    return dequeue(&tds.qo, data, 0);
+    return dequeue(&tds.qo, out, 0);
 }
 
 uint16_t telnetd_recv_str(char *buf)
