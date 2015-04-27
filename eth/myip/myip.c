@@ -15,6 +15,9 @@
 #ifdef ENABLE_DBG
 #include "dbg/dbg.h"
 #endif
+#ifdef ENABLE_STREAM
+#include "stream/stream.h"
+#endif
 
 #define IP_VER_IHL          0x45
 #define IP_TTL              0x80
@@ -41,7 +44,7 @@ void myip_init(void)
     myip_con_add(myip_icmp_frm_handler, myip_icmp_con_handler, ICMP_PROTO, 0);
 #ifdef ENABLE_TFTP
     myip_tftpd_init();
-    myip_con_add(myip_udp_frm_handler, myip_tftpd_con_handler, UDP_PROTO, TFTP_PORT);
+    myip_con_add(myip_udp_frm_handler2, myip_tftpd_con_handler, UDP_PROTO, TFTP_PORT);
 #endif
 #ifdef ENABLE_PTP
     myip_ptpd_init();
@@ -51,6 +54,10 @@ void myip_init(void)
 #endif
 #ifdef ENABLE_DBG
     myip_con_add(myip_udp_frm_handler2, myip_dbg_con_handler, UDP_PROTO, DBG_PORT);
+#endif
+#ifdef ENABLE_STREAM
+    myip_stream_init();
+    myip_con_add(myip_stream_frm_handler, myip_stream_con_handler, UDP_PROTO, STREAM_PORT);
 #endif
 #ifdef ENABLE_TELNET
     myip_tcp_init();
@@ -272,8 +279,6 @@ uint16_t myip_eth_frm_handler2(ethfrm_t *in, uint16_t sz, ethfrm_t *out)
         if(sz1)
             break;
     }
-    //if(sz1)
-        //mymemcpy(out->packet, in->packet, sz1);
     return sz1;
 }
 #endif
@@ -338,7 +343,6 @@ uint16_t myip_udp_frm_handler2(ethfrm_t *in, uint16_t sz, uint16_t con_index, et
     if(sz)
     {
         return myip_make_udp_frame(ufrmo, ufrmi->ip.src_ip_addr, HTONS_16(ufrmi->udp.src_port), HTONS_16(ufrmi->udp.dst_port), sz);
-        //return MACH_SZ + IPH_SZ + UDPH_SZ + sz;
     }
     return 0;
 }

@@ -62,14 +62,13 @@ void myip_tftpd_init(void)
     tfs.mode = 0;
 }
 
-static uint16_t tftpd_nak(uint8_t *data, uint16_t sz, int16_t e_code)
+static uint16_t tftpd_nak(uint8_t *out, int16_t e_code)
 {
-    TFTP_ERR_PKT *err = (TFTP_ERR_PKT*)data;
+    TFTP_ERR_PKT *err = (TFTP_ERR_PKT*)out;
     struct errmsg *e = 0;
     err->opcode = HTONS_16(TFTP_ERR);
     err->e_code = HTONS_16(e_code);
-    uint16_t i;
-    sz = 4;
+    uint16_t i, sz = 4;
     for(i = 0;; i++)
     {
         e = &errmsgs[i];
@@ -82,24 +81,24 @@ static uint16_t tftpd_nak(uint8_t *data, uint16_t sz, int16_t e_code)
         if(e->e_code == -1)
             break;
     }
-    data[sz] = 0;
+    out[sz] = 0;
     return sz;
 }
 
-static uint16_t tftpd_ack(uint8_t *data, uint16_t sz)
+static uint16_t tftpd_ack(uint8_t *out)
 {
-    TFTP_ACK_PKT *ack = (TFTP_ACK_PKT*)data;
+    TFTP_ACK_PKT *ack = (TFTP_ACK_PKT*)out;
     ack->opcode = HTONS_16(TFTP_ACK);
     ack->ackn = HTONS_16(tfs.ackn);
     tfs.ackn++;
     return 4;
 }
 
-uint16_t tftpd_data_in(uint8_t *data, uint16_t sz)
+uint16_t tftpd_data_in(uint8_t *in, uint16_t sz, uint8_t *out)
 {
-    TFTP_DATA_PKT *pkt = (TFTP_DATA_PKT*)data;
-    sz -= 4;
 #ifdef ENABLE_FLASH
+    TFTP_DATA_PKT *pkt = (TFTP_DATA_PKT*)in;
+    sz -= 4;
     if(sz)
     {
         flash_write_array(tfs.start, pkt->data, sz);
@@ -117,12 +116,12 @@ uint16_t tftpd_data_in(uint8_t *data, uint16_t sz)
         }
     }
 #endif
-    return tftpd_ack(data, sz);
+    return tftpd_ack(out);
 }
 
-uint16_t tftpd_data_out(uint8_t *data, uint16_t sz)
+uint16_t tftpd_data_out(uint8_t *out)
 {
-    TFTP_DATA_PKT *pkt = (TFTP_DATA_PKT*)data;
+    TFTP_DATA_PKT *pkt = (TFTP_DATA_PKT*)out;
     pkt->opcode = HTONS_16(TFTP_DATA);
     pkt->ackn = HTONS_16(tfs.ackn);
     tfs.ackn++;
@@ -136,9 +135,9 @@ uint16_t tftpd_data_out(uint8_t *data, uint16_t sz)
     return chunk_sz + 4;
 }
 
-uint16_t tftpd_wrq(uint8_t *data, uint16_t sz)
+uint16_t tftpd_wrq(uint8_t *in, uint16_t sz, uint8_t *out)
 {
-    TFTP_PKT *pkt = (TFTP_PKT*)data;
+    TFTP_PKT *pkt = (TFTP_PKT*)in;
     char *name = (char*)pkt->data;
     uint16_t len = mystrnlen(name, SEG_SZ);
     uint16_t i;
@@ -148,14 +147,14 @@ uint16_t tftpd_wrq(uint8_t *data, uint16_t sz)
     tfs.ackn = 0;
     if(mystrncmp(mode, "binary", SEG_SZ) && mystrncmp(mode, "octet", SEG_SZ))
     {
-        return tftpd_nak(data, sz, TFTP_EBADOP);
+        return tftpd_nak(out, TFTP_EBADOP);
     }
     if((name[8] == '.') && !mystrncmp(&name[9], "bin", 3))
     {
         for(i = 0; i < 8; i++)
         {
             if(!myisxdigit(name[i]))
-                return tftpd_nak(data, sz, TFTP_EBADOP);
+                return tftpd_nak(out, TFTP_EBADOP);
         }
         tfs.crc = htoi(name);
     }
@@ -164,28 +163,29 @@ uint16_t tftpd_wrq(uint8_t *data, uint16_t sz)
         tfs.crc = 0;
     }
     else
-        return tftpd_nak(data, sz, TFTP_ENOTFOUND);
-    tfs.start = USER_FLASH_MID_ADDR;
+        return tftpd_nak(out, TFTP_ENOTFOUND);
     tfs.mode = TFTP_WRQ;
 #ifdef ENABLE_FLASH
+    tfs.start = USER_FLASH_MID_ADDR;
     dbg_send_int2("flash_erase1", flash_erase1());
     HAL_FLASH_Unlock();
 #endif
-    return tftpd_ack(data, sz);
+    return tftpd_ack(out);
 }
 
-uint16_t tftpd_rrq(uint8_t *data, uint16_t sz)
+uint16_t tftpd_rrq(uint8_t *in, uint16_t sz, uint8_t *out)
 {
-    TFTP_PKT *pkt = (TFTP_PKT*)data;
+    TFTP_PKT *pkt = (TFTP_PKT*)in;
     char *name = (char*)pkt->data;
     uint16_t len = mystrnlen(name, SEG_SZ);
     char *mode = name + len + 1;
     dbg_send_str3(name, 1);
     dbg_send_str3(mode, 1);
     tfs.ackn = 1;
+#ifdef ENABLE_FLASH
     if(mystrncmp(mode, "binary", SEG_SZ) && mystrncmp(mode, "octet", SEG_SZ))
     {
-        return tftpd_nak(data, sz, TFTP_EBADOP);
+        return tftpd_nak(out, TFTP_EBADOP);
     }
     if((name[6] == '.') && !mystrncmp(&name[7], "bin", 3))
     {
@@ -200,27 +200,27 @@ uint16_t tftpd_rrq(uint8_t *data, uint16_t sz)
             tfs.end = tfs.start + flash_fsz1();
         }
         else
-            return tftpd_nak(data, sz, TFTP_ENOTFOUND);
+            return tftpd_nak(out, TFTP_ENOTFOUND);
         tfs.mode = TFTP_RRQ;
-        return tftpd_data_out(data, sz);
+        return tftpd_data_out(out);
     }
-    return tftpd_nak(data, sz, TFTP_ENOTFOUND);
-    return 0;
+#endif
+    return tftpd_nak(out, TFTP_ENOTFOUND);
 }
 
-uint16_t myip_tftpd_con_handler(uint8_t *data, uint16_t sz)
+uint16_t myip_tftpd_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
 {
     if(sz == 0)
         return 0;
-    TFTP_PKT *pkt = (TFTP_PKT*)data;
+    TFTP_PKT *pkt = (TFTP_PKT*)in;
     if(HTONS_16(pkt->opcode) == TFTP_WRQ)
-        return tftpd_wrq(data, sz);
+        return tftpd_wrq(in, sz, out);
     if(HTONS_16(pkt->opcode) == TFTP_RRQ)
-        return tftpd_rrq(data, sz);
+        return tftpd_rrq(in, sz, out);
     else if(HTONS_16(pkt->opcode) == TFTP_DATA)
-        return tftpd_data_in(data, sz);
+        return tftpd_data_in(in, sz, out);
     else if(HTONS_16(pkt->opcode) == TFTP_ACK)
-        return tftpd_data_out(data, sz);
+        return tftpd_data_out(out);
     return 0;
 }
 

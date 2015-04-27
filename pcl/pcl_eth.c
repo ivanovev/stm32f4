@@ -20,6 +20,10 @@ extern ARP_ENTRY arp_table[ARP_TABLE_SZ];
 #include "eth/myip/ptp/ptpd.h"
 #endif
 
+#ifdef ENABLE_STREAM
+#include "eth/myip/stream/stream.h"
+#endif
+
 extern volatile uint8_t reset;
 
 #ifdef ENABLE_TELNET
@@ -252,6 +256,45 @@ COMMAND(ptp) {
 }
 #endif
 
+#ifdef ENABLE_STREAM
+COMMAND(stream) {
+    char buf[MAXSTR];
+    ARITY(argc >= 2, "stream in|out|io|status [...]");
+    static uint8_t dir = 0;
+    if(SUBCMD1("in"))
+        dir = STREAM_IN;
+    if(SUBCMD1("out"))
+        dir = STREAM_OUT;
+    if(SUBCMD1("io"))
+        dir = STREAM_IO;
+    if(argc >= 3)
+    {
+        if(SUBCMD2("start"))
+        {
+            myip_stream_start(dir);
+            return picolSetIntResult(i, myip_stream_status());
+        }
+        if(SUBCMD2("stop"))
+        {
+            myip_stream_stop(dir);
+            return picolSetIntResult(i, myip_stream_status());
+        }
+    }
+    if(SUBCMD1("status"))
+    {
+        dir = myip_stream_status();
+        if(dir == STREAM_IN)
+            return picolSetResult(i, "in");
+        if(dir == STREAM_OUT)
+            return picolSetResult(i, "out");
+        if(dir == STREAM_IO)
+            return picolSetResult(i, "io");
+        return picolSetResult(i, "none");
+    }
+    return PICOL_ERR;
+}
+#endif
+
 #ifdef ENABLE_ICMP
 COMMAND(ping) {
     ARITY(argc >= 2, "ping ipaddr");
@@ -324,6 +367,9 @@ void pcl_eth_init(picolInterp *i)
 #endif
 #ifdef ENABLE_PTP
     picolRegisterCmd(i, "ptp", picol_ptp, 0);
+#endif
+#ifdef ENABLE_STREAM
+    picolRegisterCmd(i, "stream", picol_stream, 0);
 #endif
 }
 

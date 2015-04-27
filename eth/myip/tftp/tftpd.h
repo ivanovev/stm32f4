@@ -30,7 +30,7 @@ typedef struct {
 } TFTP_ERR_PKT;
 
 void        myip_tftpd_init(void);
-uint16_t    myip_tftpd_con_handler(uint8_t *data, uint16_t sz);
+uint16_t    myip_tftpd_con_handler(uint8_t *in, uint16_t sz, uint8_t *out);
 
 #endif
 

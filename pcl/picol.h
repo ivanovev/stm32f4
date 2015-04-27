@@ -41,6 +41,7 @@
 #define PARSED(_t)        {p->end = p->p-1; p->type = _t;}
 #define RETURN_PARSED(_t) {PARSED(_t);return PICOL_OK;}
 
+#define SUBCMD(j, x)       (EQ(argv[j],x))
 #define SUBCMD0(x)         (EQ(argv[0],x))
 #define SUBCMD1(x)         (EQ(argv[1],x))
 #define SUBCMD2(x)         (EQ(argv[2],x))
