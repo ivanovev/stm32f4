@@ -89,19 +89,10 @@ typedef struct {
     con_handler con_handler_ptr;
 } CON_ENTRY;
 
-#if 0
-#define MACH_SZ     ETH_HEADER
-#define ARPH_SZ     28
-#define IPH_SZ      20
-#define UDPH_SZ     8
-#define TCPH_SZ     20
-#define ICMPH_SZ    8
-#else
 #define MACH_SZ     sizeof(machdr_t)
 #define ARPH_SZ     sizeof(arphdr_t)
 #define IPH_SZ      sizeof(iphdr_t)
 #define UDPH_SZ     sizeof(udphdr_t)
-#endif
 
 typedef struct
 {
@@ -116,24 +107,25 @@ typedef struct
 #define ARP_OPER_REQ        0x0100
 #define ARP_OPER_REPL       0x0200
 
-#define arpfrm_t_TYPE  0x0608
-#define ipfrm_t_TYPE   0x0008
+#define ARP_FRM_TYPE  0x0608
+#define IP_FRM_TYPE   0x0008
 
 #define ICMP_PROTO          0x01
 #define TCP_PROTO           0x06
 #define UDP_PROTO           0x11
 
-void        myip_init(void);
-void        myip_con_add(frm_handler frm_handler_ptr, con_handler con_handler_ptr, uint8_t proto, uint16_t port);
-uint16_t    myip_arp_find(const uint8_t *ip_addr);
+void            myip_init(void);
+void            myip_con_add(frm_handler frm_handler_ptr, con_handler con_handler_ptr, uint8_t proto, uint16_t port);
+uint16_t        myip_arp_find(const uint8_t *ip_addr);
+void            myip_arp_request(const uint8_t *ip_addr);
 
-uint16_t    myip_eth_frm_handler2(ethfrm_t *in, uint16_t sz, ethfrm_t *out);
-uint16_t    myip_arp_frm_handler2(ethfrm_t *in, uint16_t sz, ethfrm_t *out);
-uint16_t    myip_udp_frm_handler2(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out);
+uint16_t        myip_eth_frm_handler(ethfrm_t *in, uint16_t sz, ethfrm_t *out);
+uint16_t        myip_arp_frm_handler(ethfrm_t *in, uint16_t sz, ethfrm_t *out);
+uint16_t        myip_udp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out);
 
-void        myip_make_ip_frame(ipfrm_t *ifrm, const uint8_t *dst_ip_addr, uint16_t hsz, uint16_t proto);
-void        myip_make_arp_frame(arpfrm_t *afrm, uint8_t *dst_ip_addr, uint16_t oper);
-uint16_t    myip_make_udp_frame(udpfrm_t *ufrm, const uint8_t *dst_ip_addr, uint16_t src_port, uint16_t dst_port, uint16_t data_sz);
+void            myip_make_ip_frame(ipfrm_t *ifrm, const uint8_t *dst_ip_addr, uint16_t hsz, uint16_t proto);
+void            myip_make_arp_frame(arpfrm_t *afrm, uint8_t *dst_ip_addr, uint16_t oper);
+uint16_t        myip_make_udp_frame(udpfrm_t *ufrm, const uint8_t *dst_ip_addr, uint16_t src_port, uint16_t dst_port, uint16_t data_sz);
 
 #endif
 

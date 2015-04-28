@@ -24,10 +24,10 @@ typedef struct {
 
 #define ICMPH_SZ    sizeof(icmphdr_t)
 
-void        myip_icmp_init(void);
-uint16_t    myip_icmp_con_handler(uint8_t *in, uint16_t sz, uint8_t *out);
-uint16_t    myip_icmp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out);
-uint16_t    myip_icmp_ping(uint8_t *ipaddr);
+void            myip_icmp_init(void);
+uint16_t        myip_icmp_con_handler(uint8_t *in, uint16_t sz, uint8_t *out);
+uint16_t        myip_icmp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out);
+uint16_t        myip_icmp_ping(uint8_t *ipaddr);
 
 #endif
 

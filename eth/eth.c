@@ -152,7 +152,7 @@ void eth_io(void)
             dbg_send_int2("fragmented packet? segcount", heth.RxFrameInfos.SegCount);
         dmatxdesc = heth.TxDesc;
         txbuf = (uint8_t*)dmatxdesc->Buffer1Addr;
-        sz = myip_eth_frm_handler2((ethfrm_t*)rxbuf, sz, (ethfrm_t*)txbuf);
+        sz = myip_eth_frm_handler((ethfrm_t*)rxbuf, sz, (ethfrm_t*)txbuf);
     }
 
     if(rxbuf != 0)

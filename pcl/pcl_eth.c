@@ -259,6 +259,9 @@ COMMAND(ptp) {
 #ifdef ENABLE_STREAM
 COMMAND(stream) {
     char buf[MAXSTR];
+    uint8_t ipaddr[4];
+    const uint8_t *ptr;
+    uint16_t j;
     ARITY(argc >= 2, "stream in|out|io|status [...]");
     static uint8_t dir = 0;
     if(SUBCMD1("in"))
@@ -267,29 +270,52 @@ COMMAND(stream) {
         dir = STREAM_OUT;
     if(SUBCMD1("io"))
         dir = STREAM_IO;
-    if(argc >= 3)
+    for(j = 2; j < argc; j++)
     {
-        if(SUBCMD2("start"))
+        if(SUBCMD(j, "start"))
         {
             myip_stream_start(dir);
             return picolSetIntResult(i, myip_stream_status());
         }
-        if(SUBCMD2("stop"))
+        if(SUBCMD(j, "stop"))
         {
             myip_stream_stop(dir);
             return picolSetIntResult(i, myip_stream_status());
         }
+        if(SUBCMD2("src") || SUBCMD2("dst"))
+        {
+            if(++j >= argc)
+                continue;
+            if(parse_eth_addr(argv[j], ipaddr, '.', 4, 10) != 4)
+                continue;
+            if(SUBCMD2("src") && (dir & STREAM_IN))
+                myip_stream_in_src(ipaddr);
+            if(SUBCMD2("dst") && (dir & STREAM_OUT))
+                myip_stream_out_dst(ipaddr);
+        }
+    }
+    if(SUBCMD1("stop"))
+    {
+        myip_stream_stop(STREAM_IO);
+        return picolSetIntResult(i, myip_stream_status());
     }
     if(SUBCMD1("status"))
     {
         dir = myip_stream_status();
+        j = 0;
         if(dir == STREAM_IN)
-            return picolSetResult(i, "in");
-        if(dir == STREAM_OUT)
-            return picolSetResult(i, "out");
-        if(dir == STREAM_IO)
-            return picolSetResult(i, "io");
-        return picolSetResult(i, "none");
+            j += mysnprintf(buf, sizeof(buf), "dir:\t%s\n\r", "in");
+        else if(dir == STREAM_OUT)
+            j += mysnprintf(buf, sizeof(buf), "dir:\t%s\n\r", "out");
+        else if(dir == STREAM_IO)
+            j += mysnprintf(buf, sizeof(buf), "dir:\t%s\n\r", "io");
+        else
+            j += mysnprintf(buf, sizeof(buf), "dir:\t%s\n\r", "none");
+        ptr = myip_stream_in_src(0);
+        j += mysnprintf(buf + j, sizeof(buf), "in  src:\t%d.%d.%d.%d\n\r", ptr[0], ptr[1], ptr[2], ptr[3]);
+        ptr = myip_stream_out_dst(0);
+        j += mysnprintf(buf + j, sizeof(buf), "out dst:\t%d.%d.%d.%d\n\r", ptr[0], ptr[1], ptr[2], ptr[3]);
+        return picolSetResult(i, buf);
     }
     return PICOL_ERR;
 }

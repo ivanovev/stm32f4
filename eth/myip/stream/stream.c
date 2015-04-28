@@ -31,6 +31,20 @@ void myip_stream_stop(uint8_t dir)
     st.dir &= ~dir;
 }
 
+const uint8_t* myip_stream_in_src(uint8_t ipaddr[])
+{
+    if(ipaddr)
+        mymemcpy(st.src_ipaddr, ipaddr, 4);
+    return st.src_ipaddr;
+}
+
+const uint8_t* myip_stream_out_dst(uint8_t ipaddr[])
+{
+    if(ipaddr)
+        mymemcpy(st.dst_ipaddr, ipaddr, 4);
+    return st.dst_ipaddr;
+}
+
 uint8_t myip_stream_status(void)
 {
     return st.dir;
@@ -44,11 +58,13 @@ uint16_t myip_stream_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
     uint32_t *ptr;
     if(st.dir & STREAM_OUT)
     {
+#if 0
         for(i = 0; i < STREAM_CHUNK_SZ; i += 4)
         {
             ptr = (uint32_t*)&out[i];
             *ptr = i;
         }
+#endif
         st.counter += STREAM_CHUNK_SZ;
         return STREAM_CHUNK_SZ;
     }
@@ -57,6 +73,17 @@ uint16_t myip_stream_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
 
 uint16_t myip_stream_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out)
 {
-
+    udpfrm_t* ufrmi = (udpfrm_t*)in;
+    udpfrm_t* ufrmo = (udpfrm_t*)out;
+    if(con_index >= CON_TABLE_SZ)
+        return 0;
+    if(sz)
+    {
+        sz = HTONS_16(ufrmi->ip.total_len) - IPH_SZ - UDPH_SZ;
+    }
+    sz = myip_stream_con_handler(ufrmi->data, sz, ufrmo->data);
+    if(sz)
+        return myip_make_udp_frame(ufrmo, st.dst_ipaddr, STREAM_PORT, STREAM_PORT, sz);
+    return 0;
 }
 

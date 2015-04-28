@@ -61,14 +61,9 @@ uint16_t myip_icmp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, et
             return 0;
         if(ping_state == PING_STATE_START)
         {
-            uint16_t i = myip_arp_find(ping_ipaddr);
-            if(i == ARP_TABLE_SZ)
-            {
-                myip_make_arp_frame((arpfrm_t*)out, ping_ipaddr, ARP_OPER_REQ);
-                ping_state = PING_STATE_WAIT_ARP;
-                return MACH_SZ + ARPH_SZ;
-            }
+            myip_arp_request(ping_ipaddr);
             ping_state = PING_STATE_WAIT_ARP;
+            return 0;
         }
         if(ping_state == PING_STATE_WAIT_ARP)
         {
