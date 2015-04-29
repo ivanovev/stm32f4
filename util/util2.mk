@@ -38,25 +38,29 @@ INCDIR += $(UTIL_DIR)
 
 MCPU = -mcpu=cortex-m4
 MTHUMB = -mthumb
-#MTHUMB += -mthumb-interwork
+MTHUMB += -mthumb-interwork
 #CFLAGS += -dD
 CFLAGS += $(MCPU)
 CFLAGS += $(MTHUMB)
-CFLAGS += -nodefaultlibs
 CFLAGS += -mlittle-endian
-CFLAGS += -mfloat-abi=soft
-#CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+#CFLAGS += -mfloat-abi=soft
+CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+CFLAGS += -nodefaultlibs
 CFLAGS += -funsigned-char
-#CFLAGS += -fno-diagnostics-show-caret
+CFLAGS += -fshort-wchar
+CFLAGS += -fno-diagnostics-show-caret
 CFLAGS += -I$(PWD)
 CFLAGS += -DSTM32F407xx
+CFLAGS += -DARM_MATH_CM4 -D__FPU_PRESENT=1 -D__FPU_USED
 IINCDIR = $(patsubst %,-I%,$(INCDIR))
 CFLAGS += $(IINCDIR)
 
 LDFLAGS += $(MCPU)
 LDFLAGS += $(MTHUMB)
-#LDFLAGS += -nostartfiles
+LDFLAGS += -nostartfiles
 LDFLAGS += -nostdlib
+LDFLAGS += -static
+#LDFLAGS += -lgcc_s
 LDFLAGS += -Wl,-T$(LDSCRIPT)
 LDFLAGS += -Wl,-Map=build/$(PROJ).map
 LDFLAGS += -Wl,--gc-sections
