@@ -2,7 +2,7 @@
 #include "pcl_misc.h"
 
 COMMAND(inthex) {
-    char buf[MAXSTR] = "";
+    char buf[MAXSTR];
     ARITY(argc == 2 || argc == 3, "int|hex ...");
     int32_t value = str2int(argv[1]);
     if(SUBCMD0("int")) {

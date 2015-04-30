@@ -1,7 +1,16 @@
 
 #include <main.h>
 #include "gpio/led.h"
-#include "arm_math.h"
+
+void* __wrap_memset(void *s, int c, size_t n)
+{
+    return mymemset(s, c, n);
+}
+
+char* __wrap_memclr(char *s, size_t n)
+{
+    return (char*)mymemset(s, 0, n);
+}
 
 #define BLOCK_SIZE            32
 #define NUM_TAPS              29

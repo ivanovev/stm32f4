@@ -30,11 +30,11 @@ uint16_t    bytes2str(const char *in, char *out, uint16_t sz);
 uint8_t     int2str(int32_t i, char *buf, uint8_t base);
 void        strip_str(char *str);
 
-inline uint8_t myisspace(char c);
-inline uint8_t myisnewline(char c);
-inline uint8_t myisalnum(char c);
-inline uint8_t myisdigit(char c);
-inline uint8_t myisxdigit(char c);
+uint8_t     myisspace(char c);
+uint8_t     myisnewline(char c);
+uint8_t     myisalnum(char c);
+uint8_t     myisdigit(char c);
+uint8_t     myisxdigit(char c);
 uint8_t     myisempty(char *str);
 
 int         mystrncmp(const char* s1, const char *s2, uint32_t n);

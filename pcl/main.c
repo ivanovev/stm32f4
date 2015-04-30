@@ -11,12 +11,14 @@ int main(void)
 {
     myinit();
 
-#if 1
+#ifdef ENABLE_UART
     io_recv_str_ptr = uart_recv_str;
     io_send_str_ptr = uart_send_str;
 #else
+#ifdef ENABLE_USB
     io_recv_str_ptr = VCP_read;
     io_send_str_ptr = VCP_write;
+#endif
 #endif
 
     dbg_send_str3("pcl_test", 1);

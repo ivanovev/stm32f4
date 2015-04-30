@@ -4,10 +4,6 @@
 #include <main.h>
 #include "flash.h"
 
-#ifndef HAL_FLASH_TIMEOUT_VALUE
-#define HAL_FLASH_TIMEOUT_VALUE   ((uint32_t)50000)/* 50 s */
-#endif
-
 void flash_erase_img1(void)
 {
     uint32_t sz1 = flash_fsz1();

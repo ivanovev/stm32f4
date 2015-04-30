@@ -12,6 +12,7 @@
 #include "util/util.h"
 #include "util/queue.h"
 
+#if 0
 #include "stdint.h"
 #include "stddef.h"
 #include "pcl/picol.h"
@@ -21,6 +22,7 @@
 #include "pcl/pcl_vfd.h"
 #ifdef __arm__
 #include "pcl/pcl_stm.h"
+#endif
 #endif
 
 #endif

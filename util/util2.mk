@@ -42,12 +42,14 @@ MTHUMB += -mthumb-interwork
 #CFLAGS += -dD
 CFLAGS += $(MCPU)
 CFLAGS += $(MTHUMB)
+#CFLAGS += -std=c99
 CFLAGS += -mlittle-endian
 #CFLAGS += -mfloat-abi=soft
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 CFLAGS += -nodefaultlibs
 CFLAGS += -funsigned-char
 CFLAGS += -fshort-wchar
+CFLAGS += -fno-builtin
 CFLAGS += -fno-diagnostics-show-caret
 CFLAGS += -I$(PWD)
 CFLAGS += -DSTM32F407xx
@@ -59,12 +61,12 @@ LDFLAGS += $(MCPU)
 LDFLAGS += $(MTHUMB)
 LDFLAGS += -nostartfiles
 LDFLAGS += -nostdlib
-LDFLAGS += -static
+#LDFLAGS += -static
 #LDFLAGS += -lgcc_s
 LDFLAGS += -Wl,-T$(LDSCRIPT)
 LDFLAGS += -Wl,-Map=build/$(PROJ).map
 LDFLAGS += -Wl,--gc-sections
-#LDFLAGS += -dead-strip
+LDFLAGS += -dead-strip
 
 # Put your stlink folder here so make burn will work.
 STLINK=~/stlink.git

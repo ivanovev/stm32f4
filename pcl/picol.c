@@ -436,7 +436,8 @@ COMMAND(test) {
     return picolSetResult(i,"test");
 }
 COMMAND(info) {
-    char buf[MAXSTR] = "";
+    char buf[MAXSTR];
+    buf[0] = 0;
     picolCmd *c = i->commands;
     ARITY(argc == 2 || argc == 3, "info args|body|commands|procs|globals|vars");
     int procs = SUBCMD1("procs");
