@@ -33,7 +33,7 @@ ifeq ($(LDSCRIPT), $(LDSCRIPT_RAM))
     CFLAGS += -DVECT_TAB_SRAM
 endif
 
-#CFLAGS += -O0 -g -Wall
-CFLAGS += -O1 -Wall
+CFLAGS += -O0 -g -Wall
+#CFLAGS += -O1 -Wall
 #CFLAGS += -Os -Wall
 

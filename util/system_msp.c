@@ -52,6 +52,11 @@ void myinit(void)
     eth_init();
 #endif
 
+#ifdef ENABLE_DSP
+#pragma message "dsp_init()"
+    dsp_init();
+#endif
+
 #ifdef ENABLE_USB
 #pragma message "usb_init()"
     usb_init();

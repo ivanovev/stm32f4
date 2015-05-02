@@ -73,6 +73,8 @@ void io_newline(void);
 void io_prompt(uint8_t newline, const char *prefix);
 void io_echo(void);
 
+#pragma GCC diagnostic ignored "-Wunused-value"
+
 #ifdef __arm__
 #ifdef ENABLE_UART
 #define dbg_send_str(a,b) uart_send_str((char*)a,b)

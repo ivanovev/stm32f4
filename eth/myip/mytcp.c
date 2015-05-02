@@ -107,7 +107,7 @@ uint16_t myip_tcp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, eth
     uint8_t *ptr;
     uint16_t sz1 = 0, sz2 = 0;
     uint32_t seqn = HTONS_32(tcpi->seqn);
-    uint32_t ackn = HTONS_32(tcpi->ackn);
+    //uint32_t ackn = HTONS_32(tcpi->ackn);
     if(sz > 0)
     {
         if(tfrmi->ip.proto != TCP_PROTO)

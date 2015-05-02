@@ -2,6 +2,10 @@
 #include "eth/eth.h"
 #include "stream.h"
 
+#ifdef ENABLE_DSP
+#include "dsp/dsp.h"
+#endif
+
 #define STREAM_CHUNK_SZ 512
 
 struct stream_t
@@ -14,7 +18,6 @@ struct stream_t
 void myip_stream_init(void)
 {
     st.dir = 0;
-    st.counter = 0;
     mymemset(st.src_ipaddr, 0, 4);
     mymemset(st.dst_ipaddr, 0, 4);
 }
@@ -22,8 +25,6 @@ void myip_stream_init(void)
 void myip_stream_start(uint8_t dir)
 {
     st.dir |= dir;
-    if(st.dir & STREAM_OUT)
-        st.counter = 0;
 }
 
 void myip_stream_stop(uint8_t dir)
@@ -56,17 +57,24 @@ uint16_t myip_stream_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
         return 0;
     uint16_t i;
     uint32_t *ptr;
-    if(st.dir & STREAM_OUT)
+    if(st.dir == STREAM_OUT)
     {
-#if 0
+#if 1
         for(i = 0; i < STREAM_CHUNK_SZ; i += 4)
         {
             ptr = (uint32_t*)&out[i];
             *ptr = i;
         }
 #endif
-        st.counter += STREAM_CHUNK_SZ;
         return STREAM_CHUNK_SZ;
+    }
+    if(st.dir == STREAM_IO)
+    {
+#ifdef ENABLE_DSP
+        return dsp_io(in, sz, out);
+#else
+        return 0;
+#endif
     }
     return 0;
 }

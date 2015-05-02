@@ -7,7 +7,5 @@
 #include "util/util.h"
 #include "util/system_msp.h"
 
-#include "arm_math.h"
-
 #endif
 

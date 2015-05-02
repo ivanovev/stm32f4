@@ -2,34 +2,18 @@
 #include <main.h>
 #include "gpio/led.h"
 
-void* __wrap_memset(void *s, int c, size_t n)
-{
-    return mymemset(s, c, n);
-}
-
-char* __wrap_memclr(char *s, size_t n)
-{
-    return (char*)mymemset(s, 0, n);
-}
-
-#define BLOCK_SIZE            32
-#define NUM_TAPS              29
-
-const float32_t firCoeffs32[NUM_TAPS] = {
-    -0.0018225230f, -0.0015879294f, +0.0000000000f, +0.0036977508f, +0.0080754303f, +0.0085302217f, -0.0000000000f, -0.0173976984f,
-    -0.0341458607f, -0.0333591565f, +0.0000000000f, +0.0676308395f, +0.1522061835f, +0.2229246956f, +0.2504960933f, +0.2229246956f,
-    +0.1522061835f, +0.0676308395f, +0.0000000000f, -0.0333591565f, -0.0341458607f, -0.0173976984f, -0.0000000000f, +0.0085302217f,
-    +0.0080754303f, +0.0036977508f, +0.0000000000f, -0.0015879294f, -0.0018225230f
-};
-
-static float32_t firStateF32[BLOCK_SIZE + NUM_TAPS - 1];
+q15_t src[DSP_BLOCK_SIZE], dst[DSP_BLOCK_SIZE];
 
 int main(void)
 {
     myinit();
-    arm_fir_instance_f32 S;
-    arm_status status;
-    arm_fir_init_f32(&S, NUM_TAPS, (float32_t *)&firCoeffs32[0], &firStateF32[0], BLOCK_SIZE);
+    uint16_t i;
+    for(i = 0; i < DSP_BLOCK_SIZE; i++)
+    {
+        src[i] = i;
+        dst[i] = 0;
+    }
+    dsp_io((uint8_t*)src, 2*DSP_BLOCK_SIZE, dst);
     for (;;) {
         HAL_Delay(1000);
         led_toggle();

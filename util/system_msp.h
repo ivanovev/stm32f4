@@ -42,6 +42,10 @@
 #include "eth/eth.h"
 #endif
 
+#ifdef ENABLE_DSP
+#include "dsp/dsp.h"
+#endif
+
 #ifdef ENABLE_USB
 #include "usb/usb.h"
 #endif

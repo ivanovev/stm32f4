@@ -282,15 +282,15 @@ COMMAND(stream) {
             myip_stream_stop(dir);
             return picolSetIntResult(i, myip_stream_status());
         }
-        if(SUBCMD2("src") || SUBCMD2("dst"))
+        if(SUBCMD(j, "src") || SUBCMD(j, "dst"))
         {
             if(++j >= argc)
                 continue;
             if(parse_eth_addr(argv[j], ipaddr, '.', 4, 10) != 4)
                 continue;
-            if(SUBCMD2("src") && (dir & STREAM_IN))
+            if(SUBCMD(j-1, "src") && (dir & STREAM_IN))
                 myip_stream_in_src(ipaddr);
-            if(SUBCMD2("dst") && (dir & STREAM_OUT))
+            if(SUBCMD(j-1, "dst") && (dir & STREAM_OUT))
                 myip_stream_out_dst(ipaddr);
         }
     }
