@@ -3,7 +3,7 @@
 #define __DSP_H__
 
 #define DSP_BLOCK_SIZE            256
-#define DSP_NUM_TAPS              4
+#define DSP_NUM_TAPS              34
 
 #include <main.h>
 #include "arm_math.h"
