@@ -5,6 +5,11 @@
 #include "stdint.h"
 #include "stddef.h"
 
+#include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
+
+#include "util/macro.h"
+
 #include <main.h>
 #ifdef ENABLE_GPIO
 #include "gpio/gpio.h"
@@ -14,12 +19,16 @@
 #include "flash/flash.h"
 #endif
 
-#ifdef ENABLE_PCL
-#include "pcl/pcl.h"
-#endif
-
 #ifdef ENABLE_TIM
 #include "tim/tim.h"
+#endif
+
+#ifdef ENABLE_ADC
+#include "adc/adc.h"
+#endif
+
+#ifdef ENABLE_DAC
+#include "dac/dac.h"
 #endif
 
 #ifdef ENABLE_I2C
@@ -36,6 +45,10 @@
 
 #ifdef ENABLE_RNG
 #include "rng/rng.h"
+#endif
+
+#ifdef ENABLE_PCL
+#include "pcl/pcl.h"
 #endif
 
 #ifdef ENABLE_ETH

@@ -42,6 +42,16 @@ void myinit(void)
     tim_init();
 #endif
 
+#ifdef ENABLE_ADC
+#pragma message "adc_init()"
+    adc_init();
+#endif
+
+#ifdef ENABLE_DAC
+#pragma message "dac_init()"
+    dac_init();
+#endif
+
 #ifdef ENABLE_FLASH
 #pragma message "flash_erase_img1()"
     flash_erase_img1();

@@ -13,7 +13,7 @@ int main(void)
         src[i] = i;
         dst[i] = 0;
     }
-    dsp_io((uint8_t*)src, 2*DSP_BLOCK_SIZE, dst);
+    dsp_io((uint8_t*)src, 2*DSP_BLOCK_SIZE, (uint8_t*)dst);
     for (;;) {
         HAL_Delay(1000);
         led_toggle();

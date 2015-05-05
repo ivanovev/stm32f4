@@ -9,6 +9,9 @@
 #define JOIN3_(A, B, C) A ## B ## C
 #define JOIN3(A, B, C) JOIN3_(A, B, C)
 
+#define JOIN4_(A, B, C, D) A ## B ## C ## D
+#define JOIN4(A, B, C, D) JOIN4_(A, B, C, D)
+
 #define GPIO(G) JOIN(GPIO, G)
 #define PIN(P) JOIN(GPIO_PIN_, P)
 #define PINSRC(P) JOIN(GPIO_PinSource, P)

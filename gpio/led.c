@@ -1,6 +1,6 @@
 
 #include <main.h>
-#include "led.h"
+#include "gpio/led.h"
 
 #pragma message "LED: GPIO" STR(LED_GPIO) " PIN" STR(LED_PIN)
 
