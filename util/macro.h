@@ -12,6 +12,9 @@
 #define JOIN4_(A, B, C, D) A ## B ## C ## D
 #define JOIN4(A, B, C, D) JOIN4_(A, B, C, D)
 
+#define JOIN5_(A, B, C, D, E) A ## B ## C ## D ## E
+#define JOIN5(A, B, C, D, E) JOIN5_(A, B, C, D, E)
+
 #define GPIO(G) JOIN(GPIO, G)
 #define PIN(P) JOIN(GPIO_PIN_, P)
 #define PINSRC(P) JOIN(GPIO_PinSource, P)

@@ -15,27 +15,25 @@
 #define DACx_GPIO                       A
 
 #if DAC_OUTn == 1
-#pragma message "DAC_OUT: DAC" STR(DAC_OUTn)
 #define DACx_PIN                        4
 #endif
 
 #if DAC_OUTn == 2
-#define DACx_GPIO                       A
 #define DACx_PIN                        5
 #endif
 
-#define DACx_DMA_CHANNEL                JOIN(DMA_CHANNEL_, DAC_DMA_CHANNELn)
-#define DACx_DMA_STREAM                 JOIN4(DMA, DAC_DMAn, _Stream, DAC_DMA_STREAMn)
-#define DACx_DMA_CLK_ENABLE             JOIN3(__HAL_RCC_DMA, DAC_DMAn, _CLK_ENABLE)
+#define DAC_DMAx_CHANNEL                JOIN(DMA_CHANNEL_, DAC_DMA_CHANNELn)
+#define DAC_DMAx_STREAM                 JOIN4(DMA, DAC_DMAn, _Stream, DAC_DMA_STREAMn)
+#define DAC_DMAx_CLK_ENABLE             JOIN3(__HAL_RCC_DMA, DAC_DMAn, _CLK_ENABLE)
 
-#define DACx_TIM                        JOIN(TIM, DAC_TIMn)
-#define DACx_TIM_CLK_ENABLE             JOIN3(__HAL_RCC_TIM, DAC_TIMn, _CLK_ENABLE)
-#define DACx_TIM_IRQn                   JOIN3(TIM, DAC_TIMn, _IRQn)
-#define DACx_TIM_FORCE_RESET            JOIN3(__HAL_RCC_TIM, DAC_TIMn, _FORCE_RESET)
-#define DACx_TIM_RELEASE_RESET          JOIN3(__HAL_RCC_TIM, DAC_TIMn, _RELEASE_RESET)
+#define DAC_TIMx                        JOIN(TIM, DAC_TIMn)
+#define DAC_TIMx_CLK_ENABLE             JOIN3(__HAL_RCC_TIM, DAC_TIMn, _CLK_ENABLE)
+#define DAC_TIMx_IRQn                   JOIN3(TIM, DAC_TIMn, _IRQn)
+#define DAC_TIMx_FORCE_RESET            JOIN3(__HAL_RCC_TIM, DAC_TIMn, _FORCE_RESET)
+#define DAC_TIMx_RELEASE_RESET          JOIN3(__HAL_RCC_TIM, DAC_TIMn, _RELEASE_RESET)
 
 void            dac_init(void);
-uint16_t        dac_start(uint16_t *data, uint16_t sz);
+void            dac_start(const uint8_t *data, uint16_t sz);
 void            dac_stop(void);
 
 #endif

@@ -3,22 +3,18 @@
 
 #ifdef DACx
 
-#pragma message "DAC_OUT: DAC" STR(DAC_OUTn)
-#pragma message "DAC_DMA: DMA" STR(DAC_DMAn)
-#pragma message "DAC_TIM: TIM" STR(DAC_TIMn)
-
 void HAL_DAC_MspInit(DAC_HandleTypeDef *hdac)
 {
     GPIO_InitTypeDef gpio_init;
     static DMA_HandleTypeDef  hdma_dac;
     GPIO_INIT(DACx_GPIO, DACx_PIN, GPIO_MODE_ANALOG, GPIO_NOPULL, 0, 0);
     DACx_CLK_ENABLE();
-    DACx_DMA_CLK_ENABLE();
-    DACx_TIM_CLK_ENABLE();
+    DAC_DMAx_CLK_ENABLE();
+    DAC_TIMx_CLK_ENABLE();
 
-    hdma_dac.Instance = DACx_DMA_STREAM;
+    hdma_dac.Instance = DAC_DMAx_STREAM;
 
-    hdma_dac.Init.Channel  = DACx_DMA_CHANNEL;
+    hdma_dac.Init.Channel  = DAC_DMAx_CHANNEL;
 
     hdma_dac.Init.Direction = DMA_MEMORY_TO_PERIPH;
     hdma_dac.Init.PeriphInc = DMA_PINC_DISABLE;
@@ -30,10 +26,16 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef *hdac)
 
     HAL_DMA_Init(&hdma_dac);
 
+#if DAC_OUTn == 1
     __HAL_LINKDMA(hdac, DMA_Handle1, hdma_dac);
+#endif
 
-    //HAL_NVIC_SetPriority(DACx_DMA_IRQn, 2, 0);
-    //HAL_NVIC_EnableIRQ(DACx_DMA_IRQn);
+#if DAC_OUTn == 2
+    __HAL_LINKDMA(hdac, DMA_Handle2, hdma_dac);
+#endif
+
+    //HAL_NVIC_SetPriority(DAC_DMAx_IRQn, 2, 0);
+    //HAL_NVIC_EnableIRQ(DAC_DMAx_IRQn);
 }
 
 #endif
