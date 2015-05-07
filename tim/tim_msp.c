@@ -11,6 +11,14 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
         HAL_NVIC_EnableIRQ(TIMx_IRQn);
     }
 #endif
+#ifdef ADC_TIMx
+    if(htim->Instance == ADC_TIMx)
+    {
+        ADC_TIMx_CLK_ENABLE();
+        HAL_NVIC_SetPriority(ADC_TIMx_IRQn, 0xF, 0);
+        HAL_NVIC_EnableIRQ(ADC_TIMx_IRQn);
+    }
+#endif
 #ifdef DAC_TIMx
     if(htim->Instance == DAC_TIMx)
     {

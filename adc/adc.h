@@ -4,6 +4,14 @@
 
 #include <main.h>
 
+#define ADCn                1
+#define ADC_INn             3
+#define ADC_DMAn            2
+#define ADC_DMA_STREAMn     0
+#define ADC_DMA_CHANNELn    0
+#define ADC_TIMn            2
+
+
 #if ADCn == 1
 #define ADCx                            ADC1
 #endif
@@ -55,8 +63,9 @@
 #define ADC_TIMx_RELEASE_RESET          JOIN3(__HAL_RCC_TIM, ADC_TIMn, _RELEASE_RESET)
 
 void            adc_init(void);
-void            adc_start(uint8_t *buf1, uint8_t *buf2, uint16_t sz);
-uint16_t        adc_get_data(uint8_t *buf1, uint16_t sz);
+void            adc_start(void);
+void            adc_start_sz(uint32_t sz);
+uint16_t        adc_get_data(uint8_t *out, uint16_t sz);
 void            adc_stop(void);
 
 #endif

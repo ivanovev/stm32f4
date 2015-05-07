@@ -1,5 +1,6 @@
 
 #include <adc/adc.h>
+#include "gpio/led.h"
 
 #pragma message "ADC: ADC" STR(ADCn)
 #pragma message "ADC_IN: ADC" STR(ADC_INn)
@@ -9,12 +10,15 @@
 #pragma message "ADC_DMA_CHANNEL: DMA_CHANNEL" STR(ADC_DMA_CHANNELn)
 
 #define ADC_BUF_NB  2
-#define ADC_BUF_SZ  512
+#define ADC_BUF_SZ  IO_BUF_SZ
 
 __ALIGN_BEGIN uint8_t ADC_Buff[ADC_BUF_NB][ADC_BUF_SZ] __ALIGN_END;
 
-uint8_t *ADC_Buf0 = &ADC_Buff[0][0];
-uint8_t *ADC_Buf1 = &ADC_Buff[1][0];
+uint8_t *ADC_Buf0 = 0;
+uint8_t *ADC_Buf1 = 0;
+uint8_t *ADC_Data = 0;
+uint32_t ADC_Counter = 0;
+uint32_t ADC_SZ = 0;
 
 ADC_HandleTypeDef hadc;
 static ADC_ChannelConfTypeDef scfg;
@@ -23,6 +27,12 @@ static void adc_tim_config(void);
 
 void adc_init(void)
 {
+    ADC_Buf0 = &(ADC_Buff[0][0]);
+    ADC_Buf1 = &(ADC_Buff[1][0]);
+    mymemset(ADC_Buf0, 0, ADC_BUF_SZ);
+    mymemset(ADC_Buf1, 0, ADC_BUF_SZ);
+    ADC_Counter = 0;
+
     hadc.Instance = ADCx;
     adc_tim_config();
 
@@ -36,10 +46,10 @@ void adc_init(void)
     //hadc.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
     hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
     hadc.Init.ExternalTrigConv = ADCx_TRIGGER;
-    hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    hadc.Init.DataAlign = ADC_DATAALIGN_LEFT;
     hadc.Init.NbrOfConversion = 1;
     hadc.Init.DMAContinuousRequests = ENABLE;
-    hadc.Init.EOCSelection = DISABLE;
+    hadc.Init.EOCSelection = ADC_EOC_SEQ_CONV;
 
     if(HAL_ADC_Init(&hadc) != HAL_OK)
     {
@@ -55,39 +65,51 @@ void adc_init(void)
     {
         Error_Handler();
     }
-
-
 }
 
-void adc_start(uint8_t *buf1, uint8_t *buf2, uint16_t sz)
+void adc_start(void)
 {
-    if(HAL_ADC_Start_DMA(&hadc, (uint32_t*)ADC_Buf0, ADC_BUF_SZ/sizeof(uint32_t)) != HAL_OK)
+    if(HAL_ADC_Start_DMA(&hadc, (uint32_t*)ADC_Buf0, ADC_BUF_NB*ADC_BUF_SZ/sizeof(uint16_t)) != HAL_OK)
     {
         Error_Handler();
     }
 }
 
-void adc_stop(void)
+void adc_start_sz(uint32_t sz)
 {
-
+    ADC_Counter = 0;
+    ADC_SZ = sz;
+    adc_start();
 }
 
-uint16_t adc_get_data(uint8_t *buf1, uint16_t sz)
+void adc_stop(void)
 {
+    HAL_ADC_Stop_DMA(&hadc);
+}
+
+uint16_t adc_get_data(uint8_t *out, uint16_t sz)
+{
+    uint8_t *ptr = ADC_Data;
+    ADC_Data = 0;
+    if(ptr)
+    {
+        mymemcpy(out, ptr, sz);
+        return sz;
+    }
     return 0;
 }
 
 static void adc_tim_config(void)
 {
-    static TIM_HandleTypeDef  htim;
+    static TIM_HandleTypeDef  htim_adc;
     TIM_MasterConfigTypeDef smastercfg;
 
-    htim.Instance = ADC_TIMx;
-    htim.Init.Period = 0x0FF;
-    htim.Init.Prescaler = 0;
-    htim.Init.ClockDivision = 0;
-    htim.Init.CounterMode = TIM_COUNTERMODE_UP;
-    if(HAL_TIM_Base_Init(&htim) != HAL_OK)
+    htim_adc.Instance = ADC_TIMx;
+    htim_adc.Init.Period = 0x7FF;
+    htim_adc.Init.Prescaler = 0;
+    htim_adc.Init.ClockDivision = 0;
+    htim_adc.Init.CounterMode = TIM_COUNTERMODE_UP;
+    if(HAL_TIM_Base_Init(&htim_adc) != HAL_OK)
     {
         Error_Handler();
     }
@@ -95,15 +117,41 @@ static void adc_tim_config(void)
     smastercfg.MasterOutputTrigger = TIM_TRGO_UPDATE;
     smastercfg.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 
-    HAL_TIMEx_MasterConfigSynchronization(&htim, &smastercfg);
+    HAL_TIMEx_MasterConfigSynchronization(&htim_adc, &smastercfg);
 
-    if(HAL_TIM_Base_Start(&htim) != HAL_OK)
+    if(HAL_TIM_Base_Start(&htim_adc) != HAL_OK)
     {
         Error_Handler();
     }
 }
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *phadc)
+#if 1
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* phadc)
+{
+    ADC_Data = ADC_Buf0;
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* phadc)
+{
+    ADC_Data = ADC_Buf1;
+    ADC_Counter += ADC_BUF_NB*ADC_BUF_SZ;
+    if(ADC_Counter >= ADC_SZ)
+    {
+        ADC_Counter = 0;
+        ADC_SZ = 0;
+        adc_stop();
+    }
+}
+#endif
+
+#if 0
+void adc_conv_half_cplt_cb(DMA_HandleTypeDef * hdma)
 {
 }
+
+void adc_conv_cplt_cb(DMA_HandleTypeDef * hdma)
+{
+    led_toggle();
+}
+#endif
 

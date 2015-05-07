@@ -6,6 +6,14 @@
 #include "gpio/gpio.h"
 #endif
 
+#ifdef ENABLE_ADC
+#include "adc/adc.h"
+#endif
+
+#ifdef ENABLE_DAC
+#include "dac/dac.h"
+#endif
+
 #ifdef ENABLE_FLASH
 #include "flash/flash.h"
 #endif
@@ -123,6 +131,43 @@ COMMAND(gpio) {
 }
 #endif
 
+#ifdef ENABLE_ADC
+COMMAND(adc) {
+    ARITY((argc >= 2), "adc start");
+    if(SUBCMD1("start"))
+    {
+        if(argc >= 3)
+        {
+            adc_start_sz(str2int(argv[2]));
+            return PICOL_OK;
+        }
+    }
+    if(SUBCMD1("stop"))
+    {
+        adc_stop();
+        return PICOL_OK;
+    }
+    return PICOL_ERR;
+}
+#endif
+
+#ifdef ENABLE_DAC
+COMMAND(dac) {
+    ARITY((argc >= 2), "dac start|stop");
+    if(SUBCMD1("start"))
+    {
+        dac_start_sin();
+        return PICOL_OK;
+    }
+    if(SUBCMD1("stop"))
+    {
+        dac_stop();
+        return PICOL_OK;
+    }
+    return PICOL_ERR;
+}
+#endif
+
 #ifdef ENABLE_UART
 COMMAND(uart) {
     ARITY((argc >= 2), "uart 1|2|3... str");
@@ -220,6 +265,12 @@ void pcl_stm_init(picolInterp *i)
 {
 #ifdef ENABLE_GPIO
     picolRegisterCmd(i, "gpio", picol_gpio, 0);
+#endif
+#ifdef ENABLE_ADC
+    picolRegisterCmd(i, "adc", picol_adc, 0);
+#endif
+#ifdef ENABLE_DAC
+    picolRegisterCmd(i, "dac", picol_dac, 0);
 #endif
 #ifdef ENABLE_FLASH
     picolRegisterCmd(i, "flash", picol_flash, 0);

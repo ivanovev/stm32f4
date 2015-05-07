@@ -4,6 +4,13 @@
 
 #include <main.h>
 
+#define DAC_OUTn            1
+#define DAC_DMAn            1
+#define DAC_DMA_STREAMn     5
+#define DAC_DMA_CHANNELn    7
+#define DAC_TIMn            5
+
+
 #define DACx                            DAC
 #define DACx_CHANNEL                    JOIN(DAC_CHANNEL_, DAC_OUTn)
 #define DACx_TRIGGER                    JOIN3(DAC_TRIGGER_T, DAC_TIMn, _TRGO)
@@ -34,6 +41,7 @@
 
 void            dac_init(void);
 void            dac_start(const uint8_t *data, uint16_t sz);
+void            dac_start_sin(void);
 void            dac_stop(void);
 
 #endif

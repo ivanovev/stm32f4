@@ -2,11 +2,13 @@
 #include "eth/eth.h"
 #include "stream.h"
 
+#ifdef ENABLE_ADC
+#include "adc/adc.h"
+#endif
+
 #ifdef ENABLE_DSP
 #include "dsp/dsp.h"
 #endif
-
-#define STREAM_CHUNK_SZ 512
 
 struct stream_t
 {
@@ -59,22 +61,17 @@ uint16_t myip_stream_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
     uint32_t *ptr;
     if(st.dir == STREAM_OUT)
     {
-#if 1
-        for(i = 0; i < STREAM_CHUNK_SZ; i += 4)
-        {
-            ptr = (uint32_t*)&out[i];
-            *ptr = i;
-        }
+#ifdef ENABLE_ADC
+        return adc_get_data(out, IO_BUF_SZ);
 #endif
-        return STREAM_CHUNK_SZ;
+        return 0;
     }
     if(st.dir == STREAM_IO)
     {
 #ifdef ENABLE_DSP
         return dsp_io(in, sz, out);
-#else
-        return 0;
 #endif
+        return 0;
     }
     return 0;
 }
