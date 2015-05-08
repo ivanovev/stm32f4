@@ -57,8 +57,6 @@ uint16_t myip_stream_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
 {
     if(st.dir == 0)
         return 0;
-    uint16_t i;
-    uint32_t *ptr;
     if(st.dir == STREAM_OUT)
     {
 #ifdef ENABLE_ADC

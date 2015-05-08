@@ -136,11 +136,11 @@ COMMAND(adc) {
     ARITY((argc >= 2), "adc start");
     if(SUBCMD1("start"))
     {
-        if(argc >= 3)
-        {
+        if(argc == 2)
+            adc_start();
+        else
             adc_start_sz(str2int(argv[2]));
-            return PICOL_OK;
-        }
+        return PICOL_OK;
     }
     if(SUBCMD1("stop"))
     {

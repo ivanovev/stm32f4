@@ -14,11 +14,14 @@
 
 __ALIGN_BEGIN uint8_t ADC_Buff[ADC_BUF_NB][ADC_BUF_SZ] __ALIGN_END;
 
-uint8_t *ADC_Buf0 = 0;
-uint8_t *ADC_Buf1 = 0;
-uint8_t *ADC_Data = 0;
-uint32_t ADC_Counter = 0;
-uint32_t ADC_SZ = 0;
+struct adcdata_t
+{
+    uint8_t *buf0;
+    uint8_t *buf1;
+    uint8_t *out;
+    uint32_t counter;
+    uint32_t sz;
+} adcd;
 
 ADC_HandleTypeDef hadc;
 static ADC_ChannelConfTypeDef scfg;
@@ -27,11 +30,11 @@ static void adc_tim_config(void);
 
 void adc_init(void)
 {
-    ADC_Buf0 = &(ADC_Buff[0][0]);
-    ADC_Buf1 = &(ADC_Buff[1][0]);
-    mymemset(ADC_Buf0, 0, ADC_BUF_SZ);
-    mymemset(ADC_Buf1, 0, ADC_BUF_SZ);
-    ADC_Counter = 0;
+    adcd.buf0 = &(ADC_Buff[0][0]);
+    adcd.buf1 = &(ADC_Buff[1][0]);
+    mymemset(adcd.buf0, 0, ADC_BUF_SZ);
+    mymemset(adcd.buf1, 0, ADC_BUF_SZ);
+    adcd.counter = 0;
 
     hadc.Instance = ADCx;
     adc_tim_config();
@@ -39,7 +42,7 @@ void adc_init(void)
     hadc.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
     hadc.Init.Resolution = ADC_RESOLUTION_12B;
     hadc.Init.ScanConvMode = DISABLE;
-    hadc.Init.ContinuousConvMode = ENABLE;
+    hadc.Init.ContinuousConvMode = DISABLE;
     hadc.Init.DiscontinuousConvMode = DISABLE;
     hadc.Init.NbrOfDiscConversion = 0;
     //hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
@@ -58,7 +61,7 @@ void adc_init(void)
 
     scfg.Channel = ADCx_CHANNEL;
     scfg.Rank = 1;
-    scfg.SamplingTime = ADC_SAMPLETIME_28CYCLES;
+    scfg.SamplingTime = ADC_SAMPLETIME_15CYCLES;
     scfg.Offset = 0;
 
     if(HAL_ADC_ConfigChannel(&hadc, &scfg) != HAL_OK)
@@ -69,7 +72,7 @@ void adc_init(void)
 
 void adc_start(void)
 {
-    if(HAL_ADC_Start_DMA(&hadc, (uint32_t*)ADC_Buf0, ADC_BUF_NB*ADC_BUF_SZ/sizeof(uint16_t)) != HAL_OK)
+    if(HAL_ADC_Start_DMA(&hadc, (uint32_t*)adcd.buf0, ADC_BUF_NB*ADC_BUF_SZ/sizeof(uint16_t)) != HAL_OK)
     {
         Error_Handler();
     }
@@ -77,8 +80,8 @@ void adc_start(void)
 
 void adc_start_sz(uint32_t sz)
 {
-    ADC_Counter = 0;
-    ADC_SZ = sz;
+    adcd.counter = 0;
+    adcd.sz = sz;
     adc_start();
 }
 
@@ -87,13 +90,19 @@ void adc_stop(void)
     HAL_ADC_Stop_DMA(&hadc);
 }
 
+#error "adc_get_data"
 uint16_t adc_get_data(uint8_t *out, uint16_t sz)
 {
-    uint8_t *ptr = ADC_Data;
-    ADC_Data = 0;
+    uint8_t *ptr = adcd.out;
+    adcd.out = 0; // it seems to be wrong...
     if(ptr)
     {
+//#ifdef ENABLE_DMA
+#if 0
+        dma_memcpy(out, ptr, sz);
+#else
         mymemcpy(out, ptr, sz);
+#endif
         return sz;
     }
     return 0;
@@ -105,7 +114,7 @@ static void adc_tim_config(void)
     TIM_MasterConfigTypeDef smastercfg;
 
     htim_adc.Instance = ADC_TIMx;
-    htim_adc.Init.Period = 0x7FF;
+    htim_adc.Init.Period = 999;
     htim_adc.Init.Prescaler = 0;
     htim_adc.Init.ClockDivision = 0;
     htim_adc.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -128,18 +137,21 @@ static void adc_tim_config(void)
 #if 1
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* phadc)
 {
-    ADC_Data = ADC_Buf0;
+    adcd.out = adcd.buf0;
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* phadc)
 {
-    ADC_Data = ADC_Buf1;
-    ADC_Counter += ADC_BUF_NB*ADC_BUF_SZ;
-    if(ADC_Counter >= ADC_SZ)
+    adcd.out = adcd.buf1;
+    if(adcd.sz)
     {
-        ADC_Counter = 0;
-        ADC_SZ = 0;
-        adc_stop();
+        adcd.counter += ADC_BUF_NB*ADC_BUF_SZ;
+        if(adcd.counter >= adcd.sz)
+        {
+            adcd.counter = 0;
+            adcd.sz = 0;
+            adc_stop();
+        }
     }
 }
 #endif

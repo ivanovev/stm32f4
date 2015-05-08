@@ -257,13 +257,28 @@ char* mystrncpy(char *dest, const char *src, uint32_t n)
     return dest;
 }
 
-void* mymemcpy(void *dest, const void *src, uint32_t n)
+void* mymemcpy(void *dst, const void *src, uint32_t n)
 {
-    char* dst8 = (char*)dest;
-    char* src8 = (char*)src;
-    while (n--)
-        *dst8++ = *src8++;
-    return dest;
+    if((uintptr_t)dst % sizeof(long) == 0 &&
+       (uintptr_t)src % sizeof(long) == 0 &&
+       n % sizeof(long) == 0)
+    {
+        uint32_t i;
+        long *d = dst;
+        const long *s = src;
+        for (i=0; i<n/sizeof(long); i++)
+        {
+            d[i] = s[i];
+        }
+    }
+    else
+    {
+        char* dst8 = (char*)dst;
+        char* src8 = (char*)src;
+        while (n--)
+            *dst8++ = *src8++;
+    }
+    return dst;
 }
 
 int mymemcmp(const void *s1, const void *s2, uint32_t n)

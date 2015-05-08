@@ -22,7 +22,7 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef *hdac)
     hdma_dac.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_dac.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_dac.Init.Mode = DMA_CIRCULAR;
-    hdma_dac.Init.Priority = DMA_PRIORITY_HIGH;
+    hdma_dac.Init.Priority = DMA_PRIORITY_MEDIUM;
 
     HAL_DMA_Init(&hdma_dac);
 
@@ -33,9 +33,6 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef *hdac)
 #if DAC_OUTn == 2
     __HAL_LINKDMA(hdac, DMA_Handle2, hdma_dac);
 #endif
-
-    //HAL_NVIC_SetPriority(DAC_DMAx_IRQn, 2, 0);
-    //HAL_NVIC_EnableIRQ(DAC_DMAx_IRQn);
 }
 
 #endif

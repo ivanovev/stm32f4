@@ -56,7 +56,7 @@ static void dac_tim_config(void)
 
     htim.Instance = DAC_TIMx;
     //htim.Init.Period = 0x0FF;
-    htim.Init.Period = 99;
+    htim.Init.Period = 999;
     htim.Init.Prescaler = 0;
     htim.Init.ClockDivision = 0;
     htim.Init.CounterMode = TIM_COUNTERMODE_UP;

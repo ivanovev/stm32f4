@@ -52,6 +52,11 @@ void myinit(void)
     dac_init();
 #endif
 
+#ifdef ENABLE_DMA
+#pragma message "dma_init()"
+    dma_init();
+#endif
+
 #ifdef ENABLE_FLASH
 #pragma message "flash_erase_img1()"
     flash_erase_img1();

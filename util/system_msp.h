@@ -31,6 +31,10 @@
 #include "dac/dac.h"
 #endif
 
+#ifdef ENABLE_DMA
+#include "dma/dma.h"
+#endif
+
 #ifdef ENABLE_I2C
 #include "i2c/i2c.h"
 #endif
