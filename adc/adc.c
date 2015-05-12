@@ -1,6 +1,7 @@
 
 #include <adc/adc.h>
 #include "gpio/led.h"
+#include "util/util.h"
 
 #pragma message "ADC: ADC" STR(ADCn)
 #pragma message "ADC_IN: ADC" STR(ADC_INn)
@@ -18,9 +19,9 @@ struct adcdata_t
 {
     uint8_t *buf0;
     uint8_t *buf1;
-    uint8_t *out;
-    uint32_t counter;
-    uint32_t sz;
+    volatile uint32_t sz;
+    volatile uint32_t counter;
+    volatile uint8_t convcplt;
 } adcd;
 
 ADC_HandleTypeDef hadc;
@@ -35,6 +36,7 @@ void adc_init(void)
     mymemset(adcd.buf0, 0, ADC_BUF_SZ);
     mymemset(adcd.buf1, 0, ADC_BUF_SZ);
     adcd.counter = 0;
+    adcd.convcplt = 0;
 
     hadc.Instance = ADCx;
     adc_tim_config();
@@ -81,7 +83,7 @@ void adc_start(void)
 void adc_start_sz(uint32_t sz)
 {
     adcd.counter = 0;
-    adcd.sz = sz;
+    adcd.sz = sz/ADC_BUF_SZ;
     adc_start();
 }
 
@@ -90,19 +92,19 @@ void adc_stop(void)
     HAL_ADC_Stop_DMA(&hadc);
 }
 
-#error "adc_get_data"
 uint16_t adc_get_data(uint8_t *out, uint16_t sz)
 {
-    uint8_t *ptr = adcd.out;
-    adcd.out = 0; // it seems to be wrong...
-    if(ptr)
+    if(adcd.convcplt)
     {
-//#ifdef ENABLE_DMA
-#if 0
-        dma_memcpy(out, ptr, sz);
-#else
-        mymemcpy(out, ptr, sz);
-#endif
+        uint16_t *ptr1 = (uint16_t*)((adcd.counter % 2) ? adcd.buf0 : adcd.buf1);
+        uint16_t *ptr2 = (uint16_t*)out;
+        sz = MIN(sz, ADC_BUF_SZ);
+        uint16_t i;
+        // copy to out and convert unsigned to signed
+        for(i = 0; i < sz; i++)
+            *ptr2++ = *ptr1++ + 0x8000;
+        //mymemcpy(out, ptr, sz);
+        adcd.convcplt = 0;
         return sz;
     }
     return 0;
@@ -137,20 +139,21 @@ static void adc_tim_config(void)
 #if 1
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* phadc)
 {
-    adcd.out = adcd.buf0;
+    adcd.counter++;
+    adcd.convcplt = 1;
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* phadc)
 {
-    adcd.out = adcd.buf1;
+    adcd.counter++;
+    adcd.convcplt = 1;
     if(adcd.sz)
     {
-        adcd.counter += ADC_BUF_NB*ADC_BUF_SZ;
         if(adcd.counter >= adcd.sz)
         {
+            adc_stop();
             adcd.counter = 0;
             adcd.sz = 0;
-            adc_stop();
         }
     }
 }

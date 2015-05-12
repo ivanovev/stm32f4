@@ -7,7 +7,7 @@
 
 #define IO_BUF_SZ 512
 
-#if 0
+#if 1
 #ifndef MIN
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #endif
