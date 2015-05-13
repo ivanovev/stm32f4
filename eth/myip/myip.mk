@@ -9,6 +9,6 @@ include $(IP_DIR)/icmp/icmp.mk
 include $(IP_DIR)/dbg/dbg.mk
 #include $(IP_DIR)/ptp/ptp.mk
 #include $(IP_DIR)/tftp/tftp.mk
-include $(IP_DIR)/stream/stream.mk
+#include $(IP_DIR)/stream/stream.mk
 include $(IP_DIR)/telnet/telnet.mk
 

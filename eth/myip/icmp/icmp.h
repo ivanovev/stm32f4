@@ -17,6 +17,7 @@ typedef struct {
     machdr_t mac;
     iphdr_t ip;
     icmphdr_t icmp;
+    uint8_t data[];
 } icmpfrm_t;
 
 #define ICMP_ECHO_REQUEST   0x8

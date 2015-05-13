@@ -18,14 +18,16 @@ uint16_t myip_icmp_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
     return 0;
 }
 
-void myip_make_icmp_frame(icmpfrm_t *ifrm, uint8_t *dst_ipaddr, uint8_t type, uint8_t code, uint16_t id, uint16_t seq)
+void myip_make_icmp_frame(icmpfrm_t *ifrm, uint8_t *dst_ipaddr, uint8_t type, uint8_t code, uint16_t id, uint16_t seq, uint8_t *data, uint16_t datasz)
 {
-    myip_make_ip_frame((ipfrm_t*)ifrm, dst_ipaddr, ICMPH_SZ, ICMP_PROTO);
+    myip_make_ip_frame((ipfrm_t*)ifrm, dst_ipaddr, ICMPH_SZ + datasz, ICMP_PROTO);
     ifrm->icmp.type = type;
     ifrm->icmp.code = code;
     ifrm->icmp.cksum = 0;
     ifrm->icmp.id = id;
     ifrm->icmp.seq = seq;
+    if(datasz)
+        mymemcpy((void*)ifrm->data, (void*)data, datasz);
 }
 
 uint16_t myip_icmp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, ethfrm_t *out)
@@ -40,9 +42,9 @@ uint16_t myip_icmp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, et
         mymemcpy(ipaddr, ifrmi->ip.src_ip_addr, 4);
         if(ifrmi->icmp.type == ICMP_ECHO_REQUEST)
         {
-            myip_make_icmp_frame(ifrmo, ipaddr, ICMP_ECHO_REPLY, 0, ifrmi->icmp.id, ifrmi->icmp.seq);
+            myip_make_icmp_frame(ifrmo, ipaddr, ICMP_ECHO_REPLY, 0, ifrmi->icmp.id, ifrmi->icmp.seq, ifrmi->data, sz - MACH_SZ - IPH_SZ - ICMPH_SZ);
             ifrmo->ip.ttl = ifrmi->ip.ttl;
-            return MACH_SZ + IPH_SZ + ICMPH_SZ;
+            return sz;
         }
         if(ifrmi->icmp.type == ICMP_ECHO_REPLY)
         {
@@ -71,7 +73,7 @@ uint16_t myip_icmp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, et
             if(i == ARP_TABLE_SZ)
                 return 0;
 
-            myip_make_icmp_frame(ifrmo, ping_ipaddr, ICMP_ECHO_REQUEST, 0, 0, 0);
+            myip_make_icmp_frame(ifrmo, ping_ipaddr, ICMP_ECHO_REQUEST, 0, 0, 0, 0, 0);
             ping_state = PING_STATE_WAIT_REPLY;
             return MACH_SZ + IPH_SZ + ICMPH_SZ;
         }
