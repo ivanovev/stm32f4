@@ -480,7 +480,7 @@ picolInterp* picolCreateInterp(void) {
     picolRegisterCmd(i, "proc", picol_proc, 0);
     picolRegisterCmd(i, "return", picol_return, 0);
     picolRegisterCmd(i, "puts", picol_puts, 0);
-    picolRegisterCmd(i, "test", picol_test, 0);
+    //picolRegisterCmd(i, "test", picol_test, 0);
     picolRegisterCmd(i, "info", picol_info, 0);
     return i;
 }

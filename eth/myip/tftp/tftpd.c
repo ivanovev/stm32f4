@@ -158,7 +158,7 @@ uint16_t tftpd_wrq(uint8_t *in, uint16_t sz, uint8_t *out)
         }
         tfs.crc = htoi(name);
     }
-    else if(!mystrncmp(name, "script.pcl", 3))
+    else if(!mystrncmp(name, "script.pcl", 10))
     {
         tfs.crc = 0;
     }
@@ -201,6 +201,13 @@ uint16_t tftpd_rrq(uint8_t *in, uint16_t sz, uint8_t *out)
         }
         else
             return tftpd_nak(out, TFTP_ENOTFOUND);
+        tfs.mode = TFTP_RRQ;
+        return tftpd_data_out(out);
+    }
+    else if(!mystrncmp(name, "script.pcl", 10))
+    {
+        tfs.start = USER_FLASH_MID_ADDR;
+        tfs.end = tfs.start + flash_fsz1();
         tfs.mode = TFTP_RRQ;
         return tftpd_data_out(out);
     }
