@@ -89,9 +89,9 @@ uint32_t flash_erase1(void)
     if(HAL_FLASHEx_Erase(&flash_erase_init, &SectorError) != HAL_OK)
         return SectorError;
     if(FLASH_WaitForLastOperation((uint32_t)HAL_FLASH_TIMEOUT_VALUE) != HAL_OK)
-        return 1;
+        return HAL_FLASH_TIMEOUT_VALUE;
 
-    return 0;
+    return flash_erase_init.NbSectors;
 }
 
 uint32_t flash_write_array(uint32_t addr, uint8_t *data, uint16_t sz)

@@ -167,7 +167,8 @@ uint16_t tftpd_wrq(uint8_t *in, uint16_t sz, uint8_t *out)
     tfs.mode = TFTP_WRQ;
 #ifdef ENABLE_FLASH
     tfs.start = USER_FLASH_MID_ADDR;
-    dbg_send_int2("flash_erase1", flash_erase1());
+    i = flash_erase1();
+    dbg_send_int2("flash_erase1", i);
     HAL_FLASH_Unlock();
 #endif
     return tftpd_ack(out);
