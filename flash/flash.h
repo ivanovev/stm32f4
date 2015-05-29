@@ -12,7 +12,8 @@
 
 #define USER_FLASH_SECTOR_SZ    0x20000
 
-#define FLASH_TIMEOUT_VALUE       ((uint32_t)50000)
+#define FLASH_TIMEOUT_VALUE         ((uint32_t)50000)
+#define HAL_FLASH_TIMEOUT_VALUE     FLASH_TIMEOUT_VALUE
 
 /* Base address of the Flash sectors */
 #define ADDR_FLASH_SECTOR_0     ((uint32_t)0x08000000) /* Base @ of Sector 0, 16 Kbytes */

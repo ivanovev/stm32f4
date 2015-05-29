@@ -110,11 +110,22 @@ uint32_t flash_write_array(uint32_t addr, uint8_t *data, uint16_t sz)
     return sz;
 }
 
+#if 0
 uint32_t revbit(uint32_t data)
 {
   asm("rbit r0,r0");
   return data;
 };
+#else
+uint32_t revbit(uint32_t data)
+{
+    int i;
+    uint32_t rev = 0;
+    for(i=0; i<32; i++)
+        rev |= ((data >> i) & 1) << (31 - i);
+    return rev;
+};
+#endif
 
 uint32_t flash_crc(uint8_t *buf, uint32_t sz)
 {
