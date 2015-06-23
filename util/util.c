@@ -2,6 +2,20 @@
 #include "util/util.h"
 #include "stdarg.h"
 
+#ifndef size_t
+#define size_t uint32_t
+#endif
+
+void* __wrap_memset(void *s, int c, size_t n)
+{
+    return mymemset(s, c, n);
+}
+
+char* __wrap_memclr(char *s, size_t n)
+{
+    return (char*)mymemset(s, 0, n);
+}
+
 io_send_func io_send_str_ptr = 0;
 io_recv_func io_recv_str_ptr = 0;
 

@@ -67,6 +67,8 @@ LDFLAGS += -Wl,-T$(LDSCRIPT)
 LDFLAGS += -Wl,-Map=build/$(PROJ).map
 LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -dead-strip
+LDFLAGS += -Xlinker --wrap=memset
+LDFLAGS += -Xlinker --wrap=memclr
 
 # Put your stlink folder here so make burn will work.
 STLINK=~/stlink.git

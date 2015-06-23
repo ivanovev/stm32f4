@@ -32,6 +32,11 @@ void myinit(void)
     uart_init();
 #endif
 
+#ifdef ENABLE_SDIO
+#pragma message "sdio_init()"
+    sdio_init();
+#endif
+
 #ifdef ENABLE_I2C
 #pragma message "i2c_init()"
     i2c_init();

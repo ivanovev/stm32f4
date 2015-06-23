@@ -4,6 +4,7 @@
 #pragma message "DSP_BLOCK_SZ: " STR(DSP_BLOCK_SZ)
 #pragma message "DSP_NUM_TAPS: " STR(DSP_NUM_TAPS)
 
+#if 0
 void* __wrap_memset(void *s, int c, size_t n)
 {
     return mymemset(s, c, n);
@@ -13,6 +14,7 @@ char* __wrap_memclr(char *s, size_t n)
 {
     return (char*)mymemset(s, 0, n);
 }
+#endif
 
 static arm_fir_instance_q15 Sq;
 

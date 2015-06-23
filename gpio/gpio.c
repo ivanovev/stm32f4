@@ -1,5 +1,6 @@
 
 #include "gpio/gpio.h"
+#include "util/util.h"
 
 volatile uint32_t* gpio_get_reg_ptr(GPIO_TypeDef *gpiox, const char *reg)
 {
