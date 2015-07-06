@@ -36,6 +36,8 @@ void uart_init(void)
     quart.head = 0;
     quart.tail = 0;
 #ifdef UARTn
+    uart_get_handle(&huart, UARTn, HAL_UART_STATE_RESET);
+#if 0
     huart.Instance        = UARTx;
     huart.Init.BaudRate   = UART_BAUDRATE;
     huart.Init.WordLength = UART_WORDLENGTH_8B;
@@ -43,6 +45,7 @@ void uart_init(void)
     huart.Init.Parity     = UART_PARITY_NONE;
     huart.Init.Mode       = UART_MODE_TX_RX;
     huart.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+#endif
 
     if(HAL_UART_Init(&huart) != HAL_OK)
     {
@@ -75,7 +78,7 @@ USART_TypeDef* uart_get_instance(uint8_t n)
     return 0;
 }
 
-void uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n)
+void uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n, uint8_t state)
 {
     phuart->Instance        = uart_get_instance(n);
 #ifdef UART_BAUDRATE
@@ -87,7 +90,7 @@ void uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n)
     phuart->Init.Mode       = UART_MODE_TX_RX;
     phuart->Init.HwFlowCtl  = UART_HWCONTROL_NONE;
     phuart->ErrorCode       = HAL_UART_ERROR_NONE;
-    phuart->State           = HAL_UART_STATE_READY;
+    phuart->State           = state;
 }
 
 void uart_send_str(const char *str, uint16_t len)

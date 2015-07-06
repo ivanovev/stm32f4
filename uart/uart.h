@@ -28,7 +28,7 @@
 
 void            uart_init(void);
 USART_TypeDef*  uart_get_instance(uint8_t n);
-void            uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n);
+void            uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n, uint8_t state);
 
 uint16_t        uart_recv_str(char *buf);
 void            uart_send_str(const char *str, uint16_t len);

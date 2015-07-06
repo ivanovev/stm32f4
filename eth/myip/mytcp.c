@@ -192,7 +192,6 @@ uint16_t myip_tcp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, eth
     {
         dbg_send_hex2("seqn", seqn);
         dbg_send_hex2("sz1", sz1);
-        dbg_send_hex2("ackn", ackn);
 
         myip_make_tcp_frame(tfrmo, sz1);
         tcpo->ackn = HTONS_32((seqn + sz1));

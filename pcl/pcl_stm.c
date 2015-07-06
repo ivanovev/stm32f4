@@ -174,58 +174,53 @@ COMMAND(uart) {
     char buf[IO_BUF_SZ];
     uint32_t value = 0, j = 0;
     static uint32_t timeout = 500;
-    static char append[4] = {0, 0, 0, 0};
     if(SUBCMD1("timeout"))
     {
         if(argc == 3)
             timeout = str2int(argv[2]);
         return picolSetIntResult(i, timeout);
     }
-    if(SUBCMD1("append"))
+    value = str2int(argv[1]);
+    ARITY((0 < value) && (value <= 6) && (argc >= 3), "uart 1|2|3... str");
+    UART_HandleTypeDef huart;
+    uart_get_handle(&huart, value, HAL_UART_STATE_READY);
+    if(SUBCMD2("init"))
     {
-        if(argc == 3)
-        {
-            append[0] = 0;
-            str2bytes(argv[2], (uint8_t*)append, 4);
-        }
-        if(append[0] == 0)
-            return picolSetIntResult(i, 0);
-        bytes2str(append, buf, mystrnlen(append, sizeof(append)));
-        return picolSetResult(i, buf);
+        ARITY((argc >= 4), "uart 1|2|3... init baudrate [8n1]");
+        HAL_UART_DeInit(&huart);
+        huart.Init.BaudRate = str2int(argv[3]);
+        return picolSetIntResult(i, (HAL_UART_DeInit(&huart) == HAL_OK) ? 0 : 1);
     }
-    USART_TypeDef *uartx = uart_get_instance((uint8_t)str2int(argv[1]));
-    ARITY(uartx, "uart 1|2|3... str");
-
-    ARITY((argc >= 3), "uart 1|2|3... str");
-    volatile uint32_t *reg_ptr = uart_get_reg_ptr(uartx, argv[2]);
+    volatile uint32_t *reg_ptr = uart_get_reg_ptr(huart.Instance, argv[2]);
     if(reg_ptr)
     {
         if(argc == 3)
-            value = uart_get_reg(uartx, argv[2]);
+            value = uart_get_reg(huart.Instance, argv[2]);
         else if(argc == 4)
-            value = uart_set_reg(uartx, argv[2], str2int(argv[3]));
+            value = uart_set_reg(huart.Instance, argv[2], str2int(argv[3]));
         return picolSetHexResult(i, value);
     }
-    if(uartx)
+    buf[0] = 0;
+    for(j = 2; j < argc; j++)
     {
-        UART_HandleTypeDef huart;
-        uart_get_handle(&huart, 0);
-        huart.Instance = uartx;
-        buf[0] = 0;
-        for(j = 2; j < argc; j++)
+        if(!mystrncmp(argv[j], "\\n", 2))
         {
-            mystrncat(buf, argv[j], IO_BUF_SZ);
-            if(j != (argc - 1))
-                mystrncat(buf, " ", IO_BUF_SZ);
+            mystrncat(buf, "\n", IO_BUF_SZ);
+            continue;
         }
-        HAL_UART_Transmit(&huart, (uint8_t*)buf, mystrnlen(buf, IO_BUF_SZ), timeout);
-        if(append[0] != 0)
-            HAL_UART_Transmit(&huart, (uint8_t*)append, mystrnlen(append, sizeof(append)), timeout);
-        mymemset(buf, 0, IO_BUF_SZ);
-        HAL_UART_Receive(&huart, (uint8_t*)buf, IO_BUF_SZ, timeout);
-        return picolSetResult(i, buf);
+        if(!mystrncmp(argv[j], "\\r", 2))
+        {
+            mystrncat(buf, "\r", IO_BUF_SZ);
+            continue;
+        }
+        if(j != 0)
+            mystrncat(buf, " ", IO_BUF_SZ);
+        mystrncat(buf, argv[j], IO_BUF_SZ);
     }
-    return picolSetHexResult(i,value);
+    HAL_UART_Transmit(&huart, (uint8_t*)buf, mystrnlen(buf, IO_BUF_SZ), timeout);
+    mymemset(buf, 0, IO_BUF_SZ);
+    HAL_UART_Receive(&huart, (uint8_t*)buf, IO_BUF_SZ, timeout);
+    return picolSetResult(i, buf);
 }
 #endif
 

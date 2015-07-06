@@ -1,5 +1,5 @@
 
-#include "eth.h"
+#include "eth/eth.h"
 #include "tftpd.h"
 
 #ifdef ENABLE_FLASH

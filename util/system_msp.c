@@ -91,6 +91,11 @@ void myinit(void)
 #pragma message "vfd_init()"
     vfd_init();
 #endif
+
+#ifdef ENABLE_BR
+#pragma message "br_init()"
+    br_init();
+#endif
 }
 
 void mydeinit(void)

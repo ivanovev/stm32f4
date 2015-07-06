@@ -8,7 +8,7 @@
 #include "util/queue.h"
 #include "util/system_msp.h"
 
-#if 0
+#if 1
 #ifdef BOARD_E407
 #define UARTn 6
 #define UART_TX_GPIO C

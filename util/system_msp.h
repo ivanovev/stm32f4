@@ -11,6 +11,7 @@
 #include "util/macro.h"
 
 #include <main.h>
+
 #ifdef ENABLE_GPIO
 #include "gpio/gpio.h"
 #endif
@@ -69,6 +70,10 @@
 
 #ifdef ENABLE_USB
 #include "usb/usb.h"
+#endif
+
+#ifdef ENABLE_BR
+#include "br/br.h"
 #endif
 
 #define RESET_REBOOT 1
