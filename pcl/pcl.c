@@ -7,7 +7,7 @@
 #include "pcl_sys.h"
 #include "util/heap1.h"
 
-static struct picolInterp *pcl_interp = 0;
+struct picolInterp *pcl_interp = 0;
 static char pcl_prefix[32];
 
 void pcl_clear(void)

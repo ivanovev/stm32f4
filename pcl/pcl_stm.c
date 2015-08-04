@@ -23,6 +23,8 @@
 #endif
 
 #ifdef ENABLE_FLASH
+extern uint16_t pcl_load(picolInterp *i, uint32_t addr);
+
 COMMAND(flash) {
     ARITY(argc >= 2, "flash cmd [addr]");
     uint32_t sz = 0;
@@ -61,7 +63,7 @@ COMMAND(flash) {
     if(SUBCMD1("erase1"))
         return picolSetIntResult(i, flash_erase1());
     if(SUBCMD1("pclupd"))
-        return picolSetHex4Result(i, pcl_load());
+        return picolSetHex4Result(i, pcl_load(i, USER_FLASH_START_ADDR));
 #endif
     return PICOL_ERR;
 }
@@ -213,7 +215,7 @@ COMMAND(uart) {
             mystrncat(buf, "\r", IO_BUF_SZ);
             continue;
         }
-        if(j != 0)
+        if(j > 2)
             mystrncat(buf, " ", IO_BUF_SZ);
         mystrncat(buf, argv[j], IO_BUF_SZ);
     }
