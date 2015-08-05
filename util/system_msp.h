@@ -10,8 +10,6 @@
 
 #include "util/macro.h"
 
-#include <main.h>
-
 #ifdef ENABLE_GPIO
 #include "gpio/gpio.h"
 #endif

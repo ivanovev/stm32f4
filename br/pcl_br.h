@@ -6,7 +6,9 @@
 #include <main.h>
 #include "pcl/pcl.h"
 
-void    pcl_br_init(picolInterp *i);
+extern struct   picolInterp *pcl_interp;
+
+void            pcl_br_init(picolInterp *i);
 
 #endif
 #endif

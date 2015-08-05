@@ -9,6 +9,7 @@ void led_init(void)
     LED_CLK_ENABLE();
     GPIO_InitTypeDef gpio_init;
     GPIO_INIT(LED_GPIO, LED_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
+    led_on();
 }
 
 void led_on(void)

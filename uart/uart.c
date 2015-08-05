@@ -6,7 +6,6 @@
 #ifdef UARTn
 #pragma message "UART: UART" STR(UARTn)
 #pragma message "UART_BAUDRATE: " STR(UART_BAUDRATE)
-#endif
 
 UART_HandleTypeDef huart;
 Queue quart;
@@ -33,25 +32,17 @@ extern void Error_Handler(void);
 
 void uart_init(void)
 {
+    //led_on();
     quart.head = 0;
     quart.tail = 0;
-#ifdef UARTn
     uart_get_handle(&huart, UARTn, HAL_UART_STATE_RESET);
-#if 0
-    huart.Instance        = UARTx;
-    huart.Init.BaudRate   = UART_BAUDRATE;
-    huart.Init.WordLength = UART_WORDLENGTH_8B;
-    huart.Init.StopBits   = UART_STOPBITS_1;
-    huart.Init.Parity     = UART_PARITY_NONE;
-    huart.Init.Mode       = UART_MODE_TX_RX;
-    huart.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-#endif
 
     if(HAL_UART_Init(&huart) != HAL_OK)
     {
         Error_Handler();
     }
-
+#if 0
+    HAL_UART_Transmit(&huart, "123", 3, 100);
 #ifndef UART_RX_DISABLE
     if(HAL_UART_Receive_IT(&huart, uart_rx_buf, 1) != HAL_OK)
     {
@@ -61,44 +52,20 @@ void uart_init(void)
 #endif
 }
 
-USART_TypeDef* uart_get_instance(uint8_t n)
-{
-    if(n == 1)
-        return USART1;
-    if(n == 2)
-        return USART2;
-    if(n == 3)
-        return USART3;
-    if(n == 4)
-        return UART4;
-    if(n == 5)
-        return UART5;
-    if(n == 6)
-        return USART6;
-    return 0;
-}
-
-void uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n, uint8_t state)
-{
-    phuart->Instance        = uart_get_instance(n);
-#ifdef UART_BAUDRATE
-    phuart->Init.BaudRate   = UART_BAUDRATE;
-#endif
-    phuart->Init.WordLength = UART_WORDLENGTH_8B;
-    phuart->Init.StopBits   = UART_STOPBITS_1;
-    phuart->Init.Parity     = UART_PARITY_NONE;
-    phuart->Init.Mode       = UART_MODE_TX_RX;
-    phuart->Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-    phuart->ErrorCode       = HAL_UART_ERROR_NONE;
-    phuart->State           = state;
-}
-
 void uart_send_str(const char *str, uint16_t len)
 {
     HAL_UART_Transmit(&huart, (uint8_t*)str, len, 100);
 }
+#else
+#pragma message "!!!no UARTn defined!!!"
+void uart_init(void)
+{
+}
+void uart_send_str(const char *str, uint16_t len)
+{
+}
+#endif
 
-#if 1
 void uart_send_str2(const char *str)
 {
     uart_send_str(str, mystrnlen(str, IO_BUF_SZ));
@@ -160,7 +127,38 @@ void uart_send_hex4(const char *str, uint8_t *bb, uint32_t n)
         uart_send_str2(" ");
     }
 }
+
+USART_TypeDef* uart_get_instance(uint8_t n)
+{
+    if(n == 1)
+        return USART1;
+    if(n == 2)
+        return USART2;
+    if(n == 3)
+        return USART3;
+    if(n == 4)
+        return UART4;
+    if(n == 5)
+        return UART5;
+    if(n == 6)
+        return USART6;
+    return 0;
+}
+
+void uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n, uint8_t state)
+{
+    phuart->Instance        = uart_get_instance(n);
+#ifdef UART_BAUDRATE
+    phuart->Init.BaudRate   = UART_BAUDRATE;
 #endif
+    phuart->Init.WordLength = UART_WORDLENGTH_8B;
+    phuart->Init.StopBits   = UART_STOPBITS_1;
+    phuart->Init.Parity     = UART_PARITY_NONE;
+    phuart->Init.Mode       = UART_MODE_TX_RX;
+    phuart->Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+    phuart->ErrorCode       = HAL_UART_ERROR_NONE;
+    phuart->State           = state;
+}
 
 volatile uint32_t* uart_get_reg_ptr(USART_TypeDef *uartx, const char *reg)
 {

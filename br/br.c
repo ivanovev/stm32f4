@@ -3,7 +3,7 @@
 
 UART_HandleTypeDef alt_huart;
 #ifdef ENABLE_PCL
-extern struct picolInterp *pcl_interp;
+#include "br/pcl_br.h"
 #endif
 
 void br_init()

@@ -2,6 +2,10 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+#ifdef ENABLE_UART
+#include "uart/uart_dbg.h"
+#endif
+
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "util/util.h"

@@ -41,18 +41,6 @@
     GPIO_INIT(rxgpio, rxpin, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, uartaf); \
 } while(0)
 
-#define UART_INIT(uartn, baud) do { \
-    RCC_APB1PeriphClockCmd(JOIN(RCC_APB1Periph_UART, uartn), ENABLE); \
-    uart_init.USART_BaudRate = baud; \
-    uart_init.USART_WordLength = USART_WordLength_8b; \
-    uart_init.USART_StopBits = USART_StopBits_1; \
-    uart_init.USART_Parity = USART_Parity_No; \
-    uart_init.USART_Mode = USART_Mode_Tx | USART_Mode_Rx; \
-    uart_init.USART_HardwareFlowControl = USART_HardwareFlowControl_None; \
-    USART_Cmd(JOIN(UART, uartn), ENABLE); \
-    USART_Init(JOIN(UART, uartn), &uart_init); \
-} while(0)
-
 #define UART_NVIC_INIT(uartn, irqn, usart_it) do { \
     HAL_NVIC_SetPriority(irqn, 0, 1); \
     HAL_NVIC_EnableIRQ(irqn); \
