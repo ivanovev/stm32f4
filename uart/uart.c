@@ -43,12 +43,12 @@ void uart_init(void)
     }
 #if 0
     HAL_UART_Transmit(&huart, "123", 3, 100);
+#endif
 #ifndef UART_RX_DISABLE
     if(HAL_UART_Receive_IT(&huart, uart_rx_buf, 1) != HAL_OK)
     {
         Error_Handler();
     }
-#endif
 #endif
 }
 

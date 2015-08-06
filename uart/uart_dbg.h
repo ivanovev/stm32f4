@@ -33,7 +33,7 @@
 #endif
 
 #define UART_BAUDRATE 115200
-#define UART_RX_DISABLE
+//#define UART_RX_DISABLE
 
 #endif
 
