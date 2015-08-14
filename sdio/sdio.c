@@ -1,5 +1,8 @@
 
 #include <main.h>
+#ifdef ENABLE_PCL
+#include "sdio/pcl_sdio.h"
+#endif
 
 static SD_HandleTypeDef hsd;
 HAL_SD_CardInfoTypedef SDCardInfo;
@@ -17,10 +20,13 @@ void sdio_init(void)
     if(HAL_SD_Init(&hsd, &SDCardInfo) != SD_OK)
     {
         dbg_send_str2("HAL_SD_Init error");
-        return;
+        //return;
     }
 
-    HAL_SD_WideBusOperation_Config(&hsd, SDIO_BUS_WIDE_4B);
+    //HAL_SD_WideBusOperation_Config(&hsd, SDIO_BUS_WIDE_4B);
+#ifdef ENABLE_PCL
+    pcl_sdio_init(pcl_interp);
+#endif
 }
 
 void sdio_write(uint8_t *data, uint32_t sz)

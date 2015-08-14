@@ -42,7 +42,7 @@ MTHUMB += -mthumb-interwork
 #CFLAGS += -dD
 CFLAGS += $(MCPU)
 CFLAGS += $(MTHUMB)
-CFLAGS += -std=c99
+#CFLAGS += -std=c99
 CFLAGS += -mlittle-endian
 #CFLAGS += -mfloat-abi=soft
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16

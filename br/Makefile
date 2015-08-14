@@ -15,6 +15,7 @@ include $(ROOT_DIR)/uart/uart.mk
 #include $(ROOT_DIR)/rng/rng.mk
 include $(ROOT_DIR)/pcl/pcl.mk
 include $(ROOT_DIR)/eth/eth.mk
+include $(ROOT_DIR)/sdio/sdio.mk
 include br.mk
 include $(UTIL_DIR)/util2.mk
 

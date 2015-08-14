@@ -2,6 +2,10 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+#ifdef ENABLE_UART
+#include "uart/uart_dbg.h"
+#endif
+
 #define ALT_UARTn 2
 #define ALT_UART_TX_GPIO D
 #define ALT_UART_RX_GPIO D
