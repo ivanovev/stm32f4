@@ -83,7 +83,7 @@ void io_echo(void);
 #define dbg_send_str4(a) uart_send_str4((char*)a)
 #define dbg_send_int(a) uart_send_int((char*)a)
 #define dbg_send_int2(a,b) uart_send_int2((char*)a,b)
-#define dbg_send_hex(a) uart_send_hex((char*)a)
+#define dbg_send_hex(a) uart_send_hex(a, 4)
 #define dbg_send_hex2(a,b) uart_send_hex2((char*)a,b)
 #define dbg_send_hex3(a,b,c) uart_send_hex3(char(a),b,c)
 #define dbg_send_hex4(a,b,c) uart_send_hex4((char*)a,b,c)

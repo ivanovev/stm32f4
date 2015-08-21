@@ -21,7 +21,6 @@ volatile uint32_t* gpio_get_reg_ptr(GPIO_TypeDef *gpiox, const char *reg)
     if(!mystrncmp(reg, "afrh", 4))
         return &(gpiox->AFR[1]);
     return 0;
-
 }
 
 uint32_t gpio_get_reg(GPIO_TypeDef *gpiox, const char *reg)
