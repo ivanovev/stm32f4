@@ -31,9 +31,13 @@
 #define SDIO_DMAx_STREAM        JOIN4(DMA, SDIO_DMAn, _Stream, SDIO_DMA_STREAMn)
 #define SDIO_DMAx_CLK_ENABLE    JOIN3(__HAL_RCC_DMA, SDIO_DMAn, _CLK_ENABLE)
 
+#define SDIO_DMAx_IRQn          JOIN5(DMA, SDIO_DMAn, _Stream, SDIO_DMA_STREAMn, _IRQn)
+#define SDIO_DMAx_IRQHandler    JOIN5(DMA, SDIO_DMAn, _Stream, SDIO_DMA_STREAMn, _IRQHandler)
+
 void                            sdio_init(void);
 void                            sdio_write(uint8_t *data, uint32_t sz);
 HAL_SD_ErrorTypedef             sdio_cmd(uint32_t cmd, uint32_t *data);
+void                            sdio_rx_start(uint32_t sz);
 const volatile uint32_t*        sdio_get_reg_ptr(const char *reg);
 uint32_t                        sdio_get_reg_bits(const char *reg, uint8_t n1, uint8_t n2);
 uint32_t                        sdio_set_reg_bits(const char *reg, uint8_t n1, uint8_t n2, uint32_t v);

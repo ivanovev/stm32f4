@@ -14,8 +14,35 @@ void HAL_SD_MspInit(SD_HandleTypeDef *hsd)
     GPIO_INIT(SDIO_D5_GPIO, SDIO_D5_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_FAST, GPIO_AF12_SDIO);
     GPIO_INIT(SDIO_D6_GPIO, SDIO_D6_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_FAST, GPIO_AF12_SDIO);
     GPIO_INIT(SDIO_D7_GPIO, SDIO_D7_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_FAST, GPIO_AF12_SDIO);
+
     __HAL_RCC_SDIO_CLK_ENABLE();
-    __HAL_RCC_DMA2_CLK_ENABLE();
+    //__HAL_RCC_DMA2_CLK_ENABLE();
+    SDIO_DMAx_CLK_ENABLE();
+
+    static DMA_HandleTypeDef  hdma_sdio;
+    hdma_sdio.Instance = SDIO_DMAx_STREAM;
+
+    hdma_sdio.Init.Channel  = SDIO_DMAx_CHANNEL;
+    hdma_sdio.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_sdio.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_sdio.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_sdio.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_sdio.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_sdio.Init.Mode = DMA_PFCTRL;
+    //hdma_sdio.Init.Mode = DMA_NORMAL;
+    hdma_sdio.Init.Priority = DMA_PRIORITY_HIGH;
+    hdma_sdio.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    hdma_sdio.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
+    hdma_sdio.Init.MemBurst = DMA_MBURST_SINGLE;
+    hdma_sdio.Init.PeriphBurst = DMA_PBURST_SINGLE;
+
+    HAL_DMA_DeInit(&hdma_sdio);
+    HAL_DMA_Init(&hdma_sdio);
+
+    __HAL_LINKDMA(hsd, hdmarx, hdma_sdio);
+
+    HAL_NVIC_SetPriority(SDIO_DMAx_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(SDIO_DMAx_IRQn);
 }
 
 void HAL_SD_MspDeInit(SD_HandleTypeDef *hsd)

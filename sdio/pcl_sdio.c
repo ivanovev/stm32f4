@@ -9,6 +9,7 @@
 COMMAND(sdio) {
     ARITY(argc >= 2, "sdio cmd..");
     uint32_t cmd = 0, v, *ptr;
+    uint8_t n1 = 0, n2 = 0;
     char buf[IO_BUF_SZ];
     buf[0] = 0;
     ptr = (uint32_t*)sdio_get_reg_ptr(argv[1]);
@@ -47,6 +48,36 @@ COMMAND(sdio) {
             else if(v == 1) v = 0;
             v = sdio_set_reg_bits("clkcr", 11, 12, v);
             return picolSetHex4Result(i, v);
+        }
+    }
+    if(SUBCMD1("dten"))
+    {
+        n1 = 0; n2 = 0; mystrncpy(buf, "dctrl", 5);
+    }
+    if(SUBCMD1("dtdir"))
+    {
+        n1 = 1; n2 = 1; mystrncpy(buf, "dctrl", 5);
+    }
+    if(SUBCMD1("dtmode"))
+    {
+        n1 = 2; n2 = 2; mystrncpy(buf, "dctrl", 5);
+    }
+    if(buf[0])
+    {
+        if(argc == 2)
+            return picolSetIntResult(i, sdio_get_reg_bits(buf, n1, n2));
+        if(argc == 3)
+            return picolSetHex4Result(i, sdio_set_reg_bits(buf, n1, n2, str2int(argv[2])));
+    }
+    if(SUBCMD1("rx"))
+    {
+        if(SUBCMD2("start"))
+        {
+            v = 32;
+            if(argc >= 4)
+                v = str2int(argv[3]);
+            sdio_rx_start(v);
+            return PICOL_OK;
         }
     }
     if(SUBCMD1("init"))

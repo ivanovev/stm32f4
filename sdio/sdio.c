@@ -4,6 +4,20 @@
 #include "sdio/pcl_sdio.h"
 #endif
 
+#define SDIO_BUF_NB  2
+#define SDIO_BUF_SZ  IO_BUF_SZ
+
+__ALIGN_BEGIN uint8_t SDIO_Buff[SDIO_BUF_NB][SDIO_BUF_SZ] __ALIGN_END;
+
+struct sdiodata_t
+{
+    uint8_t *buf0;
+    uint8_t *buf1;
+    volatile uint32_t sz;
+    volatile uint32_t counter;
+    volatile uint8_t convcplt;
+} sdiod;
+
 static SD_HandleTypeDef hsd;
 HAL_SD_CardInfoTypedef SDCardInfo;
 
@@ -44,12 +58,19 @@ static HAL_SD_ErrorTypedef mysdinit(SD_HandleTypeDef *hsd)
 
 void sdio_init(void)
 {
+    sdiod.buf0 = &(SDIO_Buff[0][0]);
+    sdiod.buf1 = &(SDIO_Buff[1][0]);
+    mymemset(sdiod.buf0, 0, SDIO_BUF_SZ);
+    mymemset(sdiod.buf1, 0, SDIO_BUF_SZ);
+    sdiod.counter = 0;
+    sdiod.convcplt = 0;
+
     dbg_send_str2("sdio_init");
     hsd.Instance = SDIO;
     hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
     hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
     hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
-    hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
+    hsd.Init.BusWide = SDIO_BUS_WIDE_8B;
     hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
     hsd.Init.ClockDiv = SDIO_INIT_CLK_DIV;
 
@@ -130,20 +151,30 @@ HAL_SD_ErrorTypedef sdio_cmd(uint32_t cmd, uint32_t *data)
 
 const volatile uint32_t* sdio_get_reg_ptr(const char *reg)
 {
-    if(!mystrncmp(reg, "cmd", 3))
-        return &(hsd.Instance->CMD);
+    if(!mystrncmp(reg, "clkcr", 5))
+        return &(hsd.Instance->CLKCR);
     if(!mystrncmp(reg, "arg", 3))
         return &(hsd.Instance->ARG);
-    if(!mystrncmp(reg, "sta", 3))
-        return &(hsd.Instance->STA);
+    if(!mystrncmp(reg, "cmd", 3))
+        return &(hsd.Instance->CMD);
     if(!mystrncmp(reg, "respcmd", 7))
         return &(hsd.Instance->RESPCMD);
     if(!mystrncmp(reg, "resp1", 5))
         return &(hsd.Instance->RESP1);
+    if(!mystrncmp(reg, "dlen", 4))
+        return &(hsd.Instance->DLEN);
+    if(!mystrncmp(reg, "dctrl", 5))
+        return &(hsd.Instance->DCTRL);
+    if(!mystrncmp(reg, "dcount", 6))
+        return &(hsd.Instance->DCOUNT);
+    if(!mystrncmp(reg, "sta", 3))
+        return &(hsd.Instance->STA);
     if(!mystrncmp(reg, "icr", 3))
         return &(hsd.Instance->ICR);
-    if(!mystrncmp(reg, "clkcr", 5))
-        return &(hsd.Instance->CLKCR);
+    if(!mystrncmp(reg, "fifocnt", 7))
+        return &(hsd.Instance->FIFOCNT);
+    if(!mystrncmp(reg, "fifo", 4))
+        return &(hsd.Instance->FIFO);
     return 0;
 }
 
@@ -166,5 +197,29 @@ uint32_t sdio_set_reg_bits(const char *reg, uint8_t n1, uint8_t n2, uint32_t v)
     ret = ret | ((v << n1) & mask);
     *ptr = ret;
     return ret;
+}
+
+#ifndef SD_DATATIMEOUT
+#define SD_DATATIMEOUT                  ((uint32_t)0xFFFFFFFF)
+#endif
+
+void sdio_rx_start(uint32_t sz)
+{
+    SDIO_DataInitTypeDef        sdio_datainit;
+    sdio_datainit.DataTimeOut   = SD_DATATIMEOUT;
+    sdio_datainit.DataBlockSize = SDIO_DATABLOCK_SIZE_16B;
+    sdio_datainit.DataLength    = sz;
+    sdio_datainit.TransferDir   = SDIO_TRANSFER_DIR_TO_SDIO;
+    sdio_datainit.TransferMode  = SDIO_TRANSFER_MODE_STREAM;
+    sdio_datainit.DPSM          = SDIO_DPSM_ENABLE;
+    SDIO_DataConfig(hsd.Instance, &sdio_datainit);
+    //uint32_t sz = 16;
+    //sdio_cmd(11, &sz);
+}
+
+void sdio_rx_stop(void)
+{
+    //sdio_cmd(12, 0);
+    sdio_set_reg_bits("dctrl", 0, 0, 0);
 }
 

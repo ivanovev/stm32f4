@@ -34,7 +34,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
 
     HAL_DMA_Init(&hdma_adc);
 
-    __HAL_LINKDMA(hadc, DMA_Handle, hdma_adc);
+    __HAL_LINKDMA(hadc, hdmarx, hdma_adc);
 
     HAL_NVIC_SetPriority(ADC_DMAx_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC_DMAx_IRQn);
