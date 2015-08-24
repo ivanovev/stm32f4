@@ -213,13 +213,26 @@ void sdio_rx_start(uint32_t sz)
     sdio_datainit.TransferMode  = SDIO_TRANSFER_MODE_STREAM;
     sdio_datainit.DPSM          = SDIO_DPSM_ENABLE;
     SDIO_DataConfig(hsd.Instance, &sdio_datainit);
+    /* Enable the DMA Stream */
+    __HAL_SD_SDIO_DMA_ENABLE();
+    HAL_DMA_Start_IT(hsd.hdmarx, (uint32_t)&hsd.Instance->FIFO, (uint32_t)sdiod.buf0, sz/4);
     //uint32_t sz = 16;
-    //sdio_cmd(11, &sz);
+    sdio_cmd(11, &sz);
 }
 
 void sdio_rx_stop(void)
 {
     //sdio_cmd(12, 0);
     sdio_set_reg_bits("dctrl", 0, 0, 0);
+}
+
+void sdio_dma_rxcpltcb(DMA_HandleTypeDef *hdma)
+{
+    dbg_send_str2("sdio recv cplt cb");
+}
+
+void sdio_dma_rxerrorcb(DMA_HandleTypeDef *hdma)
+{
+    dbg_send_str2("sdio recv error cb");
 }
 

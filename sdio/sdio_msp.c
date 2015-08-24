@@ -26,13 +26,13 @@ void HAL_SD_MspInit(SD_HandleTypeDef *hsd)
     hdma_sdio.Init.Direction = DMA_PERIPH_TO_MEMORY;
     hdma_sdio.Init.PeriphInc = DMA_PINC_DISABLE;
     hdma_sdio.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_sdio.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-    hdma_sdio.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_sdio.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+    hdma_sdio.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
     hdma_sdio.Init.Mode = DMA_PFCTRL;
     //hdma_sdio.Init.Mode = DMA_NORMAL;
-    hdma_sdio.Init.Priority = DMA_PRIORITY_HIGH;
+    hdma_sdio.Init.Priority = DMA_PRIORITY_MEDIUM;
     hdma_sdio.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-    hdma_sdio.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
+    //hdma_sdio.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
     hdma_sdio.Init.MemBurst = DMA_MBURST_SINGLE;
     hdma_sdio.Init.PeriphBurst = DMA_PBURST_SINGLE;
 
@@ -41,8 +41,12 @@ void HAL_SD_MspInit(SD_HandleTypeDef *hsd)
 
     __HAL_LINKDMA(hsd, hdmarx, hdma_sdio);
 
+    hsd->hdmarx->XferCpltCallback  = sdio_dma_rxcpltcb;
+    hsd->hdmarx->XferErrorCallback = sdio_dma_rxerrorcb;
+
     HAL_NVIC_SetPriority(SDIO_DMAx_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(SDIO_DMAx_IRQn);
+    __HAL_SD_SDIO_ENABLE_IT(hsd, (SDIO_IT_DATAEND | SDIO_IT_RXOVERR));
 }
 
 void HAL_SD_MspDeInit(SD_HandleTypeDef *hsd)

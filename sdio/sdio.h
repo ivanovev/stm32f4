@@ -41,5 +41,7 @@ void                            sdio_rx_start(uint32_t sz);
 const volatile uint32_t*        sdio_get_reg_ptr(const char *reg);
 uint32_t                        sdio_get_reg_bits(const char *reg, uint8_t n1, uint8_t n2);
 uint32_t                        sdio_set_reg_bits(const char *reg, uint8_t n1, uint8_t n2, uint32_t v);
+void                            sdio_dma_rxcpltcb(DMA_HandleTypeDef *hdma);
+void                            sdio_dma_rxerrorcb(DMA_HandleTypeDef *hdma);
 
 #endif
