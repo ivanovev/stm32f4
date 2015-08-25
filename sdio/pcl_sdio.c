@@ -6,6 +6,8 @@
 #include "sdio/pcl_sdio.h"
 #endif
 
+extern sdiodata_t sdiod;
+
 COMMAND(sdio) {
     ARITY(argc >= 2, "sdio cmd..");
     uint32_t cmd = 0, v, *ptr;
@@ -73,11 +75,20 @@ COMMAND(sdio) {
     {
         if(SUBCMD2("start"))
         {
-            v = 32;
+            v = 0;
             if(argc >= 4)
                 v = str2int(argv[3]);
             sdio_rx_start(v);
             return PICOL_OK;
+        }
+        if(SUBCMD2("stop"))
+        {
+            sdio_rx_stop();
+            return PICOL_OK;
+        }
+        if(SUBCMD2("counter"))
+        {
+            return picolSetIntResult(i, sdiod.counter);
         }
     }
     if(SUBCMD1("init"))

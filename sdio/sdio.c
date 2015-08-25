@@ -9,17 +9,9 @@
 
 __ALIGN_BEGIN uint8_t SDIO_Buff[SDIO_BUF_NB][SDIO_BUF_SZ] __ALIGN_END;
 
-struct sdiodata_t
-{
-    uint8_t *buf0;
-    uint8_t *buf1;
-    volatile uint32_t sz;
-    volatile uint32_t counter;
-    volatile uint8_t convcplt;
-} sdiod;
-
-static SD_HandleTypeDef hsd;
+SD_HandleTypeDef hsd;
 HAL_SD_CardInfoTypedef SDCardInfo;
+sdiodata_t sdiod;
 
 static HAL_SD_ErrorTypedef mysdinit(SD_HandleTypeDef *hsd)
 {
@@ -35,7 +27,7 @@ static HAL_SD_ErrorTypedef mysdinit(SD_HandleTypeDef *hsd)
     tmpinit.ClockBypass         = SDIO_CLOCK_BYPASS_DISABLE;
     tmpinit.ClockPowerSave      = SDIO_CLOCK_POWER_SAVE_DISABLE;
     tmpinit.BusWide             = SDIO_BUS_WIDE_1B;
-    tmpinit.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
+    tmpinit.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_ENABLE;
     tmpinit.ClockDiv            = SDIO_INIT_CLK_DIV;
 
     /* Initialize SDIO peripheral interface with default configuration */
@@ -205,34 +197,59 @@ uint32_t sdio_set_reg_bits(const char *reg, uint8_t n1, uint8_t n2, uint32_t v)
 
 void sdio_rx_start(uint32_t sz)
 {
+    if(sz == 0)
+    {
+        sdiod.stop = 0;
+        sdiod.counter = 0;
+        sz = SDIO_BUF_SZ;
+    }
+    sdiod.sz = sz;
+    mymemset(sdiod.buf0, 0, SDIO_BUF_SZ);
     SDIO_DataInitTypeDef        sdio_datainit;
     sdio_datainit.DataTimeOut   = SD_DATATIMEOUT;
-    sdio_datainit.DataBlockSize = SDIO_DATABLOCK_SIZE_16B;
+    sdio_datainit.DataBlockSize = SDIO_DATABLOCK_SIZE_4B;
     sdio_datainit.DataLength    = sz;
     sdio_datainit.TransferDir   = SDIO_TRANSFER_DIR_TO_SDIO;
     sdio_datainit.TransferMode  = SDIO_TRANSFER_MODE_STREAM;
     sdio_datainit.DPSM          = SDIO_DPSM_ENABLE;
     SDIO_DataConfig(hsd.Instance, &sdio_datainit);
+    sdio_cmd(11, &sz);
     /* Enable the DMA Stream */
     __HAL_SD_SDIO_DMA_ENABLE();
-    HAL_DMA_Start_IT(hsd.hdmarx, (uint32_t)&hsd.Instance->FIFO, (uint32_t)sdiod.buf0, sz/4);
-    //uint32_t sz = 16;
-    sdio_cmd(11, &sz);
+    HAL_DMA_Start_IT(hsd.hdmarx, (uint32_t)&hsd.Instance->FIFO, (uint32_t)((sdiod.counter % 2) ? sdiod.buf1 : sdiod.buf0), SDIO_BUF_SZ/4);
 }
 
 void sdio_rx_stop(void)
 {
-    //sdio_cmd(12, 0);
+    sdiod.stop = 1;
+    sdio_cmd(12, 0);
     sdio_set_reg_bits("dctrl", 0, 0, 0);
 }
 
 void sdio_dma_rxcpltcb(DMA_HandleTypeDef *hdma)
 {
-    dbg_send_str2("sdio recv cplt cb");
+    if(sdiod.stop == 0)
+    {
+        sdiod.counter++;
+        sdiod.convcplt = 1;
+        sdio_rx_start(sdiod.sz);
+    }
 }
 
 void sdio_dma_rxerrorcb(DMA_HandleTypeDef *hdma)
 {
-    dbg_send_str2("sdio recv error cb");
+    dbg_send_str3("sdio recv error cb", 1);
+}
+
+uint16_t sdio_get_data(uint8_t *out, uint16_t sz)
+{
+    if(sdiod.convcplt)
+    {
+        uint16_t *ptr = (uint16_t*)((sdiod.counter % 2) ? sdiod.buf1 : sdiod.buf0);
+        sz = MIN(sz, SDIO_BUF_SZ);
+        mymemcpy(out, ptr, sz);
+        sdiod.convcplt = 0;
+        return sz;
+    }
 }
 
