@@ -38,9 +38,9 @@ typedef struct
 {
     uint8_t *buf0;
     uint8_t *buf1;
-    volatile uint32_t sz;
-    volatile uint32_t counter;
     volatile uint8_t convcplt, stop;
+    volatile uint16_t sz;
+    volatile uint32_t counter;
 } sdiodata_t;
 
 

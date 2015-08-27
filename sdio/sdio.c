@@ -198,18 +198,20 @@ uint32_t sdio_set_reg_bits(const char *reg, uint8_t n1, uint8_t n2, uint32_t v)
 
 void sdio_rx_start(uint32_t sz)
 {
+    static SDIO_DataInitTypeDef sdio_datainit;
     if(sz == 0)
     {
         sdiod.stop = 0;
         sdiod.counter = 0;
         sz = SDIO_BUF_SZ;
+        mymemset(sdiod.buf0, 0, SDIO_BUF_SZ);
+        mymemset(sdiod.buf1, 0, SDIO_BUF_SZ);
     }
     sdiod.sz = sz;
-    mymemset(sdiod.buf0, 0, SDIO_BUF_SZ);
-    SDIO_DataInitTypeDef        sdio_datainit;
+    uint8_t *buf = (sdiod.counter % 2) ? sdiod.buf1 : sdiod.buf0;
     sdio_datainit.DataTimeOut   = SD_DATATIMEOUT;
     sdio_datainit.DataBlockSize = SDIO_DATABLOCK_SIZE_4B;
-    sdio_datainit.DataLength    = sz;
+    sdio_datainit.DataLength    = sdiod.sz;
     sdio_datainit.TransferDir   = SDIO_TRANSFER_DIR_TO_SDIO;
     sdio_datainit.TransferMode  = SDIO_TRANSFER_MODE_STREAM;
     sdio_datainit.DPSM          = SDIO_DPSM_ENABLE;
@@ -217,7 +219,7 @@ void sdio_rx_start(uint32_t sz)
     sdio_cmd(11, &sz);
     /* Enable the DMA Stream */
     __HAL_SD_SDIO_DMA_ENABLE();
-    HAL_DMA_Start_IT(hsd.hdmarx, (uint32_t)&hsd.Instance->FIFO, (uint32_t)((sdiod.counter % 2) ? sdiod.buf1 : sdiod.buf0), SDIO_BUF_SZ/4);
+    HAL_DMA_Start_IT(hsd.hdmarx, (uint32_t)&hsd.Instance->FIFO, (uint32_t)buf, sdiod.sz/4);
 }
 
 void sdio_rx_stop(void)
@@ -246,11 +248,17 @@ uint16_t sdio_get_data(uint8_t *out, uint16_t sz)
 {
     if(sdiod.convcplt)
     {
-        uint16_t *ptr = (uint16_t*)((sdiod.counter % 2) ? sdiod.buf1 : sdiod.buf0);
+        uint16_t *ptr1 = (uint16_t*)((sdiod.counter % 2) ? sdiod.buf0 : sdiod.buf1);
+        uint16_t *ptr2 = (uint16_t*)out;
         sz = MIN(sz, SDIO_BUF_SZ);
-        mymemcpy(out, ptr, sz);
+        uint16_t i;
+        // copy to out and convert unsigned to signed
+        for(i = 0; i < sz/2; i++)
+            *ptr2++ = *ptr1++ + 0x8000;
+        //mymemcpy(out, ptr, sz);
         sdiod.convcplt = 0;
         return sz;
     }
+    return 0;
 }
 
