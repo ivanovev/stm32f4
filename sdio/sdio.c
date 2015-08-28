@@ -7,6 +7,10 @@
 #define SDIO_BUF_NB  2
 #define SDIO_BUF_SZ  IO_BUF_SZ
 
+#ifndef SD_DATATIMEOUT
+#define SD_DATATIMEOUT                  ((uint32_t)0xFFFFFFFF)
+#endif
+
 __ALIGN_BEGIN uint8_t SDIO_Buff[SDIO_BUF_NB][SDIO_BUF_SZ] __ALIGN_END;
 
 SD_HandleTypeDef hsd;
@@ -57,7 +61,7 @@ void sdio_init(void)
     sdiod.counter = 0;
     sdiod.convcplt = 0;
 
-    dbg_send_str2("sdio_init");
+    dbg_send_str3("sdio_init", 1);
     hsd.Instance = SDIO;
     hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
     hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
@@ -68,13 +72,11 @@ void sdio_init(void)
     hsd.Init.ClockDiv = 0x10;
 
     if(HAL_SD_Init(&hsd, &SDCardInfo) != SD_OK)
-    //if(mysdinit(&hsd) != SD_OK)
     {
-        dbg_send_str2("HAL_SD_Init error");
-        //return;
+        dbg_send_str3("HAL_SD_Init error", 1);
+        return;
     }
 
-    //HAL_SD_WideBusOperation_Config(&hsd, SDIO_BUS_WIDE_4B);
 #ifdef ENABLE_PCL
     pcl_sdio_init(pcl_interp);
 #endif
@@ -192,13 +194,8 @@ uint32_t sdio_set_reg_bits(const char *reg, uint8_t n1, uint8_t n2, uint32_t v)
     return ret;
 }
 
-#ifndef SD_DATATIMEOUT
-#define SD_DATATIMEOUT                  ((uint32_t)0xFFFFFFFF)
-#endif
-
 void sdio_rx_start(uint32_t sz)
 {
-    static SDIO_DataInitTypeDef sdio_datainit;
     if(sz == 0)
     {
         sdiod.stop = 0;
@@ -209,6 +206,7 @@ void sdio_rx_start(uint32_t sz)
     }
     sdiod.sz = sz;
     uint8_t *buf = (sdiod.counter % 2) ? sdiod.buf1 : sdiod.buf0;
+    SDIO_DataInitTypeDef sdio_datainit;
     sdio_datainit.DataTimeOut   = SD_DATATIMEOUT;
     sdio_datainit.DataBlockSize = SDIO_DATABLOCK_SIZE_4B;
     sdio_datainit.DataLength    = sdiod.sz;
