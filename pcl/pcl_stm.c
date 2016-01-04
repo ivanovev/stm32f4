@@ -10,6 +10,10 @@
 #include "adc/adc.h"
 #endif
 
+#ifdef ENABLE_CAN
+#include "can/can.h"
+#endif
+
 #ifdef ENABLE_DAC
 #include "dac/dac.h"
 #endif
@@ -153,6 +157,28 @@ COMMAND(adc) {
 }
 #endif
 
+#ifdef ENABLE_CAN
+COMMAND(can) {
+    ARITY((argc >= 2), "can cmd");
+    uint32_t j = 0;
+    if(SUBCMD1("test"))
+    {
+        j = can_send_data(0);
+        return picolSetIntResult(i, j);
+    }
+    volatile uint32_t *reg_ptr = can_get_reg_ptr(argv[1]);
+    if(reg_ptr)
+    {
+        if(argc == 2)
+            return picolSetHex4Result(i, *reg_ptr);
+        if(argc == 4)
+            *reg_ptr = str2int(argv[2]);
+        return picolSetResult(i, argv[2]);
+    }
+    return PICOL_ERR;
+}
+#endif
+
 #ifdef ENABLE_DAC
 COMMAND(dac) {
     ARITY((argc >= 2), "dac start|stop");
@@ -265,6 +291,9 @@ void pcl_stm_init(picolInterp *i)
 #endif
 #ifdef ENABLE_ADC
     picolRegisterCmd(i, "adc", picol_adc, 0);
+#endif
+#ifdef ENABLE_CAN
+    picolRegisterCmd(i, "can", picol_can, 0);
 #endif
 #ifdef ENABLE_DAC
     picolRegisterCmd(i, "dac", picol_dac, 0);

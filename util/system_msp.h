@@ -26,6 +26,10 @@
 #include "adc/adc.h"
 #endif
 
+#ifdef ENABLE_CAN
+#include "can/can.h"
+#endif
+
 #ifdef ENABLE_DAC
 #include "dac/dac.h"
 #endif

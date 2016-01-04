@@ -47,6 +47,11 @@ void myinit(void)
     adc_init();
 #endif
 
+#ifdef ENABLE_CAN
+#pragma message "can_init()"
+    can_init();
+#endif
+
 #ifdef ENABLE_DAC
 #pragma message "dac_init()"
     dac_init();

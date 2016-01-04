@@ -53,7 +53,8 @@ CFLAGS += -fno-builtin
 CFLAGS += -fno-diagnostics-show-caret
 CFLAGS += -I$(PWD)
 CFLAGS += -DSTM32F407xx
-CFLAGS += -DARM_MATH_CM4 -D__FPU_PRESENT=1 -D__FPU_USED
+CFLAGS += -DARM_MATH_CM4 -D__FPU_PRESENT=1
+#CFLAGS += -D__FPU_USED
 IINCDIR = $(patsubst %,-I%,$(INCDIR))
 CFLAGS += $(IINCDIR)
 

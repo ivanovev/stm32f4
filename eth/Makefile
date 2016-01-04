@@ -1,14 +1,15 @@
 
 include ../util/util1.mk
 C_SRCS += main.c
-include $(ROOT_DIR)/flash/flash.mk
+#include $(ROOT_DIR)/flash/flash.mk
 include $(ROOT_DIR)/gpio/gpio.mk
 #include $(ROOT_DIR)/adc/adc.mk
+include $(ROOT_DIR)/can/can.mk
 #include $(ROOT_DIR)/dac/dac.mk
 #include $(ROOT_DIR)/dma/dma.mk
 #include $(ROOT_DIR)/i2c/i2c.mk
-include $(ROOT_DIR)/tim/tim.mk
-include $(ROOT_DIR)/uart/uart.mk
+#include $(ROOT_DIR)/tim/tim.mk
+#include $(ROOT_DIR)/uart/uart.mk
 #include $(ROOT_DIR)/usb/usb.mk
 #include $(ROOT_DIR)/vfd/vfd.mk
 #include $(ROOT_DIR)/dsp/dsp.mk

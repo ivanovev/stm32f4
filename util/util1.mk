@@ -12,7 +12,7 @@ ifeq ($(BOARD), 'MY1')
     CFLAGS += -DBOARD_MY1
 endif
 
-CUBE_DIR=/home/$(USER)/src/STM32Cube_FW_F4_V1.5.0
+CUBE_DIR=/home/$(USER)/src/STM32Cube_FW_F4_V1.10.0
 HAL_DIR=$(CUBE_DIR)/Drivers/STM32F4xx_HAL_Driver
 CMSIS_DIR=$(CUBE_DIR)/Drivers/CMSIS
 USBD_DIR=$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library
