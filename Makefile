@@ -1,5 +1,4 @@
 
-#PROJ = led uart usb hcsr i2c adc pwm mdio
 PROJ = $(shell ls -d */ 2>/dev/null | grep -v util | sed "s:/::")
 .PHONY: clean commit $(PROJ) stats
 
@@ -18,3 +17,5 @@ clean: $(BUILDS)
 commit: clean
 	git add ./* && git commit && git push
 
+stats:
+	@find . -name "*.c" -print0 | xargs -0 cat | awk "NF" | wc
