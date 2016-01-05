@@ -10,9 +10,11 @@
 
 #ifdef CANn
 #if CANn == 1
-#define CANx JOIN(CAN, CANn)
-#define CAN_CLK_ENABLE JOIN3(__HAL_RCC_CAN, CANn, _CLK_ENABLE)
-#define CAN_CLK_DISABLE JOIN3(__HAL_RCC_CAN, CANn, _CLK_DISABLE)
+#define CANx                JOIN(CAN, CANn)
+#define CAN_CLK_ENABLE      JOIN3(__HAL_RCC_CAN, CANn, _CLK_ENABLE)
+#define CAN_CLK_DISABLE     JOIN3(__HAL_RCC_CAN, CANn, _CLK_DISABLE)
+#define CANx_RX_IRQn        JOIN3(CAN, CANn, _RX0_IRQn)
+#define CANx_RX_IRQHandler  JOIN3(CAN, CANn, _RX0_IRQHandler)
 #define CAN_TX_GPIO D
 #define CAN_RX_GPIO D
 #define CAN_TX_PIN 1

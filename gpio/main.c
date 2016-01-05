@@ -11,7 +11,7 @@ int main(void)
     //led_toggle();
     for (;;) {
         HAL_Delay(1000);
-//        led_toggle();
+        led_toggle();
 #if 0
         if(btn_state())
             led_toggle();

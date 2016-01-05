@@ -19,3 +19,4 @@ commit: clean
 
 stats:
 	@find . -name "*.c" -print0 | xargs -0 cat | awk "NF" | wc
+

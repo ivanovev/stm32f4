@@ -3,6 +3,7 @@
 
 CAN_HandleTypeDef hcan;
 extern void Error_Handler(void);
+uint32_t rxcounter = 0;
 
 void can_init(void)
 {
@@ -20,9 +21,9 @@ void can_init(void)
     hcan.Init.TXFP = DISABLE;
     hcan.Init.Mode = CAN_MODE_LOOPBACK;
     hcan.Init.SJW = CAN_SJW_1TQ;
-    hcan.Init.BS1 = CAN_BS1_6TQ;
-    hcan.Init.BS2 = CAN_BS2_5TQ;
-    hcan.Init.Prescaler = 28;
+    hcan.Init.BS1 = CAN_BS1_3TQ;
+    hcan.Init.BS2 = CAN_BS2_2TQ;
+    hcan.Init.Prescaler = 7;
     if(HAL_CAN_Init(&hcan) != HAL_OK)
     {
         Error_Handler();
@@ -48,6 +49,13 @@ void can_init(void)
     hcan.pTxMsg->RTR = CAN_RTR_DATA;
     hcan.pTxMsg->IDE = CAN_ID_STD;
     hcan.pTxMsg->DLC = 8;
+
+#if 1
+    if(HAL_CAN_Receive_IT(&hcan, CAN_FIFO0) != HAL_OK)
+    {
+        Error_Handler();
+    }
+#endif
 }
 
 void can_deinit()
@@ -57,15 +65,19 @@ void can_deinit()
 
 uint32_t can_send_data(uint8_t data[])
 {
-    uint32_t i;
+    uint32_t i, j;
     for(i = 0; i < 8; i++)
-        hcan.pTxMsg->Data[i] = (uint8_t)i;
-    i = HAL_CAN_Transmit(&hcan, 100);
-    if(i != HAL_OK)
+        hcan.pTxMsg->Data[i] = data ? data[i] : (uint8_t)i;
+    for(i = 0; i < 1; i++)
     {
-        //Error_Handler();
+        j = HAL_CAN_Transmit_IT(&hcan);
+        if(j != HAL_OK)
+        {
+            break;
+            //Error_Handler();
+        }
     }
-    return i;
+    return j;
 }
 
 volatile uint32_t* can_get_reg_ptr(char *reg)
@@ -81,5 +93,18 @@ volatile uint32_t* can_get_reg_ptr(char *reg)
     if(!mystrncmp(reg, "btr", 3))
         return &(hcan.Instance->BTR);
     return 0;
+}
+
+void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *phcan)
+{
+    led_toggle();
+    if((phcan->pRxMsg->StdId == 0x321) && (phcan->pRxMsg->IDE == CAN_ID_STD))
+    {
+        rxcounter += phcan->pRxMsg->DLC;
+    }
+
+#if 1
+    HAL_CAN_Receive_IT(&hcan, CAN_FIFO0);
+#endif
 }
 

@@ -158,6 +158,7 @@ COMMAND(adc) {
 #endif
 
 #ifdef ENABLE_CAN
+extern uint32_t rxcounter;
 COMMAND(can) {
     ARITY((argc >= 2), "can cmd");
     uint32_t j = 0;
@@ -165,6 +166,10 @@ COMMAND(can) {
     {
         j = can_send_data(0);
         return picolSetIntResult(i, j);
+    }
+    if(SUBCMD1("rxcounter"))
+    {
+        return picolSetIntResult(i, rxcounter);
     }
     volatile uint32_t *reg_ptr = can_get_reg_ptr(argv[1]);
     if(reg_ptr)
