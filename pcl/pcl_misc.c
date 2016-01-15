@@ -9,7 +9,10 @@ COMMAND(inthex) {
         int2str(value, buf, 10);
     }
     else if(SUBCMD0("hex")) {
-        int2str(value, buf, 16);
+        uint8_t bytes = 0;
+        if(argc >= 3)
+           bytes = clip(0, str2int(argv[2]), 4);
+        itoh(value, buf, bytes);
     }
     else
         return PICOL_ERR;

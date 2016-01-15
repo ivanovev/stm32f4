@@ -20,15 +20,19 @@ uint32_t    mr(uint32_t addr);
 uint32_t    mw(uint32_t addr, uint32_t value);
 
 char        to_upper(char myChar);
-int         atoi(const char *p);
-uint8_t     itoa(int32_t i, char *b);
 uint32_t    htoi(char *myArray);
 uint8_t     itoh(uint32_t v, char *buf, uint8_t bytes);
+void        strip_str(char *str);
+int         clip(int min, int value, int max);
+
+int         atoi(const char *p);
+double      atof(char* num);
+uint8_t     itoa(int32_t i, char *b);
+uint8_t     int2str(int32_t i, char *buf, uint8_t base);
 int32_t     str2int(const char *buf);
 int         str2bytes(const char *in, uint8_t *out, int maxbytes);
 uint16_t    bytes2str(const char *in, char *out, uint16_t sz);
-uint8_t     int2str(int32_t i, char *buf, uint8_t base);
-void        strip_str(char *str);
+int         double2str(char *buf, int len, double f, char *pr);
 
 uint8_t     myisspace(char c);
 uint8_t     myisnewline(char c);

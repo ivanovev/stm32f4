@@ -30,18 +30,18 @@
 #define ARP_PLEN            0x04
 
 #ifdef ENABLE_ICMP
-ARP_ENTRY   arp_table[ARP_TABLE_SZ];
-CON_ENTRY   con_table[CON_TABLE_SZ];
-uint8_t     arp_request_ipaddr[4];
+ARP_ENTRY   arp_table[ARP_TABLE_SZ] = {{{0}}};
+CON_ENTRY   con_table[CON_TABLE_SZ] = {{0}};
+uint8_t     arp_request_ipaddr[4] = {0};
 
 uint8_t local_ipaddr[4] = {IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3};
 uint8_t local_macaddr[6] = {MAC_ADDR0, MAC_ADDR1, MAC_ADDR2, MAC_ADDR3, MAC_ADDR4, MAC_ADDR5};
 
 void myip_init(void)
 {
-    mymemset(&arp_table, 0, ARP_TABLE_SZ*sizeof(ARP_ENTRY));
-    mymemset(&con_table, 0, CON_TABLE_SZ*sizeof(CON_ENTRY));
-    mymemset(&arp_request_ipaddr, 0, sizeof(arp_request_ipaddr));
+    //mymemset(&arp_table, 0, ARP_TABLE_SZ*sizeof(ARP_ENTRY));
+    //mymemset(&con_table, 0, CON_TABLE_SZ*sizeof(CON_ENTRY));
+    //mymemset(&arp_request_ipaddr, 0, sizeof(arp_request_ipaddr));
     myip_icmp_init();
     myip_con_add(myip_icmp_frm_handler, myip_icmp_con_handler, ICMP_PROTO, 0);
 #ifdef ENABLE_TFTP

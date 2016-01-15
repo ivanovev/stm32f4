@@ -10,6 +10,8 @@
 
 #define MAXRECURSION 10
 
+#define SCAN_INT atof
+
 /* -------------------------- Macros mostly need picol_ environment (argv,i) */
 #define APPEND(dst,src) {if((mystrnlen(dst,MAXSTR)+mystrnlen(src,MAXSTR))>=sizeof(dst)-1) \
                         return picolErr(i, "string too long"); \
@@ -21,7 +23,7 @@
 #define COMMAND(c)      int picol_##c(picolInterp* i, int argc, char** argv)
 #define EQ(a,b)         ((*a)==(*b) && !mystrncmp(a,b,IO_BUF_SZ))
 
-#define FOLD(init,step,n) {init;for(p=n;p<argc;p++) {SCAN_INT(a,argv[p]);step;}}
+#define FOLD(init,step,n) {init;for(p=n;p<argc;p++) {a=SCAN_INT(argv[p]);step;}}
 
 #define FOREACH(_v,_p,_s) \
                  for(_p = picolParseList(_s,_v); _p; _p = picolParseList(_p,_v))
