@@ -24,16 +24,16 @@ extern ARP_ENTRY arp_table[ARP_TABLE_SZ];
 #include "eth/myip/stream/stream.h"
 #endif
 
-extern volatile uint8_t reset;
+extern volatile uint8_t main_evt;
 
 #ifdef ENABLE_TELNET
 COMMAND(exit) {
     myip_tcp_con_close();
     return picolSetIntResult(i, 0);
 }
-COMMAND(reset) {
+COMMAND(reboot) {
     myip_tcp_con_close();
-    reset = RESET_REBOOT;
+    main_evt = EVT_REBOOT;
     return picolSetIntResult(i, 0);
 }
 #endif
@@ -385,7 +385,7 @@ void pcl_eth_init(picolInterp *i)
     picolRegisterCmd(i, "eth", picol_eth, 0);
 #ifdef ENABLE_TELNET
     picolRegisterCmd(i, "exit", picol_exit, 0);
-    picolRegisterCmd(i, "reset", picol_reset, 0);
+    picolRegisterCmd(i, "reboot", picol_reboot, 0);
 #endif
 #ifdef ENABLE_ICMP
     picolRegisterCmd(i, "arp", picol_arp, 0);

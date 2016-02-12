@@ -9,7 +9,7 @@
 #include "core_cm4.h"
 #include "flash/flash.h"
 
-volatile uint8_t reset = 0;
+volatile uint8_t main_evt = 0;
 
 int main(void)
 {
@@ -24,6 +24,21 @@ int main(void)
     {
 #ifdef ENABLE_PCL
         pcl_io();
+#ifdef ENABLE_FLASH
+        if(main_evt & EVT_PCLUPD)
+        {
+            pcl_clear();
+            pcl_init();
+            main_evt &= ~EVT_PCLUPD;
+            continue;
+        }
+#endif
+        if(main_evt & EVT_BTN)
+        {
+            pcl_exec("btn_cb");
+            main_evt &= ~EVT_BTN;
+            continue;
+        }
 #endif
 #ifdef ENABLE_VFD
         vfd_upd();
@@ -32,16 +47,16 @@ int main(void)
 #ifdef ENABLE_TELNET
         if(myip_tcp_con_closed())
         {
-            if((reset == RESET_FWUPG) || (reset == RESET_REBOOT))
+            if((main_evt == EVT_FWUPG) || (main_evt == EVT_REBOOT))
                 break;
         }
 #endif
     }
     mydeinit();
-    dbg_send_int2("reset", reset);
+    dbg_send_int2("reset", main_evt);
 
 #ifdef ENABLE_FLASH
-    if(reset == RESET_FWUPG)
+    if(main_evt == EVT_FWUPG)
     {
         flash_copy10();
     }

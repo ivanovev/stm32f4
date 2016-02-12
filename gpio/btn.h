@@ -9,8 +9,9 @@
 #define BTN_PIN 0
 #endif
 
-void btn_init(void);
-uint16_t btn_state(void);
+void            btn_init(void);
+void            btn_irq_init(GPIO_TypeDef *gpiox, uint32_t pin);
+uint16_t        btn_state(void);
 
 #endif /* __BTN_H__ */
 

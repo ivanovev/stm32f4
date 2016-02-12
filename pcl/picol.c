@@ -151,12 +151,16 @@ picolCmd* picolGetCmd(picolInterp *i, char *name) {
     for(c = i->commands; c; c = c->next) if (EQ(c->name,name)) return c;
     return 0;
 }
-void picolListAppend(picolList *l, char *str, char *buf) {
+void picolListAppend(picolList *l, char *str, char *buf, char sep) {
     if(l->size == 0)
         l->table[0] = buf;
     else
-        l->table[l->size] = l->table[l->size-1] + mystrnlen(l->table[l->size-1], MAXSTR) + 1;
-    //mysnprintf(l->table[l->size], p->end - p->start + 1, "%s", p->start);
+    {
+        l->table[l->size] = l->table[l->size-1] + mystrnlen(l->table[l->size-1], MAXSTR);
+        if(sep)
+            l->table[l->size][0] = sep;
+        l->table[l->size] += 1;
+    }
     mysnprintf(l->table[l->size], mystrnlen(str, MAXSTR), "%s", str);
     l->size += 1;
 }
@@ -218,23 +222,30 @@ picolVar *picolGetVar2(picolInterp *i, char *name, int glob) {
 #define picolSetVar(_i,_n,_v)       picolSetVar2(_i,_n,_v,0)
 #define picolSetGlobalVar(_i,_n,_v) picolSetVar2(_i,_n,_v,1)
 int     picolSetVar2(picolInterp *i, char *name, char *val,int glob) {
-  picolVar       *v = picolGetVar(i,name);
-  picolCallFrame *c = i->callframe, *localc = c;
-  int             global = COLONED(name);
-  if(glob||global) v = picolGetGlobalVar(i,name);
-  if(!v) {           /* non-existing variable */
-    if(glob || global) {
-      if(global) name += 2;
-      while(c->parent) c = c->parent;
+    picolVar       *v = picolGetVar(i,name);
+    picolCallFrame *c = i->callframe, *localc = c;
+    int             global = COLONED(name);
+    if(glob||global) v = picolGetGlobalVar(i,name);
+    if(!v) {           /* non-existing variable */
+        if(glob || global) {
+            if(global) name += 2;
+            while(c->parent) c = c->parent;
+        } else {
+            v       = mymalloc(sizeof(*v));
+            v->name = mystrdup(name);
+            v->next = c->vars;
+            c->vars = v;
+            i->callframe = localc;
+        }
     }
-    v       = mymalloc(sizeof(*v));
-    v->name = mystrdup(name);
-    v->next = c->vars;
-    c->vars = v;
-    i->callframe = localc;
-  }
-  v->val = mystrdup(val);
-  return PICOL_OK;
+    if(v)
+    {
+        if(glob || global)
+            mystrncpy(v->val, val, mystrnlen(v->val, MAXSTR));
+        else
+            v->val = mystrdup(val);
+    }
+    return PICOL_OK;
 }
 int picolGetToken(picolInterp *i, picolParser *p) {
     int rc;
@@ -266,7 +277,9 @@ int picolGetToken(picolInterp *i, picolParser *p) {
 int picolEval2(picolInterp *i, const char *t, int mode) { /*----------- EVAL! */
     /* mode==0: subst only, mode==1: full eval */
     picolParser p;
-    char        buf[MAXSTR], tmp[MAXSTR];
+    char        buf[MAXSTR], tmp[MAXSTR], sep = 0;
+    if(mode == 0)
+        sep = ' ';
     uint32_t    len;
     int         rc = PICOL_OK;
     picolList args; args.size = 0;
@@ -288,14 +301,14 @@ int picolEval2(picolInterp *i, const char *t, int mode) { /*----------- EVAL! */
             if (v && !v->val) v = picolGetGlobalVar(i,tmp);
             if(!v)
                 return picolErr(i,"no such variable");
-            picolListAppend(&args, v->val, buf);
+            picolListAppend(&args, v->val, buf, sep);
             //___print_list(&args);
             continue;
         } else if (p.type == PT_CMD) {
             rc = picolEval(i,tmp);
             if (rc != PICOL_OK)
                 break;
-            picolListAppend(&args, i->result, buf);
+            picolListAppend(&args, i->result, buf, sep);
             continue;
         }
         /* We have a complete command + args. Call it! */
@@ -303,7 +316,7 @@ int picolEval2(picolInterp *i, const char *t, int mode) { /*----------- EVAL! */
             picolCmd *c;
             //args.size -= 1;
             if(mode==0) { /* do a quasi-subst only */
-                //rc = picolSetResult(i,picolList(buf,argc,argv)); // !!!!!!!!!!!!!!!!!!!!!!!!!!!
+                rc = picolSetResult(i, buf);
                 goto err; /* not an error, if rc == PICOL_OK */
             }
             if (args.size) {
@@ -320,12 +333,13 @@ int picolEval2(picolInterp *i, const char *t, int mode) { /*----------- EVAL! */
             continue;
         }
         else
-            picolListAppend(&args, tmp, buf);
+            picolListAppend(&args, tmp, buf, sep);
     }
 err:
     return rc;
 }
-int picolCallProc(picolInterp *i, int argc, char **argv) {
+int picolCallProc(picolInterp *i, int argc, char **argv)
+{
     if(i->level>MAXRECURSION)
         return picolErr(i,"too many nested evaluations (infinite loop?)");
     picolCmd *c = picolGetCmd(i,argv[0]);
@@ -375,6 +389,41 @@ int picolCallProc(picolInterp *i, int argc, char **argv) {
     myfree(cf);
     i->level--;
     return errcode;
+}
+int picolCondition(picolInterp *i, char* str)
+{
+    if(str) {
+        char buf[MAXSTR], buf2[MAXSTR], *argv[3], *cp;
+        int a = 0, rc;
+        rc = picolSubst(i,str);
+        if(rc != PICOL_OK) return rc;
+        mysnprintf(buf, MAXSTR, "Condi: (%s) ->(%s)\n",str,i->result);
+        dbg_send_str3(buf, 1);
+        mystrncpy(buf2,i->result, MAXSTR);
+        /* ------- try whether the format suits [expr]... */
+        mystrncpy(buf,"llength ", MAXSTR); LAPPEND(buf,i->result);
+        dbg_send_str3(buf, 1);
+        rc = picolEval(i,buf);
+        if(rc != PICOL_OK) return rc;
+#if 0
+        if(EQ(i->result,"3")) {
+            FOREACH(buf,cp,buf2) argv[a++] = mystrdup(buf);
+            if(picolGetCmd(i,argv[1])) { /* defined operator in center */
+                mystrncpy(buf,argv[1], MAXSTR);       /* translate to Polish :) */
+                LAPPEND(buf,argv[0]);      /* e.g. {1 > 2} -> {> 1 2} */
+                LAPPEND(buf,argv[2]);
+                rc = picolEval(i, buf);
+                return rc;
+            }
+        } /* .. otherwise, check for inequality to zero */
+#endif
+        if(*str == '!') {mystrncpy(buf, "== 0 ", MAXSTR); str++;} /* allow !$x */
+        else             mystrncpy(buf, "!= 0 ", MAXSTR);
+        mystrncat(buf, str, MAXSTR);
+        return picolEval(i, buf); // todo: compare without eval
+    }
+    else
+        return picolErr(i, "NULL condition");
 }
 int picolRegisterCmd(picolInterp *i, char *name, picol_Func f, void *pd) {
     picolCmd *c = picolGetCmd(i,name);
@@ -473,6 +522,17 @@ COMMAND(info) {
     }
     return PICOL_ERR;
 }
+
+COMMAND(if)
+{
+    int rc;
+    ARITY(argc==3 || argc==5, "if test script1 ?else script2?")
+        if ((rc = picolCondition(i,argv[1])) != PICOL_OK) return rc;
+    if ((rc = atoi(i->result))) return picolEval(i,argv[2]);
+    else if (argc == 5)         return picolEval(i,argv[4]);
+    return picolSetResult(i,"");
+}
+
 picolInterp* picolCreateInterp(void) {
     picolInterp* i = mymalloc(sizeof(picolInterp));
     picolInitInterp(i);
@@ -481,6 +541,7 @@ picolInterp* picolCreateInterp(void) {
     picolRegisterCmd(i, "return", picol_return, 0);
     picolRegisterCmd(i, "puts", picol_puts, 0);
     //picolRegisterCmd(i, "test", picol_test, 0);
+    picolRegisterCmd(i, "if", picol_if, 0);
     picolRegisterCmd(i, "info", picol_info, 0);
     return i;
 }

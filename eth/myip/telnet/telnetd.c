@@ -29,7 +29,11 @@ void myip_telnetd_init(void)
     tds.qi.tail = 0;
     tds.qo.head = 0;
     tds.qo.tail = 0;
+#ifndef ENABLE_PCL
     enqueue_str(&tds.qo, telnetd_prompt, sizeof(telnetd_prompt));
+#else
+    enqueue_str(&tds.qi, (uint8_t*)"\n", 1);
+#endif
 }
 
 uint16_t myip_telnetd_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)

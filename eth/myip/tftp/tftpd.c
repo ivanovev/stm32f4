@@ -6,7 +6,7 @@
 #include "flash/flash.h"
 #endif
 
-extern volatile uint8_t reset;
+extern volatile uint8_t main_evt;
 
 enum
 {
@@ -52,6 +52,7 @@ struct {
     uint16_t mode;
     uint32_t crc;
     uint32_t start, end;
+    uint32_t evt;
 } tfs;
 
 void myip_tftpd_init(void)
@@ -60,6 +61,7 @@ void myip_tftpd_init(void)
     tfs.ackn = 0;
     tfs.crc = 0;
     tfs.mode = 0;
+    tfs.evt = 0;
 }
 
 static uint16_t tftpd_nak(uint8_t *out, int16_t e_code)
@@ -99,9 +101,12 @@ uint16_t tftpd_data_in(uint8_t *in, uint16_t sz, uint8_t *out)
 #ifdef ENABLE_FLASH
     TFTP_DATA_PKT *pkt = (TFTP_DATA_PKT*)in;
     sz -= 4;
+    uint16_t sz1;
     if(sz)
     {
-        flash_write_array(tfs.start, pkt->data, sz);
+        sz1 = flash_write_data(tfs.start, pkt->data, sz);
+        if(sz1 != sz)
+            dbg_send_hex2("flash_write_data", sz1);
         tfs.start += sz;
     }
     if(sz != SEG_SZ)
@@ -110,10 +115,21 @@ uint16_t tftpd_data_in(uint8_t *in, uint16_t sz, uint8_t *out)
         uint32_t crc = flash_crc1(fsz);
         dbg_send_hex2("crc_orig", tfs.crc);
         dbg_send_hex2("crc_recv", crc);
-        if(crc && (crc == tfs.crc))
+        if(tfs.evt)
         {
-            reset = RESET_FWUPG;
+            if(tfs.evt == EVT_FWUPG)
+            {
+                if(crc && (crc == tfs.crc))
+                {
+                    main_evt = EVT_FWUPG;
+                }
+            }
+            if(tfs.evt == EVT_PCLUPD)
+            {
+                main_evt = EVT_PCLUPD;
+            }
         }
+        tfs.evt = 0;
     }
 #endif
     return tftpd_ack(out);
@@ -157,10 +173,12 @@ uint16_t tftpd_wrq(uint8_t *in, uint16_t sz, uint8_t *out)
                 return tftpd_nak(out, TFTP_EBADOP);
         }
         tfs.crc = htoi(name);
+        tfs.evt = EVT_FWUPG;
     }
     else if(!mystrncmp(name, "script.pcl", 10))
     {
         tfs.crc = 0;
+        tfs.evt = EVT_PCLUPD;
     }
     else
         return tftpd_nak(out, TFTP_ENOTFOUND);
@@ -169,7 +187,7 @@ uint16_t tftpd_wrq(uint8_t *in, uint16_t sz, uint8_t *out)
     tfs.start = USER_FLASH_MID_ADDR;
     i = flash_erase1();
     dbg_send_int2("flash_erase1", i);
-    HAL_FLASH_Unlock();
+    flash_unlock();
 #endif
     return tftpd_ack(out);
 }

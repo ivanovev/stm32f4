@@ -1,5 +1,6 @@
 
 #include "pcl.h"
+#include "pcl_math.h"
 #include "pcl_misc.h"
 #include "pcl_stm.h"
 #include "pcl_eth.h"
@@ -9,6 +10,7 @@
 
 struct picolInterp *pcl_interp = 0;
 static char pcl_prefix[32];
+extern volatile uint8_t main_evt;
 
 void pcl_clear(void)
 {
@@ -31,12 +33,17 @@ COMMAND(prefix) {
     return picolSetResult(i, pcl_prefix);
 }
 
+#ifdef ENABLE_FLASH
+extern uint16_t pcl_load(picolInterp *i, uint32_t addr);
+#endif
+
 void pcl_init(void)
 {
     if(!pcl_interp)
     {
         pcl_interp = picolCreateInterp();
         pcl_misc_init(pcl_interp);
+        pcl_math_init(pcl_interp);
         pcl_stm_init(pcl_interp);
         pcl_sys_init(pcl_interp);
 #ifdef ENABLE_VFD
@@ -50,6 +57,10 @@ void pcl_init(void)
         dbg_send_str3("pcl_init", 1);
         pcl_prefix[0] = 0;
     }
+#ifdef ENABLE_FLASH
+    pcl_load(pcl_interp, USER_FLASH_MID_ADDR);
+    pcl_exec("boot_cb");
+#endif
 }
 
 struct picolInterp* pcl_get_interp(void)
@@ -72,9 +83,11 @@ void pcl_io(void)
 {
     static char buf[IO_BUF_SZ];
     char buf2[IO_BUF_SZ];
+    uint8_t newline = 1;
     uint16_t sz = io_recv_str(buf);
     uint16_t rc = PICOL_WAIT;
     uint32_t wait = pcl_interp->wait;
+    static char *dev = 0;
     if(sz)
         wait = 0;
     if(sz)
@@ -94,9 +107,9 @@ void pcl_io(void)
         }
         else
         {
-            io_prompt(0, pcl_prefix);
+            newline = 0;
             wait = 0;
-            return;
+            rc = PICOL_OK;
         }
     }
     else if(wait)
@@ -113,15 +126,28 @@ void pcl_io(void)
     }
     else
         return;
+    picolVar *pv = picolGetVar2(pcl_interp, "DEV", 1);
+    if(pv)
+        dev = pv->val;
     if(rc != PICOL_WAIT)
     {
         io_send_str4(buf);
-        io_prompt(1, pcl_prefix);
+        io_prompt(newline, dev, pcl_prefix);
         pcl_interp->wait = 0;
     }
     else if(wait == 0)
     {
         pcl_interp->wait = HAL_GetTick();
     }
+}
+
+void pcl_gpio_exti_cb(void)
+{
+    static uint32_t t = 0;
+    uint32_t t1 = HAL_GetTick();
+    if((t1 - t) < 300)
+        return;
+    t = t1;
+    main_evt |= EVT_BTN;
 }
 

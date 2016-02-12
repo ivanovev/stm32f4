@@ -4,6 +4,15 @@
 #include <main.h>
 #include "flash.h"
 
+void flash_unlock(void)
+{
+    HAL_FLASH_Unlock();
+    if(__HAL_FLASH_GET_FLAG(FLASH_FLAG_PGSERR) != RESET)
+        __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGSERR);
+    if(__HAL_FLASH_GET_FLAG(FLASH_FLAG_PGPERR) != RESET)
+        __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGPERR);
+}
+
 void flash_erase_img1(void)
 {
     uint32_t sz1 = flash_fsz1();
@@ -59,10 +68,10 @@ uint32_t flash_fsz1(void)
 #if 1
 uint32_t flash_write(uint32_t addr, uint32_t data)
 {
-    HAL_FLASH_Unlock();
+    flash_unlock();
     if((USER_FLASH_START_ADDR <= addr) && (addr <= (USER_FLASH_END_ADDR - 4)))
-        HAL_FLASH_Program(TYPEPROGRAM_WORD, addr & 0xFFFFFFFC, data);
-    return 0;
+        data = HAL_FLASH_Program(TYPEPROGRAM_WORD, addr & 0xFFFFFFFC, data);
+    return data;
 }
 #endif
 
@@ -71,7 +80,7 @@ uint32_t flash_erase1(void)
     uint32_t sz = flash_fsz1();
     if(!sz)
         return 0;
-    HAL_FLASH_Unlock();
+    flash_unlock();
     uint32_t SectorError = 0;
     FLASH_EraseInitTypeDef flash_erase_init;
     flash_erase_init.TypeErase = TYPEERASE_SECTORS;
@@ -94,15 +103,25 @@ uint32_t flash_erase1(void)
     return flash_erase_init.NbSectors;
 }
 
-uint32_t flash_write_array(uint32_t addr, uint8_t *data, uint16_t sz)
+uint16_t flash_write_data(uint32_t addr, uint8_t *data, uint16_t sz)
 {
+    flash_unlock();
     if((addr < USER_FLASH_START_ADDR) || (addr > USER_FLASH_END_ADDR))
     {
         dbg_send_hex2("bad addr", addr);
         return 0;
     }
     uint16_t i;
-    for(i = 0; i < sz; i++)
+    uint32_t *data32 = (uint32_t*)data;
+    for(i = 0; (i + 4) <= sz; i += 4)
+    {
+        if(HAL_FLASH_Program(TYPEPROGRAM_WORD, addr + i, data32[i/4]) != HAL_OK)
+            return i;
+    }
+    if(i == sz)
+        return i;
+    i -= 4;
+    for(; i < sz; i++)
     {
         if(HAL_FLASH_Program(TYPEPROGRAM_BYTE, addr + i, data[i]) != HAL_OK)
             return i;

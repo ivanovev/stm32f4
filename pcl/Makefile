@@ -8,5 +8,5 @@ include pcl.mk
 include $(UTIL_DIR)/util2.mk
 
 test: $(BUILDDIR)
-	gcc -w -g -I.. -I. -o $(BUILDDIR)/test picol.c heap1.c pcl_misc.c ../util/util.c -Wl,-Map=$(BUILDDIR)/test.map
+	gcc -w -g -I. -I.. -I../util -o $(BUILDDIR)/test picol.c ../util/heap1.c pcl_misc.c ../util/util.c -Wl,-Map=$(BUILDDIR)/test.map
 

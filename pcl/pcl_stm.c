@@ -63,7 +63,7 @@ COMMAND(flash) {
     if(SUBCMD1("erase1"))
         return picolSetIntResult(i, flash_erase1());
     if(SUBCMD1("pclupd"))
-        return picolSetHex4Result(i, pcl_load(i, USER_FLASH_START_ADDR));
+        return picolSetHex4Result(i, pcl_load(i, USER_FLASH_MID_ADDR));
 #endif
     return PICOL_ERR;
 }
@@ -100,36 +100,76 @@ static GPIO_TypeDef *get_gpio_instance(char *a)
 }
 
 COMMAND(gpio) {
-    ARITY(argc >= 3, "gpio a|b|c... num [val]");
+    ARITY(argc >= 2, "gpio a|b|c... num [val]");
     GPIO_TypeDef *gpiox = get_gpio_instance(argv[1]);
     if(gpiox == 0)
         return PICOL_ERR;
     ARITY(gpiox, "gpio a|b|c... num [val]");
     uint32_t pin = 0, value = 0;
-    volatile uint32_t *preg = gpio_get_reg_ptr(gpiox, argv[2]);
-    if(preg)
+    char op = 0;
+    if(argc >= 3)
     {
-        if(argc == 4)
-            *preg = str2int(argv[3]);
-        return picolSetHex4Result(i,*preg);
-    }
-    else if(('0' <= argv[2][0]) && (argv[2][0] <= '9'))
-    {
-        pin = str2int(argv[2]);
-        if(argc == 3)
-            value = HAL_GPIO_ReadPin(gpiox, 1 << pin);
-        else if(argc == 4)
+        volatile uint32_t *preg = gpio_get_reg_ptr(gpiox, argv[2]);
+        if(preg)
         {
-            value = str2int(argv[3]);
-            if(value)
-                HAL_GPIO_WritePin(gpiox, 1 << pin, GPIO_PIN_SET);
-            else
-                HAL_GPIO_WritePin(gpiox, 1 << pin, GPIO_PIN_RESET);
+            if(argc == 4)
+                *preg = str2int(argv[3]);
+            return picolSetHex4Result(i,*preg);
         }
+    }
+    if(('0' <= argv[1][1]) && (argv[1][1] <= '9'))
+    {
+        pin = str2int(&(argv[1][1]));
+        if(argc == 2)
+            op = 'r';
+        else
+        {
+            op = 'w';
+            value = str2int(argv[2]);
+        }
+    }
+    else if (argc >= 3)
+    {
+        if(('0' <= argv[2][0]) && (argv[2][0] <= '9'))
+        {
+            pin = str2int(argv[2]);
+            if(argc == 3)
+                op = 'r';
+            else
+            {
+                op = 'w';
+                value = str2int(argv[3]);
+            }
+        }
+    }
+    if(op == 'r')
+        value = HAL_GPIO_ReadPin(gpiox, 1 << pin);
+    else if(op == 'w')
+    {
+        if(value)
+            HAL_GPIO_WritePin(gpiox, 1 << pin, GPIO_PIN_SET);
+        else
+            HAL_GPIO_WritePin(gpiox, 1 << pin, GPIO_PIN_RESET);
     }
     else
         return PICOL_ERR;
     return picolSetHexResult(i,value);
+}
+
+COMMAND(btn) {
+    ARITY(argc >= 3, "btn [a n ...] ...");
+    uint8_t j;
+    uint32_t pin;
+    GPIO_InitTypeDef gpio_init;
+    GPIO_TypeDef *gpiox = 0;
+    for(j = 1; j < argc; j++)
+    {
+        if(gpiox && ('0' <= argv[j][0]) && (argv[j][0] <= '9'))
+            btn_irq_init(gpiox, str2int(argv[j]));
+        else
+            gpiox = get_gpio_instance(argv[j]);
+    }
+    return PICOL_OK;
 }
 #endif
 
@@ -262,6 +302,7 @@ void pcl_stm_init(picolInterp *i)
 {
 #ifdef ENABLE_GPIO
     picolRegisterCmd(i, "gpio", picol_gpio, 0);
+    picolRegisterCmd(i, "btn", picol_btn, 0);
 #endif
 #ifdef ENABLE_ADC
     picolRegisterCmd(i, "adc", picol_adc, 0);

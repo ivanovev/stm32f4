@@ -12,7 +12,9 @@ int32_t pcl_get_chunksz(uint8_t *ptr, int32_t fsz)
 {
     if(fsz <= 0)
         return 0;
+    //dbg_send_hex2("ptr", (uint32_t)ptr);
     uint8_t *ptr1 = mymemchr(ptr, 0x0A, fsz);
+    //dbg_send_hex2("ptr1", (uint32_t)ptr1);
     //print2("ptr1[0]", ptr1[0]);
     //print2("ptr1[1]", ptr1[1]);
     if(!ptr1)

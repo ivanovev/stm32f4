@@ -74,9 +74,10 @@
 #include "br/br.h"
 #endif
 
-#define RESET_REBOOT 1
-#define RESET_FWUPG 2
-#define RESET_PCLUPD 3
+#define EVT_REBOOT  (1 << 0)
+#define EVT_FWUPG   (1 << 1)
+#define EVT_PCLUPD  (1 << 2)
+#define EVT_BTN     (1 << 3)
 
 extern void Error_Handler(void);
 

@@ -27,7 +27,7 @@ uint8_t     itoh(uint32_t v, char *buf, uint8_t bytes);
 int32_t     str2int(const char *buf);
 int         str2bytes(const char *in, uint8_t *out, int maxbytes);
 uint16_t    bytes2str(const char *in, char *out, uint16_t sz);
-uint8_t     int2str(int32_t i, char *buf, uint8_t base);
+uint8_t     int2str(int32_t i, char *buf, uint8_t base, int len);
 void        strip_str(char *str);
 
 uint8_t     myisspace(char c);
@@ -70,7 +70,7 @@ void io_send_hex2(const char *str, uint32_t h);
 void io_send_hex3(const char *str, int n, uint32_t h);
 void io_send_hex4(const char *str, const uint8_t *bytes, uint32_t n);
 void io_newline(void);
-void io_prompt(uint8_t newline, const char *prefix);
+void io_prompt(uint8_t newline, const char *prefix1, const char *prefix2);
 void io_echo(void);
 
 #pragma GCC diagnostic ignored "-Wunused-value"

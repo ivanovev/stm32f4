@@ -64,12 +64,17 @@ unsigned int mw(unsigned int addr, unsigned int value)
 
 int atoi(const char *p)
 {
-    int k = 0;
+    int k = 0, sign = 1;
+    if(*p == '-')
+    {
+        sign = -1;
+        p++;
+    }
     while (myisdigit(*p)) {
         k = (k<<3)+(k<<1)+(*p)-'0';
         p++;
     }
-    return k;
+    return sign*k;
 }
 
 uint8_t itoa(int32_t i, char *b)
@@ -168,10 +173,22 @@ uint8_t itoh(uint32_t v, char *buf, uint8_t bytes)
     return itoh_(v, &(buf[2]), bytes);
 }
 
-uint8_t int2str(int32_t i, char *buf, uint8_t base)
+uint8_t int2str(int32_t i, char *buf, uint8_t base, int len)
 {
+    char buf1[10];
+    int len1, j;
     if(base == 10)
-        return itoa(i, buf);
+    {
+        itoa(i, buf1);
+        len1 = mystrnlen(buf1, sizeof(buf1));
+        if(len)
+        {
+            for(j = len1; j < len; j++)
+                *buf++ = '0';
+        }
+        mystrncpy(buf, buf1, len1);
+        return len;
+    }
     else if(base == 16)
         return itoh(i, buf, 4);
     else
@@ -525,16 +542,22 @@ void io_newline(void)
     io_send_str("\n\r", 2);
 }
 
-void io_prompt(uint8_t newline, const char *prefix)
+void io_prompt(uint8_t newline, const char *prefix1, const char *prefix2)
 {
     if(newline)
         io_newline();
-    if(prefix)
+    uint8_t i;
+    const char *pp[2] = {prefix1, prefix2}, *p;
+    for(i = 0; i <= sizeof(pp)/sizeof(pp[0]); i++)
     {
-        if(prefix[0])
+        p = pp[i];
+        if(p)
         {
-            io_send_str(prefix, mystrnlen(prefix, 32));
-            io_send_str(" ", 1);
+            if(p[0])
+            {
+                io_send_str(p, mystrnlen(p, 32));
+                io_send_str(" ", 1);
+            }
         }
     }
     io_send_str("#> ", 3);
@@ -549,10 +572,10 @@ void io_echo(void)
         if(!myisnewline(buf[0]))
         {
             io_send_str4(buf);
-            io_prompt(1, 0);
+            io_prompt(1, 0, 0);
         }
         else
-            io_prompt(0, 0);
+            io_prompt(0, 0, 0);
     }
 }
 
