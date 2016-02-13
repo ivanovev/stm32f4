@@ -1,26 +1,5 @@
 
 #include "pcl_stm.h"
-#include "util/util.h"
-
-#ifdef ENABLE_GPIO
-#include "gpio/gpio.h"
-#endif
-
-#ifdef ENABLE_ADC
-#include "adc/adc.h"
-#endif
-
-#ifdef ENABLE_DAC
-#include "dac/dac.h"
-#endif
-
-#ifdef ENABLE_FLASH
-#include "flash/flash.h"
-#endif
-
-#ifdef ENABLE_I2C
-#include "i2c/eeprom.h"
-#endif
 
 #ifdef ENABLE_FLASH
 extern uint16_t pcl_load(picolInterp *i, uint32_t addr);
@@ -160,7 +139,6 @@ COMMAND(btn) {
     ARITY(argc >= 3, "btn [a n ...] ...");
     uint8_t j;
     uint32_t pin;
-    GPIO_InitTypeDef gpio_init;
     GPIO_TypeDef *gpiox = 0;
     for(j = 1; j < argc; j++)
     {
@@ -298,6 +276,35 @@ COMMAND(eeprom) {
 }
 #endif
 
+#ifdef ENABLE_SPI
+COMMAND(spi) {
+    ARITY(argc >= 3, "spi nspi data ...");
+    uint8_t nspi = 0;
+    if(argv[1][0] == '1') nspi = 1;
+    if(argv[1][0] == '2') nspi = 2;
+    if(argv[1][0] == '3') nspi = 3;
+    uint8_t buf[MAXSTR];
+    uint32_t tmp = 0;
+    if(nspi && (argv[1][1] == '.') && (mystrnlen(argv[1], 8) >= 4))
+    {
+        GPIO_TypeDef *csgpiox = get_gpio_instance(&(argv[1][2]));
+        if(!csgpiox)
+            return PICOL_ERR;
+        uint8_t csgpion = str2int(&(argv[1][3]));
+        uint16_t len = str2bytes(argv[2], buf, MAXSTR);
+        tmp = spi_send(nspi, csgpiox, csgpion, buf, len);
+        return picolSetHex4Result(i, tmp);
+
+    }
+    if(nspi)
+    {
+        tmp = spi_get_reg(nspi, argv[2]);
+        return picolSetHex4Result(i, tmp);
+    }
+    return PICOL_ERR;
+}
+#endif
+
 void pcl_stm_init(picolInterp *i)
 {
 #ifdef ENABLE_GPIO
@@ -313,11 +320,14 @@ void pcl_stm_init(picolInterp *i)
 #ifdef ENABLE_FLASH
     picolRegisterCmd(i, "flash", picol_flash, 0);
 #endif
-#ifdef ENABLE_UART
-    picolRegisterCmd(i, "uart", picol_uart, 0);
-#endif
 #ifdef ENABLE_I2C
     picolRegisterCmd(i, "eeprom", picol_eeprom, 0);
+#endif
+#ifdef ENABLE_SPI
+    picolRegisterCmd(i, "spi", picol_spi, 0);
+#endif
+#ifdef ENABLE_UART
+    picolRegisterCmd(i, "uart", picol_uart, 0);
 #endif
 }
 

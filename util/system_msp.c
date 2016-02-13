@@ -37,6 +37,11 @@ void myinit(void)
     i2c_init();
 #endif
 
+#ifdef ENABLE_SPI
+#pragma message "spi_init()"
+    spi_init();
+#endif
+
 #ifdef ENABLE_TIM
 #pragma message "tim_init()"
     tim_init();

@@ -38,6 +38,10 @@
 #include "i2c/i2c.h"
 #endif
 
+#ifdef ENABLE_SPI
+#include "spi/spi.h"
+#endif
+
 #ifdef ENABLE_UART
 #include "uart/uart.h"
 #endif

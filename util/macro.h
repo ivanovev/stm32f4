@@ -36,12 +36,18 @@
     HAL_GPIO_Init(GPIO(gpio), &gpio_init); \
 } while(0)
 
-#define UART_PINMUX(uartn, txgpio, txpin, rxgpio, rxpin, uartaf) do { \
+#define UART_PINMUX(txgpio, txpin, rxgpio, rxpin, uartaf) do { \
     GPIO_INIT(txgpio, txpin, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, uartaf); \
     GPIO_INIT(rxgpio, rxpin, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, uartaf); \
 } while(0)
 
-#define UART_NVIC_INIT(uartn, irqn, usart_it) do { \
+#define SPI_PINMUX(clkgpio, clkpin, mosigpio, mosipin, misogpio, misopin, spiaf) do { \
+    GPIO_INIT(clkgpio, clkpin, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, spiaf); \
+    GPIO_INIT(mosigpio, mosipin, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, spiaf); \
+    GPIO_INIT(misogpio, misopin, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FAST, spiaf); \
+} while(0)
+
+#define UART_NVIC_INIT(irqn, usart_it) do { \
     HAL_NVIC_SetPriority(irqn, 0, 1); \
     HAL_NVIC_EnableIRQ(irqn); \
 } while(0)
@@ -51,7 +57,7 @@
     GPIO_PinAFConfig(GPIO(gpio), PINSRC(pin), GPIO_AF_ETH); \
 } while(0)
 
-#define I2C_PINMUX(i2cn, sclgpio, sclpin, sdagpio, sdapin, i2caf) do { \
+#define I2C_PINMUX(sclgpio, sclpin, sdagpio, sdapin, i2caf) do { \
     GPIO_INIT(sclgpio, sclpin, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_FAST, i2caf); \
     GPIO_INIT(sdagpio, sdapin, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_FAST, i2caf); \
 } while(0)

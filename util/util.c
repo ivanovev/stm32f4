@@ -190,7 +190,7 @@ uint8_t int2str(int32_t i, char *buf, uint8_t base, int len)
         return len;
     }
     else if(base == 16)
-        return itoh(i, buf, 4);
+        return itoh(i, buf, len);
     else
         return 0;
 }

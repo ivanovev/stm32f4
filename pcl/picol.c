@@ -397,12 +397,12 @@ int picolCondition(picolInterp *i, char* str)
         int a = 0, rc;
         rc = picolSubst(i,str);
         if(rc != PICOL_OK) return rc;
-        mysnprintf(buf, MAXSTR, "Condi: (%s) ->(%s)\n",str,i->result);
-        dbg_send_str3(buf, 1);
+        //mysnprintf(buf, MAXSTR, "Condi: (%s) ->(%s)\n",str,i->result);
+        //dbg_send_str3(buf, 1);
         mystrncpy(buf2,i->result, MAXSTR);
         /* ------- try whether the format suits [expr]... */
         mystrncpy(buf,"llength ", MAXSTR); LAPPEND(buf,i->result);
-        dbg_send_str3(buf, 1);
+        //dbg_send_str3(buf, 1);
         rc = picolEval(i,buf);
         if(rc != PICOL_OK) return rc;
 #if 0

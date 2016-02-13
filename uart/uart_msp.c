@@ -15,7 +15,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 #ifdef UARTn
     if(huart->Instance == UARTx)
     {
-        UART_PINMUX(UARTn, UART_TX_GPIO, UART_TX_PIN, UART_RX_GPIO, UART_RX_PIN, GPIO_AF_UARTx);
+        UART_PINMUX(UART_TX_GPIO, UART_TX_PIN, UART_RX_GPIO, UART_RX_PIN, GPIO_AF_UARTx);
         UARTx_CLK_ENABLE();
 
         HAL_NVIC_SetPriority(UARTx_IRQn, 0, 1);
@@ -32,7 +32,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 #ifdef ENABLE_BR
     if(huart->Instance == ALT_UARTx)
     {
-        UART_PINMUX(ALT_UARTn, ALT_UART_TX_GPIO, ALT_UART_TX_PIN, ALT_UART_RX_GPIO, ALT_UART_RX_PIN, GPIO_AF_ALT_UARTx);
+        UART_PINMUX(ALT_UART_TX_GPIO, ALT_UART_TX_PIN, ALT_UART_RX_GPIO, ALT_UART_RX_PIN, GPIO_AF_ALT_UARTx);
         ALT_UARTx_CLK_ENABLE();
     }
 #endif

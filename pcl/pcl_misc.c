@@ -12,7 +12,7 @@ COMMAND(inthex) {
         int2str(value, buf, 10, len);
     }
     else if(SUBCMD0("hex")) {
-        int2str(value, buf, 16, 0);
+        int2str(value, buf, 16, len);
     }
     else
         return PICOL_ERR;
