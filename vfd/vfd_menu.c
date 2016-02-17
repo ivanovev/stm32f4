@@ -354,6 +354,7 @@ static void vfd_menu_imm_upd(vfd_menu_item_t *item, uint8_t up)
 
 void vfd_menu_down(void)
 {
+    dbg_send_str3("down", 1);
     if(vfd_menu_flag(pstate->sel, VFD_FLAG_EDIT) == 0)
     {
         if(pstate->sel->next)
@@ -376,6 +377,7 @@ void vfd_menu_down(void)
 
 void vfd_menu_up(void)
 {
+    dbg_send_str3("up", 1);
     if(vfd_menu_flag(pstate->sel, VFD_FLAG_EDIT) == 0)
     {
         if(pstate->sel->prev)
@@ -398,10 +400,13 @@ void vfd_menu_up(void)
 
 void vfd_menu_right(void)
 {
+    dbg_send_str3("right", 1);
     if(pstate->sel->child)
     {
+        dbg_send_str3(pstate->sel->name, 1);
         pstate->sel = pstate->sel->child;
         pstate->scroll = pstate->sel;
+        dbg_send_str3(pstate->sel->name, 0);
         vfd_menu_draw();
         return;
     }
@@ -418,6 +423,7 @@ void vfd_menu_right(void)
 
 void vfd_menu_left(void)
 {
+    dbg_send_str3("left", 1);
     if(vfd_menu_flag(pstate->sel, VFD_FLAG_EDIT) == 1)
     {
         pstate->sel->edit->flags &= ~VFD_FLAG_EDIT;

@@ -71,5 +71,12 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
         TIMx_RELEASE_RESET();
     }
 #endif
+#ifdef VFD_TIMn
+    if(htim->Instance == VFD_TIMx)
+    {
+        VFD_TIMx_FORCE_RESET();
+        VFD_TIMx_RELEASE_RESET();
+    }
+#endif
 }
 

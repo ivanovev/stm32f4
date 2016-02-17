@@ -1,6 +1,7 @@
 
 #include <main.h>
 #include "vfd_menu.h"
+#include "gpio/btn.h"
 
 #pragma message "VFD_UART: UART" STR(VFD_UARTn)
 #pragma message "VFD_UART_BAUDRATE: " STR(VFD_UART_BAUDRATE)
@@ -36,22 +37,11 @@ void vfd_init(void)
     //GPIO_INIT(VFD_RESETN_GPIO, VFD_RESETN_PIN, GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_LOW, 0);
     //HAL_GPIO_WritePin(GPIO(VFD_RESETN_GPIO), PIN(VFD_RESETN_PIN), GPIO_PIN_SET);
 
-    GPIO_INIT(BTNL_GPIO, BTNL_PIN, GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
-    GPIO_INIT(BTNR_GPIO, BTNR_PIN, GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
-    GPIO_INIT(BTNU_GPIO, BTNU_PIN, GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
-    GPIO_INIT(BTND_GPIO, BTND_PIN, GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
-    GPIO_INIT(BTNO_GPIO, BTNO_PIN, GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
-
-    HAL_NVIC_SetPriority(BTNL_IRQn, 0xF, 0);
-    HAL_NVIC_EnableIRQ(BTNL_IRQn);
-    HAL_NVIC_SetPriority(BTNR_IRQn, 0xF, 0);
-    HAL_NVIC_EnableIRQ(BTNR_IRQn);
-    HAL_NVIC_SetPriority(BTNU_IRQn, 0xF, 0);
-    HAL_NVIC_EnableIRQ(BTNU_IRQn);
-    HAL_NVIC_SetPriority(BTND_IRQn, 0xF, 0);
-    HAL_NVIC_EnableIRQ(BTND_IRQn);
-    HAL_NVIC_SetPriority(BTNO_IRQn, 0xF, 0);
-    HAL_NVIC_EnableIRQ(BTNO_IRQn);
+    btn_irq_init(GPIO(BTNL_GPIO), BTNL_PIN);
+    btn_irq_init(GPIO(BTNR_GPIO), BTNR_PIN);
+    btn_irq_init(GPIO(BTNU_GPIO), BTNU_PIN);
+    btn_irq_init(GPIO(BTND_GPIO), BTND_PIN);
+    btn_irq_init(GPIO(BTNO_GPIO), BTNO_PIN);
 
     //vfd_reset();
     vfd_menu_init();
@@ -74,15 +64,13 @@ void vfd_init(void)
 
 void vfd_deinit(void)
 {
-    VFD_TIMx_FORCE_RESET();
-    VFD_TIMx_RELEASE_RESET();
+    HAL_TIM_Base_Stop_IT(&hvfdtim);
+    HAL_TIM_Base_DeInit(&hvfdtim);
 }
 
 void VFD_TIMx_IRQHandler(void)
 {
     HAL_TIM_IRQHandler(&hvfdtim);
-    //led_toggle();
-    //vfd_state |= VFD_EVT_TIM_UPD;
 }
 
 uint16_t vfd_busy(void)
@@ -197,6 +185,7 @@ uint16_t vfd_gpio_exti_cb(void)
 {
 #if 1
     uint16_t btn_state = vfd_btn_state();
+    dbg_send_hex2("btn_state", btn_state);
     if(btn_state)
     {
         //led_toggle();
