@@ -1,0 +1,88 @@
+
+#include "pcl_math.h"
+
+<<<<<<< HEAD
+COMMAND(math2) {
+    ARITY(argc == 3, "op arg1 arg2");
+    int arg1 = str2int(argv[1]);
+    int arg2 = str2int(argv[2]);
+    int result;
+    if(EQ(argv[0], "==")) result = (arg1 == arg2);
+    if(EQ(argv[0], "!=")) result = (arg1 != arg2);
+    if(EQ(argv[0], "/")) result = (arg1 / arg2);
+    if(EQ(argv[0], "%")) result = (arg1 % arg2);
+    if(EQ(argv[0], "<<")) result = (arg1 << arg2);
+    if(EQ(argv[0], ">>")) result = (arg1 >> arg2);
+    return picolSetIntResult(i, result);
+}
+
+COMMAND(mathn) {
+    ARITY(argc >= 2, "op arg1 arg2 ...");
+    int j, aj;
+    int result = str2int(argv[1]);
+    for(j = 2; j < argc; j++)
+    {
+        aj = str2int(argv[j]);
+        if(EQ(argv[0], "+")) result = (result + aj);
+        if(EQ(argv[0], "-")) result = (result - aj);
+        if(EQ(argv[0], "min")) result = (result < aj) ? result : aj;
+        if(EQ(argv[0], "max")) result = (result > aj) ? result : aj;
+    }
+    return picolSetIntResult(i, result);
+}
+
+COMMAND(clamp) {
+    ARITY(argc == 4, "clamp min max value");
+    int arg1 = str2int(argv[1]);
+    int arg2 = str2int(argv[2]);
+    int arg3 = str2int(argv[3]);
+    arg3 = (arg1 > arg3) ? arg1 : arg3;
+    arg3 = (arg2 < arg3) ? arg2 : arg3;
+    return picolSetIntResult(i, arg3);
+=======
+COMMAND(math)
+{
+    int a = 0, b = 0, c = -1, p;
+    char buf[32] = {0};
+    mysnprintf(buf, 32, "%s a b", argv[0]);
+    if ((SUBCMD0("/") || SUBCMD0("%")) && !b) {return picolErr(i, "divide by zero");}
+    if (0) {}
+    else if (SUBCMD0("+")) {FOLD(c=0,c += a,1)}
+    return picolSetIntResult(i,c);
+}
+
+COMMAND(mathf)
+{
+    double a = 0, b = 0, c = -1;
+    int p;
+    char buf[32] = {0};
+    mysnprintf(buf, 32, "%s a b", argv[0]);
+    if ((SUBCMD0("/") || SUBCMD0("%")) && !b) {return picolErr(i, "divide by zero");}
+    if (0) {}
+    else if (SUBCMD0("+")) {FOLD(c=0,c += a,1)}
+    double2str(buf, sizeof(buf), c, "6");
+    return picolSetResult(i,buf);
+>>>>>>> e9dcc8d022d3d7e729d1e668f69c3587189b81e3
+}
+
+void pcl_math_init(picolInterp *i)
+{
+    int j;
+<<<<<<< HEAD
+    char *name2[] =
+        {"==", "!=", "/", "%", "<<", ">>"};
+    for (j = 0; j < (int)(sizeof(name2)/sizeof(char*)); j++)
+        picolRegisterCmd(i, name2[j], picol_math2, 0);
+    char *namen[] =
+        {"+", "-", "min", "max"};
+    for (j = 0; j < (int)(sizeof(namen)/sizeof(char*)); j++)
+        picolRegisterCmd(i, namen[j], picol_mathn, 0);
+    picolRegisterCmd(i, "clamp", picol_clamp, 0);
+=======
+    char *name[] =
+    {"+"};
+    for (j = 0; j < (int)(sizeof(name)/sizeof(char*)); j++)
+        picolRegisterCmd(i, name[j], picol_mathf, 0);
+>>>>>>> e9dcc8d022d3d7e729d1e668f69c3587189b81e3
+}
+

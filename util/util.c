@@ -100,6 +100,59 @@ uint8_t itoa(int32_t i, char *b)
     return ret;
 }
 
+double atof(char* num)
+{
+    if (!num || !*num)
+        return 0; 
+    double integerPart = 0;
+    double fractionPart = 0;
+    int divisorForFraction = 1;
+    int sign = 1;
+    uint8_t inFraction = 0;
+    /*Take care of +/- sign*/
+    if (*num == '-')
+    {
+        ++num;
+        sign = -1;
+    }
+    else if (*num == '+')
+    {
+        ++num;
+    }
+    while (*num != '\0')
+    {
+        if (*num >= '0' && *num <= '9')
+        {
+            if (inFraction)
+            {
+                if(fractionPart < 1000000)
+                {
+                    /*See how are we converting a character to integer*/
+                    fractionPart = fractionPart*10 + (*num - '0');
+                    divisorForFraction *= 10;
+                }
+            }
+            else
+            {
+                integerPart = integerPart*10 + (*num - '0');
+            }
+        }
+        else if (*num == '.')
+        {
+            if (inFraction)
+                return sign * (integerPart + fractionPart/divisorForFraction);
+            else
+                inFraction = 1;
+        }
+        else
+        {
+            return sign * (integerPart + fractionPart/divisorForFraction);
+        }
+        ++num;
+    }
+    return sign * (integerPart + fractionPart/divisorForFraction);
+}
+
 char to_upper(char myChar)
 {
     if(myChar>91) myChar-=32;
@@ -144,13 +197,14 @@ uint8_t itoh_(uint32_t v, char *buf, uint8_t bytes)
 	uint8_t i = 0;
 	int digit_shift, digit, c;
 	/* Find first non-zero digit. */
-#if 1
-    digit_shift = (bytes - 1)*8 + 4;
-#else
-	digit_shift = 28;
-	while (!(v & (0xF << digit_shift)))
-		digit_shift -= 4;
-#endif
+    if(bytes > 0)
+        digit_shift = (bytes - 1)*8 + 4;
+    else
+    {
+        digit_shift = 28;
+        while (!(v & (0xF << digit_shift)))
+            digit_shift -= 4;
+    }
 
 	/* Print digits. */
 	for (; digit_shift >= 0; digit_shift -= 4)
@@ -173,7 +227,7 @@ uint8_t itoh(uint32_t v, char *buf, uint8_t bytes)
     return itoh_(v, &(buf[2]), bytes);
 }
 
-uint8_t int2str(int32_t i, char *buf, uint8_t base, int len)
+uint8_t int2str(int32_t i, char *buf, uint8_t base, uint8_t len)
 {
     char buf1[10];
     int len1, j;
@@ -193,6 +247,66 @@ uint8_t int2str(int32_t i, char *buf, uint8_t base, int len)
         return itoh(i, buf, len);
     else
         return 0;
+}
+
+int double2str(char *buf, int len, double f, char *pr)
+{
+    unsigned int d1, d2, i;
+    double af = (f >= 0) ? f : -f;
+    d1 = af;
+    double f2 = af - d1;
+    double f3 = 1;
+    int p = 0, half = 0;
+    char *ptr = buf;
+    if(!mystrncmp(pr, "0.5", 3))
+    {
+        p = 1;
+        half = 1;
+    }
+    else
+        p = str2int(pr);
+    if(p <= 0)
+    {
+        return mysnprintf(buf, len, "%d", (int)(f + .5));
+    }
+    if(p >= 6) p = 6;
+    for(i = 0; i < p; i++)
+    {
+        f2 *= 10;
+        f3 *= 10;
+    }
+    if(half == 0)
+    {
+        f2 += 0.5;
+        if(f2 >= f3)
+        {
+            f2 = 0;
+            d1 += 1;
+        }
+    }
+    else
+    {
+        if((f2 + 2.5) >= f3)
+        {
+            f2 = 0;
+            d1 += 1;
+        }
+        if((f2 - 2.5) <= (f3 - 10))
+            f2 = 0;
+        else
+            f2 = 5;
+
+    }
+    for(d2 = f2; d2 ? !(d2 % 10) : 0; d2 /= 10, p--);
+    char fmt[16];
+    if(f < 0)
+        ptr += mysnprintf(ptr, len - (ptr - buf), "-");
+    ptr += mysnprintf(ptr, len - (ptr - buf), "%d", d1);
+    if(!d2)
+        return (ptr - buf);
+    ptr += mysnprintf(ptr, len - (ptr - buf), ".");
+    ptr += mysnprintf(ptr, len - (ptr - buf), "%d", d2);
+    return (ptr - buf);
 }
 
 int32_t str2int(const char *str)
@@ -248,6 +362,11 @@ void strip_str(char *str)
     uint16_t len = mystrnlen(str, IO_BUF_SZ);
     for(; (str[len-1] == '\n') || (str[len-1] == '\r'); len--)
         str[len-1] = 0;
+}
+
+int clip(int min, int value, int max)
+{
+    return MAX(min, MIN(value, max));
 }
 
 uint16_t mystrnlen(const char *array, uint16_t maxlen)

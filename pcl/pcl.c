@@ -2,6 +2,7 @@
 #include "pcl.h"
 #include "pcl_math.h"
 #include "pcl_misc.h"
+#include "pcl_math.h"
 #include "pcl_stm.h"
 #include "pcl_eth.h"
 #include "pcl_vfd.h"
@@ -42,6 +43,7 @@ void pcl_init(void)
     if(!pcl_interp)
     {
         pcl_interp = picolCreateInterp();
+        pcl_math_init(pcl_interp);
         pcl_misc_init(pcl_interp);
         pcl_math_init(pcl_interp);
         pcl_stm_init(pcl_interp);

@@ -1,0 +1,16 @@
+
+#ifndef __PCL_MATH_H__
+#define __PCL_MATH_H__
+
+#include <main.h>
+<<<<<<< HEAD
+#include "picol.h"
+
+void    pcl_math_init(picolInterp *i);
+=======
+
+void        pcl_math_init(picolInterp *i);
+>>>>>>> e9dcc8d022d3d7e729d1e668f69c3587189b81e3
+
+#endif
+

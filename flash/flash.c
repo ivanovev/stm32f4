@@ -160,7 +160,11 @@ uint32_t flash_crc(uint8_t *buf, uint32_t sz)
 
     CRC->CR=1;
 
+#if 0
     asm("NOP");asm("NOP");asm("NOP");//delay for hardware ready
+#else
+    HAL_Delay(1);
+#endif
 
     i = sz >> 2;
 

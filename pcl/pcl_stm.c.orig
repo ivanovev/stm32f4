@@ -1,5 +1,33 @@
 
 #include "pcl_stm.h"
+<<<<<<< HEAD
+=======
+#include "util/util.h"
+
+#ifdef ENABLE_GPIO
+#include "gpio/gpio.h"
+#endif
+
+#ifdef ENABLE_ADC
+#include "adc/adc.h"
+#endif
+
+#ifdef ENABLE_CAN
+#include "can/can.h"
+#endif
+
+#ifdef ENABLE_DAC
+#include "dac/dac.h"
+#endif
+
+#ifdef ENABLE_FLASH
+#include "flash/flash.h"
+#endif
+
+#ifdef ENABLE_I2C
+#include "i2c/eeprom.h"
+#endif
+>>>>>>> e9dcc8d022d3d7e729d1e668f69c3587189b81e3
 
 #ifdef ENABLE_FLASH
 extern uint16_t pcl_load(picolInterp *i, uint32_t addr);

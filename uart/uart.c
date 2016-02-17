@@ -157,7 +157,7 @@ void uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n, uint8_t state)
     phuart->Init.Mode       = UART_MODE_TX_RX;
     phuart->Init.HwFlowCtl  = UART_HWCONTROL_NONE;
     phuart->ErrorCode       = HAL_UART_ERROR_NONE;
-    phuart->State           = state;
+    phuart->gState           = state;
 }
 
 volatile uint32_t* uart_get_reg_ptr(USART_TypeDef *uartx, const char *reg)
