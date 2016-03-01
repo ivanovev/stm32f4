@@ -3,16 +3,14 @@
 
 #ifdef ADCx
 
-extern void adc_conv_half_cplt_cb(DMA_HandleTypeDef * hdma);
-extern void adc_conv_cplt_cb(DMA_HandleTypeDef * hdma);
-
 void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
 {
     GPIO_InitTypeDef          gpio_init;
-    static DMA_HandleTypeDef  hdma_adc;
 
     GPIO_INIT(ADCx_GPIO, ADCx_PIN, GPIO_MODE_ANALOG, GPIO_NOPULL, 0, 0);
     ADCx_CLK_ENABLE();
+#ifdef ADC_DMAn
+    static DMA_HandleTypeDef  hdma_adc;
     ADC_DMAx_CLK_ENABLE();
     ADC_TIMx_CLK_ENABLE();
 
@@ -38,6 +36,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
 
     HAL_NVIC_SetPriority(ADC_DMAx_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC_DMAx_IRQn);
+#endif
 }
 
 #endif

@@ -3,26 +3,38 @@
 #include <dac/dac.h>
 
 #pragma message "DAC_OUT: DAC" STR(DAC_OUTn)
+
+#ifdef DAC_DMAn
 #pragma message "DAC_TIM: TIM" STR(DAC_TIMn)
 #pragma message "DAC_DMA: DMA" STR(DAC_DMAn)
 #pragma message "DAC_DMA_STREAM: DMA_STREAM" STR(DAC_DMA_STREAMn)
 #pragma message "DAC_DMA_CHANNEL: DMA_CHANNEL" STR(DAC_DMA_CHANNELn)
+#endif
 
 DAC_HandleTypeDef hdac;
 static DAC_ChannelConfTypeDef scfg;
 
+#ifdef DAC_TIMn
 static void dac_tim_config(void);
+#endif
 
 void dac_init(void)
 {
     hdac.Instance = DAC;
+#ifdef DAC_TIMn
     dac_tim_config();
+#endif
     if(HAL_DAC_Init(&hdac) != HAL_OK)
     {
         Error_Handler();
     }
+#ifdef DAC_DMAn
     scfg.DAC_Trigger = DACx_TRIGGER;
     scfg.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
+#else
+    scfg.DAC_Trigger = DAC_TRIGGER_NONE;
+    scfg.DAC_OutputBuffer = DAC_OUTPUTBUFFER_DISABLE;
+#endif
     if(HAL_DAC_ConfigChannel(&hdac, &scfg, DACx_CHANNEL) != HAL_OK)
     { 
         Error_Handler();
@@ -49,6 +61,7 @@ void dac_stop(void)
     HAL_DAC_Stop_DMA(&hdac, DACx_CHANNEL);
 }
 
+#ifdef DAC_TIMn
 static void dac_tim_config(void)
 {
     static TIM_HandleTypeDef  htim;
@@ -74,5 +87,17 @@ static void dac_tim_config(void)
     { 
         Error_Handler();
     }
+}
+#endif
+
+uint16_t dac_write(uint16_t data)
+{
+    HAL_DAC_Stop(&hdac, DACx_CHANNEL);
+    if(HAL_DAC_SetValue(&hdac, DACx_CHANNEL, DAC_ALIGN_12B_R, data) != HAL_OK)
+        return -1;
+
+    if(HAL_DAC_Start(&hdac, DACx_CHANNEL) != HAL_OK)
+        return -2;
+    return data;
 }
 

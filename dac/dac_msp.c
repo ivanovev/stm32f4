@@ -9,6 +9,7 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef *hdac)
     static DMA_HandleTypeDef  hdma_dac;
     GPIO_INIT(DACx_GPIO, DACx_PIN, GPIO_MODE_ANALOG, GPIO_NOPULL, 0, 0);
     DACx_CLK_ENABLE();
+#ifdef DAC_DMAn
     DAC_DMAx_CLK_ENABLE();
     DAC_TIMx_CLK_ENABLE();
 
@@ -33,6 +34,8 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef *hdac)
 #if DAC_OUTn == 2
     __HAL_LINKDMA(hdac, DMA_Handle2, hdma_dac);
 #endif
+#endif
 }
 
 #endif
+

@@ -153,7 +153,7 @@ COMMAND(btn) {
 
 #ifdef ENABLE_ADC
 COMMAND(adc) {
-    ARITY((argc >= 2), "adc start");
+    ARITY((argc >= 2), "adc cmd ...");
     if(SUBCMD1("start"))
     {
         if(argc == 2)
@@ -166,6 +166,10 @@ COMMAND(adc) {
     {
         adc_stop();
         return PICOL_OK;
+    }
+    if(SUBCMD1("read"))
+    {
+        return picolSetHex2Result(i, adc_read());
     }
     return PICOL_ERR;
 }
@@ -200,7 +204,7 @@ COMMAND(can) {
 
 #ifdef ENABLE_DAC
 COMMAND(dac) {
-    ARITY((argc >= 2), "dac start|stop");
+    ARITY((argc >= 2), "dac cmd ...");
     if(SUBCMD1("start"))
     {
         dac_start_sin();
@@ -210,6 +214,11 @@ COMMAND(dac) {
     {
         dac_stop();
         return PICOL_OK;
+    }
+    if(SUBCMD1("write"))
+    {
+        ARITY((argc >= 3), "dac write value");
+        return picolSetHex2Result(i, dac_write((uint16_t)str2int(argv[2])));
     }
     return PICOL_ERR;
 }

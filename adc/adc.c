@@ -5,10 +5,13 @@
 
 #pragma message "ADC: ADC" STR(ADCn)
 #pragma message "ADC_IN: ADC" STR(ADC_INn)
+
+#ifdef ADC_DMAn
 #pragma message "ADC_TIM: TIM" STR(ADC_TIMn)
 #pragma message "ADC_DMA: DMA" STR(ADC_DMAn)
 #pragma message "ADC_DMA_STREAM: DMA_STREAM" STR(ADC_DMA_STREAMn)
 #pragma message "ADC_DMA_CHANNEL: DMA_CHANNEL" STR(ADC_DMA_CHANNELn)
+#endif
 
 #define ADC_BUF_NB  2
 #define ADC_BUF_SZ  IO_BUF_SZ
@@ -27,10 +30,20 @@ struct adcdata_t
 ADC_HandleTypeDef hadc;
 static ADC_ChannelConfTypeDef scfg;
 
+#ifdef ADC_TIMn
 static void adc_tim_config(void);
+#endif
 
 void adc_init(void)
 {
+    hadc.Instance = ADCx;
+    hadc.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+	hadc.Init.Resolution            = ADC_RESOLUTION_12B;
+    hadc.Init.ScanConvMode = DISABLE;
+	hadc.Init.ContinuousConvMode    = DISABLE;
+    hadc.Init.DiscontinuousConvMode = DISABLE;
+	hadc.Init.NbrOfDiscConversion   = 0;
+#ifdef ADC_DMAn
     adcd.buf0 = &(ADC_Buff[0][0]);
     adcd.buf1 = &(ADC_Buff[1][0]);
     mymemset(adcd.buf0, 0, ADC_BUF_SZ);
@@ -38,15 +51,8 @@ void adc_init(void)
     adcd.counter = 0;
     adcd.convcplt = 0;
 
-    hadc.Instance = ADCx;
     adc_tim_config();
 
-    hadc.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-    hadc.Init.Resolution = ADC_RESOLUTION_12B;
-    hadc.Init.ScanConvMode = DISABLE;
-    hadc.Init.ContinuousConvMode = DISABLE;
-    hadc.Init.DiscontinuousConvMode = DISABLE;
-    hadc.Init.NbrOfDiscConversion = 0;
     //hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
     //hadc.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
     hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
@@ -55,6 +61,15 @@ void adc_init(void)
     hadc.Init.NbrOfConversion = 1;
     hadc.Init.DMAContinuousRequests = ENABLE;
     hadc.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+#else
+	hadc.Init.ExternalTrigConvEdge  = ADC_EXTERNALTRIGCONVEDGE_NONE;
+	hadc.Init.ExternalTrigConv      = ADC_EXTERNALTRIGCONV_T1_CC1;
+	hadc.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
+	hadc.Init.NbrOfConversion       = 1;
+	hadc.Init.DMAContinuousRequests = DISABLE;
+	hadc.Init.EOCSelection          = DISABLE;
+#endif
+
 
     if(HAL_ADC_Init(&hadc) != HAL_OK)
     {
@@ -110,6 +125,7 @@ uint16_t adc_get_data(uint8_t *out, uint16_t sz)
     return 0;
 }
 
+#ifdef ADC_TIMn
 static void adc_tim_config(void)
 {
     static TIM_HandleTypeDef  htim_adc;
@@ -135,6 +151,7 @@ static void adc_tim_config(void)
         Error_Handler();
     }
 }
+#endif
 
 #if 1
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* phadc)
@@ -169,4 +186,21 @@ void adc_conv_cplt_cb(DMA_HandleTypeDef * hdma)
     led_toggle();
 }
 #endif
+
+uint16_t adc_read(void)
+{
+    uint16_t data = 0;
+    if(HAL_ADC_Start(&hadc) != HAL_OK)
+    {
+        return -1;
+    }
+
+    HAL_ADC_PollForConversion(&hadc, 10);
+
+    if((HAL_ADC_GetState(&hadc) & HAL_ADC_STATE_EOC_REG) == HAL_ADC_STATE_EOC_REG)
+    {
+        data = HAL_ADC_GetValue(&hadc);
+    }
+    return data;
+}
 
