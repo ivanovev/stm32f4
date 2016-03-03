@@ -65,10 +65,18 @@ int main(void)
     return 0;
 }
 
-#if 0
+#if 1
+#ifdef ENABLE_TIM
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    eth_io();
+#ifdef ENABLE_VFD
+    if(htim->Instance == VFD_TIMx)
+    {
+        led_toggle();
+        vfd_tim_upd();
+    }
+#endif
 }
+#endif
 #endif
 

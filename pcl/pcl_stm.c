@@ -153,7 +153,7 @@ COMMAND(btn) {
 
 #ifdef ENABLE_ADC
 COMMAND(adc) {
-    ARITY((argc >= 2), "adc start");
+    ARITY((argc >= 2), "adc start|stop...");
     if(SUBCMD1("start"))
     {
         if(argc == 2)

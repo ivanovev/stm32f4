@@ -3,8 +3,8 @@
 
 #ifdef ADCx
 
-extern void adc_conv_half_cplt_cb(DMA_HandleTypeDef * hdma);
-extern void adc_conv_cplt_cb(DMA_HandleTypeDef * hdma);
+//extern void adc_conv_half_cplt_cb(DMA_HandleTypeDef * hdma);
+//extern void adc_conv_cplt_cb(DMA_HandleTypeDef * hdma);
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
 {

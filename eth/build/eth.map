@@ -1,0 +1,1761 @@
+Archive member included to satisfy reference by file (symbol)
+
+/usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_addsubdf3.o)
+                              /home/iev/prog/stm32f4/eth/build/obj/util.o (__aeabi_dsub)
+/usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_muldivdf3.o)
+                              /home/iev/prog/stm32f4/eth/build/obj/util.o (__aeabi_dmul)
+/usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_cmpdf2.o)
+                              /home/iev/prog/stm32f4/eth/build/obj/util.o (__aeabi_dcmplt)
+/usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixdfsi.o)
+                              /home/iev/prog/stm32f4/eth/build/obj/util.o (__aeabi_d2iz)
+/usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixunsdfsi.o)
+                              /home/iev/prog/stm32f4/eth/build/obj/util.o (__aeabi_d2uiz)
+
+Allocating common symbols
+Common symbol       size              file
+
+hvfdtim             0x3c              /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+hvfduart            0x40              /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+huart               0x40              /home/iev/prog/stm32f4/eth/build/obj/uart.o
+uwTick              0x4               /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+pFlash              0x20              /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+tfs                 0x16              /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+DMATxDscrTab        0x80              /home/iev/prog/stm32f4/eth/build/obj/eth.o
+Rx_Buff             0x17d0            /home/iev/prog/stm32f4/eth/build/obj/eth.o
+tcp_con             0x19              /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+tds                 0x408             /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+DMARxDscrTab        0x80              /home/iev/prog/stm32f4/eth/build/obj/eth.o
+uart_rx_buf         0x200             /home/iev/prog/stm32f4/eth/build/obj/uart.o
+heth                0x48              /home/iev/prog/stm32f4/eth/build/obj/eth.o
+Tx_Buff             0x17d0            /home/iev/prog/stm32f4/eth/build/obj/eth.o
+quart               0x204             /home/iev/prog/stm32f4/eth/build/obj/uart.o
+
+Discarded input sections
+
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/main.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/led.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/led.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/btn.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/btn.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/tim.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/tim.o
+ .text          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .debug_info    0x0000000000000000       0x99 /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .debug_abbrev  0x0000000000000000       0x4b /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .debug_aranges
+                0x0000000000000000       0x18 /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .debug_line    0x0000000000000000       0xb7 /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .debug_str     0x0000000000000000      0x199 /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .comment       0x0000000000000000       0x39 /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .ARM.attributes
+                0x0000000000000000       0x39 /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .data          0x0000000000000000        0x4 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/queue.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/queue.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/util.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/version.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/version.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+ .text          0x0000000000000000       0x14 /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+ .data          0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+ .bss           0x0000000000000000        0x0 /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_addsubdf3.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_addsubdf3.o)
+ .debug_line    0x0000000000000000      0x176 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_addsubdf3.o)
+ .debug_info    0x0000000000000000       0xbb /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_addsubdf3.o)
+ .debug_abbrev  0x0000000000000000       0x14 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_addsubdf3.o)
+ .debug_aranges
+                0x0000000000000000       0x20 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_addsubdf3.o)
+ .ARM.attributes
+                0x0000000000000000       0x1e /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_addsubdf3.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_muldivdf3.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_muldivdf3.o)
+ .debug_line    0x0000000000000000      0x19a /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_muldivdf3.o)
+ .debug_info    0x0000000000000000       0xbb /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_muldivdf3.o)
+ .debug_abbrev  0x0000000000000000       0x14 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_muldivdf3.o)
+ .debug_aranges
+                0x0000000000000000       0x20 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_muldivdf3.o)
+ .ARM.attributes
+                0x0000000000000000       0x1e /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_muldivdf3.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_cmpdf2.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_cmpdf2.o)
+ .debug_line    0x0000000000000000       0xb7 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_cmpdf2.o)
+ .debug_info    0x0000000000000000       0xbb /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_cmpdf2.o)
+ .debug_abbrev  0x0000000000000000       0x14 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_cmpdf2.o)
+ .debug_aranges
+                0x0000000000000000       0x20 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_cmpdf2.o)
+ .ARM.attributes
+                0x0000000000000000       0x1e /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_cmpdf2.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixdfsi.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixdfsi.o)
+ .debug_line    0x0000000000000000       0x77 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixdfsi.o)
+ .debug_info    0x0000000000000000       0xbb /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixdfsi.o)
+ .debug_abbrev  0x0000000000000000       0x14 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixdfsi.o)
+ .debug_aranges
+                0x0000000000000000       0x20 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixdfsi.o)
+ .ARM.attributes
+                0x0000000000000000       0x1e /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixdfsi.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixunsdfsi.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixunsdfsi.o)
+ .debug_line    0x0000000000000000       0x73 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixunsdfsi.o)
+ .debug_info    0x0000000000000000       0xbb /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixunsdfsi.o)
+ .debug_abbrev  0x0000000000000000       0x14 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixunsdfsi.o)
+ .debug_aranges
+                0x0000000000000000       0x20 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixunsdfsi.o)
+ .ARM.attributes
+                0x0000000000000000       0x1e /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixunsdfsi.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+FLASH            0x0000000008000000 0x0000000000100000 xr
+RAM              0x0000000020000000 0x0000000000030000 xrw
+MEMORY_B1        0x0000000060000000 0x0000000000000000 xr
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD /home/iev/prog/stm32f4/eth/build/obj/main.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/flash.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/led.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/btn.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/tim.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/tim_it.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/uart.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/picol.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/eth.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/myip.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/queue.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/util.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/version.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+LOAD /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+                0x0000000020020000                _estack = 0x20020000
+                0x0000000000000000                _Min_Heap_Size = 0x0
+                0x0000000000000400                _Min_Stack_Size = 0x400
+
+.isr_vector     0x0000000008000000      0x188
+                0x0000000008000000                . = ALIGN (0x4)
+ *(.isr_vector)
+ .isr_vector    0x0000000008000000      0x188 /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+                0x0000000008000000                g_pfnVectors
+                0x0000000008000188                . = ALIGN (0x4)
+
+.text           0x0000000008000188    0x16318
+                0x0000000008000188                . = ALIGN (0x4)
+ *(.text)
+ .text          0x0000000008000188      0x12c /home/iev/prog/stm32f4/eth/build/obj/main.o
+                0x00000000080001b0                main
+                0x0000000008000290                HAL_TIM_PeriodElapsedCallback
+ .text          0x00000000080002b4      0x5f8 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+                0x00000000080002b4                HAL_FLASH_Program
+                0x000000000800035c                HAL_FLASH_Program_IT
+                0x00000000080003f8                HAL_FLASH_IRQHandler
+                0x0000000008000538                HAL_FLASH_EndOfOperationCallback
+                0x000000000800054c                HAL_FLASH_OperationErrorCallback
+                0x0000000008000560                HAL_FLASH_Unlock
+                0x0000000008000594                HAL_FLASH_Lock
+                0x00000000080005b4                HAL_FLASH_OB_Unlock
+                0x00000000080005ec                HAL_FLASH_OB_Lock
+                0x000000000800060c                HAL_FLASH_OB_Launch
+                0x0000000008000634                HAL_FLASH_GetError
+                0x000000000800064c                FLASH_WaitForLastOperation
+ .text          0x00000000080008ac      0x60c /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+                0x00000000080008ac                HAL_FLASHEx_Erase
+                0x000000000800098c                HAL_FLASHEx_Erase_IT
+                0x0000000008000a38                HAL_FLASHEx_OBProgram
+                0x0000000008000b18                HAL_FLASHEx_OBGetConfig
+                0x0000000008000ba0                FLASH_Erase_Sector
+                0x0000000008000e30                FLASH_FlushCaches
+ .text          0x0000000008000eb8      0x1a0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+                0x0000000008000eb8                HAL_CRC_Init
+                0x0000000008000ef8                HAL_CRC_DeInit
+                0x0000000008000f54                HAL_CRC_Accumulate
+                0x0000000008000fc0                HAL_CRC_Calculate
+                0x000000000800103c                HAL_CRC_GetState
+ .text          0x0000000008001058      0x4f8 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+                0x0000000008001058                flash_unlock
+                0x0000000008001090                flash_erase_img1
+                0x0000000008001164                flash_fsz0
+                0x000000000800117c                flash_fsz1
+                0x0000000008001198                flash_write
+                0x00000000080011e0                flash_erase1
+                0x000000000800129c                flash_write_data
+                0x000000000800136c                revbit
+                0x00000000080013b4                flash_crc
+                0x00000000080014c8                flash_crc0
+                0x00000000080014fc                flash_crc1
+                0x0000000008001530                flash_copy10
+ .text          0x0000000008001550       0x64 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+                0x0000000008001550                HAL_CRC_MspInit
+                0x0000000008001584                HAL_CRC_MspDeInit
+ .text          0x00000000080015b4      0x658 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+                0x00000000080015b4                HAL_GPIO_Init
+                0x00000000080018f0                HAL_GPIO_DeInit
+                0x0000000008001af4                HAL_GPIO_ReadPin
+                0x0000000008001b24                HAL_GPIO_WritePin
+                0x0000000008001b54                HAL_GPIO_TogglePin
+                0x0000000008001b78                HAL_GPIO_LockPin
+                0x0000000008001bc8                HAL_GPIO_EXTI_IRQHandler
+ .text          0x0000000008001c0c       0xb8 /home/iev/prog/stm32f4/eth/build/obj/led.o
+                0x0000000008001c0c                led_init
+                0x0000000008001c80                led_on
+                0x0000000008001c98                led_off
+                0x0000000008001cb0                led_toggle
+ .text          0x0000000008001cc4       0xb4 /home/iev/prog/stm32f4/eth/build/obj/btn.o
+                0x0000000008001cc4                btn_irq_init
+ .text          0x0000000008001d78      0x144 /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+                0x0000000008001d78                gpio_get_reg_ptr
+                0x0000000008001e5c                gpio_get_reg
+                0x0000000008001e88                gpio_set_reg
+ .text          0x0000000008001ebc       0x74 /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+                0x0000000008001ebc                EXTI0_IRQHandler
+                0x0000000008001ec8                EXTI1_IRQHandler
+                0x0000000008001ed4                EXTI2_IRQHandler
+                0x0000000008001ee0                EXTI3_IRQHandler
+                0x0000000008001eec                EXTI4_IRQHandler
+                0x0000000008001ef8                EXTI9_5_IRQHandler
+                0x0000000008001f20                EXTI15_10_IRQHandler
+ .text          0x0000000008001f30       0x18 /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+                0x0000000008001f30                HAL_GPIO_EXTI_Callback
+ .text          0x0000000008001f48     0x3f3c /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+                0x0000000008001f48                HAL_TIM_Base_Init
+                0x0000000008001fa0                HAL_TIM_Base_DeInit
+                0x0000000008002028                HAL_TIM_Base_Start
+                0x0000000008002060                HAL_TIM_Base_Stop
+                0x00000000080020b8                HAL_TIM_Base_Start_IT
+                0x00000000080020f0                HAL_TIM_Base_Stop_IT
+                0x0000000008002148                HAL_TIM_Base_Start_DMA
+                0x00000000080021e8                HAL_TIM_Base_Stop_DMA
+                0x0000000008002248                HAL_TIM_OC_Init
+                0x00000000080022a0                HAL_TIM_OC_DeInit
+                0x0000000008002314                HAL_TIM_OC_MspDeInit
+                0x0000000008002328                HAL_TIM_OC_Start
+                0x0000000008002390                HAL_TIM_OC_Stop
+                0x0000000008002438                HAL_TIM_OC_Start_IT
+                0x000000000800252c                HAL_TIM_OC_Stop_IT
+                0x0000000008002660                HAL_TIM_OC_Start_DMA
+                0x000000000800283c                HAL_TIM_OC_Stop_DMA
+                0x0000000008002978                HAL_TIM_PWM_Init
+                0x00000000080029d0                HAL_TIM_PWM_DeInit
+                0x0000000008002a30                HAL_TIM_PWM_MspInit
+                0x0000000008002a44                HAL_TIM_PWM_MspDeInit
+                0x0000000008002a58                HAL_TIM_PWM_Start
+                0x0000000008002ac0                HAL_TIM_PWM_Stop
+                0x0000000008002b70                HAL_TIM_PWM_Start_IT
+                0x0000000008002c64                HAL_TIM_PWM_Stop_IT
+                0x0000000008002d98                HAL_TIM_PWM_Start_DMA
+                0x0000000008002f74                HAL_TIM_PWM_Stop_DMA
+                0x00000000080030b0                HAL_TIM_IC_Init
+                0x0000000008003108                HAL_TIM_IC_DeInit
+                0x0000000008003168                HAL_TIM_IC_MspInit
+                0x000000000800317c                HAL_TIM_IC_MspDeInit
+                0x0000000008003190                HAL_TIM_IC_Start
+                0x00000000080031c4                HAL_TIM_IC_Stop
+                0x0000000008003218                HAL_TIM_IC_Start_IT
+                0x00000000080032d8                HAL_TIM_IC_Stop_IT
+                0x00000000080033b8                HAL_TIM_IC_Start_DMA
+                0x0000000008003558                HAL_TIM_IC_Stop_DMA
+                0x0000000008003640                HAL_TIM_OnePulse_Init
+                0x00000000080036b8                HAL_TIM_OnePulse_DeInit
+                0x0000000008003718                HAL_TIM_OnePulse_MspInit
+                0x000000000800372c                HAL_TIM_OnePulse_MspDeInit
+                0x0000000008003740                HAL_TIM_OnePulse_Start
+                0x00000000080037a8                HAL_TIM_OnePulse_Stop
+                0x0000000008003860                HAL_TIM_OnePulse_Start_IT
+                0x00000000080038e8                HAL_TIM_OnePulse_Stop_IT
+                0x00000000080039c0                HAL_TIM_Encoder_Init
+                0x0000000008003aec                HAL_TIM_Encoder_DeInit
+                0x0000000008003b4c                HAL_TIM_Encoder_MspInit
+                0x0000000008003b60                HAL_TIM_Encoder_MspDeInit
+                0x0000000008003b74                HAL_TIM_Encoder_Start
+                0x0000000008003be4                HAL_TIM_Encoder_Stop
+                0x0000000008003c74                HAL_TIM_Encoder_Start_IT
+                0x0000000008003d24                HAL_TIM_Encoder_Stop_IT
+                0x0000000008003df8                HAL_TIM_Encoder_Start_DMA
+                0x0000000008003fb0                HAL_TIM_Encoder_Stop_DMA
+                0x0000000008004084                HAL_TIM_IRQHandler
+                0x0000000008004294                HAL_TIM_OC_ConfigChannel
+                0x0000000008004354                HAL_TIM_IC_ConfigChannel
+                0x000000000800448c                HAL_TIM_PWM_ConfigChannel
+                0x0000000008004618                HAL_TIM_OnePulse_ConfigChannel
+                0x0000000008004798                HAL_TIM_DMABurst_WriteStart
+                0x00000000080049a4                HAL_TIM_DMABurst_WriteStop
+                0x0000000008004a54                HAL_TIM_DMABurst_ReadStart
+                0x0000000008004c54                HAL_TIM_DMABurst_ReadStop
+                0x0000000008004d04                HAL_TIM_GenerateEvent
+                0x0000000008004d54                HAL_TIM_ConfigOCrefClear
+                0x0000000008004ea8                HAL_TIM_ConfigClockSource
+                0x000000000800506c                HAL_TIM_ConfigTI1Input
+                0x00000000080050a8                HAL_TIM_SlaveConfigSynchronization
+                0x0000000008005114                HAL_TIM_SlaveConfigSynchronization_IT
+                0x0000000008005180                HAL_TIM_ReadCapturedValue
+                0x0000000008005238                HAL_TIM_OC_DelayElapsedCallback
+                0x000000000800524c                HAL_TIM_IC_CaptureCallback
+                0x0000000008005260                HAL_TIM_PWM_PulseFinishedCallback
+                0x0000000008005274                HAL_TIM_TriggerCallback
+                0x0000000008005288                HAL_TIM_ErrorCallback
+                0x000000000800529c                HAL_TIM_Base_GetState
+                0x00000000080052b8                HAL_TIM_OC_GetState
+                0x00000000080052d4                HAL_TIM_PWM_GetState
+                0x00000000080052f0                HAL_TIM_IC_GetState
+                0x000000000800530c                HAL_TIM_OnePulse_GetState
+                0x0000000008005328                HAL_TIM_Encoder_GetState
+                0x0000000008005344                TIM_Base_SetConfig
+                0x0000000008005494                TIM_TI1_SetConfig
+                0x0000000008005588                TIM_OC2_SetConfig
+                0x0000000008005678                TIM_DMADelayPulseCplt
+                0x00000000080056e8                TIM_DMAError
+                0x000000000800570c                TIM_DMACaptureCplt
+                0x000000000800577c                TIM_CCxChannelCmd
+ .text          0x0000000008005e84     0x14dc /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+                0x0000000008005e84                HAL_TIMEx_HallSensor_Init
+                0x0000000008005fa0                HAL_TIMEx_HallSensor_DeInit
+                0x0000000008006000                HAL_TIMEx_HallSensor_MspInit
+                0x0000000008006014                HAL_TIMEx_HallSensor_MspDeInit
+                0x0000000008006028                HAL_TIMEx_HallSensor_Start
+                0x0000000008006058                HAL_TIMEx_HallSensor_Stop
+                0x00000000080060a8                HAL_TIMEx_HallSensor_Start_IT
+                0x00000000080060e8                HAL_TIMEx_HallSensor_Stop_IT
+                0x0000000008006148                HAL_TIMEx_HallSensor_Start_DMA
+                0x00000000080061f4                HAL_TIMEx_HallSensor_Stop_DMA
+                0x0000000008006254                HAL_TIMEx_OCN_Start
+                0x0000000008006298                HAL_TIMEx_OCN_Stop
+                0x000000000800631c                HAL_TIMEx_OCN_Start_IT
+                0x00000000080063fc                HAL_TIMEx_OCN_Stop_IT
+                0x000000000800652c                HAL_TIMEx_OCN_Start_DMA
+                0x00000000080066e4                HAL_TIMEx_OCN_Stop_DMA
+                0x00000000080067fc                HAL_TIMEx_PWMN_Start
+                0x0000000008006840                HAL_TIMEx_PWMN_Stop
+                0x00000000080068c4                HAL_TIMEx_PWMN_Start_IT
+                0x00000000080069a4                HAL_TIMEx_PWMN_Stop_IT
+                0x0000000008006ad4                HAL_TIMEx_PWMN_Start_DMA
+                0x0000000008006c8c                HAL_TIMEx_PWMN_Stop_DMA
+                0x0000000008006da4                HAL_TIMEx_OnePulseN_Start
+                0x0000000008006dd8                HAL_TIMEx_OnePulseN_Stop
+                0x0000000008006e5c                HAL_TIMEx_OnePulseN_Start_IT
+                0x0000000008006eb0                HAL_TIMEx_OnePulseN_Stop_IT
+                0x0000000008006f54                HAL_TIMEx_ConfigCommutationEvent
+                0x0000000008006ff4                HAL_TIMEx_ConfigCommutationEvent_IT
+                0x00000000080070a4                HAL_TIMEx_ConfigCommutationEvent_DMA
+                0x000000000800716c                HAL_TIMEx_MasterConfigSynchronization
+                0x00000000080071f8                HAL_TIMEx_ConfigBreakDeadTime
+                0x000000000800726c                HAL_TIMEx_RemapConfig
+                0x00000000080072b4                HAL_TIMEx_CommutationCallback
+                0x00000000080072c8                HAL_TIMEx_BreakCallback
+                0x00000000080072dc                HAL_TIMEx_HallSensor_GetState
+                0x00000000080072f8                TIMEx_DMACommutationCplt
+ .text          0x0000000008007360       0xe4 /home/iev/prog/stm32f4/eth/build/obj/tim.o
+                0x0000000008007360                tim_init
+                0x000000000800736c                tim_deinit
+                0x0000000008007378                tim_get_prescaler
+ .text          0x0000000008007444       0x9c /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+                0x0000000008007444                HAL_TIM_Base_MspInit
+                0x0000000008007490                HAL_TIM_OC_MspInit
+                0x00000000080074a4                HAL_TIM_Base_MspDeInit
+ .text          0x00000000080074e0      0x450 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+                0x00000000080074e0                uart_recv_str
+                0x0000000008007500                HAL_UART_RxCpltCallback
+                0x0000000008007548                uart_init
+                0x0000000008007598                uart_send_str
+                0x00000000080075bc                uart_send_str2
+                0x00000000080075e0                uart_send_str3
+                0x0000000008007608                uart_send_int
+                0x000000000800762c                uart_send_int2
+                0x0000000008007654                uart_send_hex
+                0x0000000008007680                uart_send_hex2
+                0x00000000080076ac                uart_send_hex3
+                0x00000000080076e0                uart_send_hex4
+                0x0000000008007744                uart_get_instance
+                0x00000000080077b0                uart_get_handle
+                0x0000000008007808                uart_get_reg_ptr
+                0x00000000080078d0                uart_get_reg
+                0x00000000080078fc                uart_set_reg
+ .text          0x0000000008007930       0x10 /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+                0x0000000008007930                USART3_IRQHandler
+ .text          0x0000000008007940      0x138 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+                0x0000000008007940                HAL_UART_MspInit
+ .text          0x0000000008007a78     0x16dc /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+                0x0000000008007a78                HAL_UART_Init
+                0x0000000008007b14                HAL_HalfDuplex_Init
+                0x0000000008007bc0                HAL_LIN_Init
+                0x0000000008007c8c                HAL_MultiProcessor_Init
+                0x0000000008007d6c                HAL_UART_DeInit
+                0x0000000008007dc8                HAL_UART_MspDeInit
+                0x0000000008007ddc                HAL_UART_Transmit
+                0x0000000008007ef0                HAL_UART_Receive
+                0x0000000008008028                HAL_UART_Transmit_IT
+                0x00000000080080b4                HAL_UART_Receive_IT
+                0x0000000008008160                HAL_UART_Transmit_DMA
+                0x0000000008008238                HAL_UART_Receive_DMA
+                0x00000000080082fc                HAL_UART_DMAPause
+                0x0000000008008368                HAL_UART_DMAResume
+                0x00000000080083ec                HAL_UART_DMAStop
+                0x0000000008008454                HAL_UART_IRQHandler
+                0x0000000008008664                HAL_UART_TxCpltCallback
+                0x0000000008008678                HAL_UART_TxHalfCpltCallback
+                0x00000000080086a0                HAL_UART_RxHalfCpltCallback
+                0x00000000080086b4                HAL_UART_ErrorCallback
+                0x00000000080086c8                HAL_LIN_SendBreak
+                0x000000000800871c                HAL_MultiProcessor_EnterMuteMode
+                0x0000000008008770                HAL_MultiProcessor_ExitMuteMode
+                0x00000000080087c4                HAL_HalfDuplex_EnableTransmitter
+                0x000000000800882c                HAL_HalfDuplex_EnableReceiver
+                0x0000000008008894                HAL_UART_GetState
+                0x00000000080088d0                HAL_UART_GetError
+ .text          0x0000000008009154      0x434 /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+                0x0000000008009154                vfd_init
+                0x0000000008009264                vfd_deinit
+                0x000000000800927c                TIM7_IRQHandler
+                0x000000000800928c                vfd_busy
+                0x00000000080092a4                vfd_wait
+                0x00000000080092d4                vfd_reset
+                0x0000000008009300                vfd_btn_state
+                0x000000000800938c                vfd_send_str
+                0x00000000080093b4                vfd_str
+                0x0000000008009410                vfd_cp866
+                0x0000000008009420                vfd_home
+                0x0000000008009430                vfd_cls
+                0x0000000008009440                vfd_crlf
+                0x000000000800945c                vfd_brightness
+                0x00000000080094b8                vfd_gpio_exti_cb
+                0x00000000080094f4                vfd_upd
+                0x000000000800956c                vfd_tim_upd
+ .text          0x0000000008009588      0xa0c /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+                0x0000000008009840                vfd_menu_init
+                0x0000000008009988                vfd_menu_line
+                0x0000000008009b98                vfd_menu_draw
+                0x0000000008009c44                vfd_menu_down
+                0x0000000008009cfc                vfd_menu_up
+                0x0000000008009db0                vfd_menu_right
+                0x0000000008009e6c                vfd_menu_left
+                0x0000000008009f24                vfd_menu_ok
+                0x0000000008009f30                vfd_menu_tim_upd
+ .text          0x0000000008009f94     0x1c28 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+                0x0000000008009f94                picolInitParser
+                0x0000000008009fe4                picolParseSep
+                0x000000000800a04c                picolParseBrace
+                0x000000000800a128                picolParseCmd
+                0x000000000800a230                picolParseEol
+                0x000000000800a28c                picolParseString
+                0x000000000800a564                picolParseVar
+                0x000000000800a694                picolInitInterp
+                0x000000000800a6cc                picolGetCmd
+                0x000000000800a71c                picolListAppend
+                0x000000000800a7cc                picolSetResult
+                0x000000000800a7f8                picolSetFmtResult
+                0x000000000800a82c                picolErr
+                0x000000000800a848                picolErr1
+                0x000000000800a894                picolGetVar2
+                0x000000000800a938                picolSetVar2
+                0x000000000800aa30                picolGetToken
+                0x000000000800ab04                picolEval2
+                0x000000000800ad2c                picolCallProc
+                0x000000000800aeec                picolCondition
+                0x000000000800b180                picolRegisterCmd
+                0x000000000800b1e8                picol_set
+                0x000000000800b2dc                picol_proc
+                0x000000000800b38c                picol_return
+                0x000000000800b3d8                picol_puts
+                0x000000000800b40c                picol_test
+                0x000000000800b430                picol_info
+                0x000000000800ba8c                picol_if
+                0x000000000800bb24                picolCreateInterp
+ .text          0x000000000800bbbc      0x3bc /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+                0x000000000800bbbc                pcl_clear
+                0x000000000800bbdc                picol_clear
+                0x000000000800bc00                picol_prefix
+                0x000000000800bc50                pcl_init
+                0x000000000800bd14                pcl_get_interp
+                0x000000000800bd2c                pcl_exec
+                0x000000000800bd7c                pcl_io
+                0x000000000800bf38                pcl_gpio_exti_cb
+ .text          0x000000000800bf78      0x724 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+                0x000000000800bf78                picol_exit
+                0x000000000800bfa0                picol_reboot
+                0x000000000800bfd4                picol_mdio
+                0x000000000800c128                picol_eth
+                0x000000000800c3a0                picol_ping
+                0x000000000800c530                picol_arp
+                0x000000000800c614                pcl_eth_init
+ .text          0x000000000800c69c      0x3e4 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+                0x000000000800c69c                picol_math2
+                0x000000000800c828                picol_mathn
+                0x000000000800c958                picol_clamp
+                0x000000000800c9d4                pcl_math_init
+ .text          0x000000000800ca80      0x54c /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+                0x000000000800ca80                picol_inthex
+                0x000000000800cbb0                picol_list
+                0x000000000800cdd0                picolListParse
+                0x000000000800ce6c                picol_llength
+                0x000000000800cea4                picol_lsearch
+                0x000000000800cf5c                pcl_misc_init
+ .text          0x000000000800cfcc      0xa1c /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+                0x000000000800cfcc                picol_flash
+                0x000000000800d2dc                picol_mw
+                0x000000000800d3cc                picol_gpio
+                0x000000000800d584                picol_btn
+                0x000000000800d61c                picol_uart
+                0x000000000800d988                pcl_stm_init
+ .text          0x000000000800d9e8      0x4b8 /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+                0x000000000800d9e8                pcl_get_chunksz
+                0x000000000800da68                pcl_load
+                0x000000000800dc20                picol_reload
+                0x000000000800dc44                picol_sys
+                0x000000000800de68                pcl_sys_init
+ .text          0x000000000800dea0      0x340 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+                0x000000000800dea0                picol_vfd
+                0x000000000800e1bc                pcl_vfd_init
+ .text          0x000000000800e1e0      0x28c /home/iev/prog/stm32f4/eth/build/obj/eth.o
+                0x000000000800e1e0                eth_init
+                0x000000000800e288                eth_deinit
+                0x000000000800e2a0                eth_reset
+                0x000000000800e35c                eth_output
+                0x000000000800e3b0                eth_io
+ .text          0x000000000800e46c       0x10 /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+                0x000000000800e46c                ETH_IRQHandler
+ .text          0x000000000800e47c      0x414 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+                0x000000000800e47c                HAL_ETH_MspInit
+                0x000000000800e84c                HAL_ETH_MspDeInit
+ .text          0x000000000800e890       0x58 /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+                0x000000000800e890                mdio_read
+                0x000000000800e8bc                mdio_write
+ .text          0x000000000800e8e8     0x15b0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+                0x000000000800e8e8                HAL_ETH_Init
+                0x000000000800ec20                HAL_ETH_DeInit
+                0x000000000800ec50                HAL_ETH_DMATxDescListInit
+                0x000000000800ed24                HAL_ETH_DMARxDescListInit
+                0x000000000800ee28                HAL_ETH_TransmitFrame
+                0x000000000800effc                HAL_ETH_GetReceivedFrame
+                0x000000000800f108                HAL_ETH_GetReceivedFrame_IT
+                0x000000000800f21c                HAL_ETH_IRQHandler
+                0x000000000800f2e8                HAL_ETH_TxCpltCallback
+                0x000000000800f2fc                HAL_ETH_RxCpltCallback
+                0x000000000800f310                HAL_ETH_ErrorCallback
+                0x000000000800f324                HAL_ETH_ReadPHYRegister
+                0x000000000800f3f4                HAL_ETH_WritePHYRegister
+                0x000000000800f4c0                HAL_ETH_Start
+                0x000000000800f520                HAL_ETH_Stop
+                0x000000000800f580                HAL_ETH_ConfigMAC
+                0x000000000800f770                HAL_ETH_ConfigDMA
+                0x000000000800f890                HAL_ETH_GetState
+ .text          0x000000000800fe98      0x930 /home/iev/prog/stm32f4/eth/build/obj/myip.o
+                0x000000000800fe98                myip_init
+                0x000000000800fefc                myip_con_add
+                0x000000000800ff94                myip_arp_find
+                0x000000000800ffdc                myip_arp_request
+                0x0000000008010008                myip_con_find
+                0x000000000801006c                myip_update_mac_hdr
+                0x00000000080100cc                myip_update_ip_hdr
+                0x0000000008010178                myip_update_udp_hdr
+                0x00000000080101e0                myip_update_arp_hdr
+                0x0000000008010298                myip_make_ip_frame
+                0x00000000080102d0                myip_make_arp_frame
+                0x0000000008010328                myip_make_udp_frame
+                0x00000000080104c8                myip_eth_frm_handler
+                0x0000000008010668                myip_arp_frm_handler
+                0x0000000008010704                myip_udp_frm_handler
+ .text          0x00000000080107c8      0x6fc /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+                0x00000000080107c8                myip_tcp_init
+                0x0000000008010804                myip_tcp_data
+                0x000000000801086c                myip_new_tcp_con
+                0x0000000008010930                myip_update_tcp_hdr
+                0x0000000008010a04                myip_make_tcp_frame
+                0x0000000008010a38                myip_tcp_frm_handler
+                0x0000000008010e88                myip_tcp_con_close
+                0x0000000008010ea0                myip_tcp_con_closed
+ .text          0x0000000008010ec4      0x23c /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+                0x0000000008010ec4                myip_icmp_init
+                0x0000000008010edc                myip_icmp_con_handler
+                0x0000000008010ef8                myip_make_icmp_frame
+                0x0000000008010f68                myip_icmp_frm_handler
+                0x00000000080110c0                myip_icmp_ping
+ .text          0x0000000008011100       0x7c /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+                0x0000000008011100                myip_dbg_con_handler
+ .text          0x000000000801117c      0x724 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+                0x000000000801117c                myip_tftpd_init
+                0x00000000080112ec                tftpd_data_in
+                0x00000000080113e4                tftpd_data_out
+                0x0000000008011488                tftpd_wrq
+                0x0000000008011624                tftpd_rrq
+                0x00000000080117d0                myip_tftpd_con_handler
+ .text          0x00000000080118a0       0xe8 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+                0x00000000080118a0                myip_telnetd_init
+                0x00000000080118e0                myip_telnetd_con_handler
+                0x0000000008011944                telnetd_recv_str
+                0x0000000008011964                telnetd_send_str
+ .text          0x0000000008011988      0x2dc /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+                0x0000000008011988                HAL_Init
+                0x00000000080119cc                HAL_DeInit
+                0x0000000008011a24                HAL_MspInit
+                0x0000000008011a30                HAL_MspDeInit
+                0x0000000008011a3c                HAL_InitTick
+                0x0000000008011a74                HAL_IncTick
+                0x0000000008011a90                HAL_GetTick
+                0x0000000008011aa8                HAL_Delay
+                0x0000000008011ad4                HAL_SuspendTick
+                0x0000000008011af0                HAL_ResumeTick
+                0x0000000008011b0c                HAL_GetHalVersion
+                0x0000000008011b20                HAL_GetREVID
+                0x0000000008011b38                HAL_GetDEVID
+                0x0000000008011b54                HAL_DBGMCU_EnableDBGSleepMode
+                0x0000000008011b70                HAL_DBGMCU_DisableDBGSleepMode
+                0x0000000008011b8c                HAL_DBGMCU_EnableDBGStopMode
+                0x0000000008011ba8                HAL_DBGMCU_DisableDBGStopMode
+                0x0000000008011bc4                HAL_DBGMCU_EnableDBGStandbyMode
+                0x0000000008011be0                HAL_DBGMCU_DisableDBGStandbyMode
+                0x0000000008011bfc                HAL_EnableCompensationCell
+                0x0000000008011c30                HAL_DisableCompensationCell
+ .text          0x0000000008011c64      0xaf0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+                0x0000000008011c64                HAL_RCC_DeInit
+                0x0000000008011c70                HAL_RCC_OscConfig
+                0x000000000801209c                HAL_RCC_ClockConfig
+                0x0000000008012284                HAL_RCC_MCOConfig
+                0x0000000008012350                HAL_RCC_EnableCSS
+                0x0000000008012368                HAL_RCC_DisableCSS
+                0x0000000008012380                HAL_RCC_GetSysClockFreq
+                0x000000000801247c                HAL_RCC_GetHCLKFreq
+                0x00000000080124cc                HAL_RCC_GetPCLK1Freq
+                0x0000000008012510                HAL_RCC_GetPCLK2Freq
+                0x0000000008012554                HAL_RCC_GetOscConfig
+                0x00000000080126c4                HAL_RCC_GetClockConfig
+                0x0000000008012724                HAL_RCC_NMI_IRQHandler
+                0x0000000008012748                HAL_RCC_CSSCallback
+ .text          0x0000000008012754      0x5b0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+                0x0000000008012ad0                HAL_NVIC_SetPriorityGrouping
+                0x0000000008012ae4                HAL_NVIC_SetPriority
+                0x0000000008012b1c                HAL_NVIC_EnableIRQ
+                0x0000000008012b38                HAL_NVIC_DisableIRQ
+                0x0000000008012b54                HAL_NVIC_SystemReset
+                0x0000000008012b60                HAL_SYSTICK_Config
+                0x0000000008012b78                HAL_MPU_ConfigRegion
+                0x0000000008012bfc                HAL_NVIC_GetPriorityGrouping
+                0x0000000008012c0c                HAL_NVIC_GetPriority
+                0x0000000008012c3c                HAL_NVIC_SetPendingIRQ
+                0x0000000008012c58                HAL_NVIC_GetPendingIRQ
+                0x0000000008012c78                HAL_NVIC_ClearPendingIRQ
+                0x0000000008012c94                HAL_NVIC_GetActive
+                0x0000000008012cb4                HAL_SYSTICK_CLKSourceConfig
+                0x0000000008012cec                HAL_SYSTICK_IRQHandler
+                0x0000000008012cf8                HAL_SYSTICK_Callback
+ .text          0x0000000008012d04      0x8e4 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+                0x0000000008012d04                HAL_DMA_Init
+                0x0000000008012ddc                HAL_DMA_DeInit
+                0x0000000008012e78                HAL_DMA_Start
+                0x0000000008012edc                HAL_DMA_Start_IT
+                0x0000000008012f60                HAL_DMA_Abort
+                0x0000000008012fdc                HAL_DMA_PollForTransfer
+                0x00000000080131f8                HAL_DMA_IRQHandler
+                0x00000000080134ec                HAL_DMA_GetState
+                0x0000000008013508                HAL_DMA_GetError
+ .text          0x00000000080135e8      0x164 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+                0x00000000080135e8                SystemInit
+                0x0000000008013654                SystemCoreClockUpdate
+ .text          0x000000000801374c       0xbc /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+                0x000000000801374c                Error_Handler
+                0x0000000008013754                SystemClock_Config
+ .text          0x0000000008013808        0xc /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+                0x0000000008013808                SysTick_Handler
+ .text          0x0000000008013814       0x5c /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+                0x0000000008013814                myinit
+                0x0000000008013840                mydeinit
+                0x0000000008013854                uptime
+ .text          0x0000000008013870      0x160 /home/iev/prog/stm32f4/eth/build/obj/queue.o
+                0x0000000008013870                enqueue
+                0x00000000080138b8                enqueue_str
+                0x00000000080138f0                dequeue
+ .text          0x00000000080139d0     0x14c0 /home/iev/prog/stm32f4/eth/build/obj/util.o
+                0x00000000080139d0                __wrap_memset
+                0x00000000080139f0                __wrap_memclr
+                0x0000000008013a10                myisspace
+                0x0000000008013a4c                myisnewline
+                0x0000000008013a78                myisalnum
+                0x0000000008013abc                myisdigit
+                0x0000000008013ae8                myisxdigit
+                0x0000000008013b2c                atoi
+                0x0000000008013b8c                itoa
+                0x0000000008013c4c                atof
+                0x0000000008013e5c                to_upper
+                0x0000000008013e80                htoi
+                0x0000000008013f94                itoh_
+                0x0000000008014038                itoh
+                0x0000000008014070                int2str
+                0x0000000008014104                double2str
+                0x00000000080143ec                str2int
+                0x0000000008014428                str2bytes
+                0x0000000008014500                bytes2str
+                0x000000000801455c                strip_str
+                0x00000000080145a8                clip
+                0x00000000080145d4                mystrnlen
+                0x0000000008014614                mystrncmp
+                0x0000000008014678                mystrncpy
+                0x00000000080146cc                mymemcpy
+                0x000000000801475c                mymemcmp
+                0x00000000080147ac                mysnprintf
+                0x000000000801496c                myisempty
+                0x00000000080149a8                mystrchr
+                0x00000000080149e4                mystrncat
+                0x0000000008014a4c                mymemchr
+                0x0000000008014a94                mymemset
+                0x0000000008014acc                io_recv_str
+                0x0000000008014af8                io_send_str
+                0x0000000008014b24                io_send_str2
+                0x0000000008014b48                io_send_str3
+                0x0000000008014b6c                io_send_str4
+                0x0000000008014bd4                io_send_int
+                0x0000000008014bf8                io_send_int2
+                0x0000000008014c20                io_send_hex
+                0x0000000008014c4c                io_send_hex2
+                0x0000000008014c78                io_send_hex4
+                0x0000000008014cdc                io_newline
+                0x0000000008014cf0                io_prompt
+                0x0000000008014d70                io_echo
+                0x0000000008014dc4                format_time
+ .text          0x0000000008014e90       0xa4 /home/iev/prog/stm32f4/eth/build/obj/version.o
+                0x0000000008014e90                version
+                0x0000000008014ec4                version_date
+                0x0000000008014ef0                version_time
+                0x0000000008014f1c                version_hw
+ .text          0x0000000008014f34      0x144 /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+                0x0000000008014f34                mymalloc
+                0x0000000008014fac                mystrdup
+                0x0000000008014ff0                mycalloc
+                0x000000000801503c                myfree
+                0x0000000008015058                mymemory
+ .text          0x0000000008015078      0x370 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_addsubdf3.o)
+                0x0000000008015078                __aeabi_drsub
+                0x0000000008015080                __aeabi_dsub
+                0x0000000008015080                __subdf3
+                0x0000000008015084                __adddf3
+                0x0000000008015084                __aeabi_dadd
+                0x00000000080152fc                __aeabi_ui2d
+                0x00000000080152fc                __floatunsidf
+                0x000000000801531c                __floatsidf
+                0x000000000801531c                __aeabi_i2d
+                0x0000000008015340                __extendsfdf2
+                0x0000000008015340                __aeabi_f2d
+                0x000000000801537c                __aeabi_ul2d
+                0x000000000801537c                __floatundidf
+                0x000000000801538c                __floatdidf
+                0x000000000801538c                __aeabi_l2d
+ .text          0x00000000080153e8      0x424 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_muldivdf3.o)
+                0x00000000080153e8                __aeabi_dmul
+                0x00000000080153e8                __muldf3
+                0x000000000801563c                __aeabi_ddiv
+                0x000000000801563c                __divdf3
+ .text          0x000000000801580c      0x110 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_cmpdf2.o)
+                0x000000000801580c                __gtdf2
+                0x000000000801580c                __gedf2
+                0x0000000008015814                __ltdf2
+                0x0000000008015814                __ledf2
+                0x000000000801581c                __cmpdf2
+                0x000000000801581c                __eqdf2
+                0x000000000801581c                __nedf2
+                0x0000000008015898                __aeabi_cdrcmple
+                0x00000000080158a8                __aeabi_cdcmple
+                0x00000000080158a8                __aeabi_cdcmpeq
+                0x00000000080158b8                __aeabi_dcmpeq
+                0x00000000080158cc                __aeabi_dcmplt
+                0x00000000080158e0                __aeabi_dcmple
+                0x00000000080158f4                __aeabi_dcmpge
+                0x0000000008015908                __aeabi_dcmpgt
+ .text          0x000000000801591c       0x50 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixdfsi.o)
+                0x000000000801591c                __fixdfsi
+                0x000000000801591c                __aeabi_d2iz
+ .text          0x000000000801596c       0x40 /usr/lib/gcc/arm-none-eabi/4.9.3/armv7e-m/libgcc.a(_arm_fixunsdfsi.o)
+                0x000000000801596c                __fixunsdfsi
+                0x000000000801596c                __aeabi_d2uiz
+ *(.text*)
+ .text.Reset_Handler
+                0x00000000080159ac       0x4c /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+                0x00000000080159ac                Reset_Handler
+ .text.Default_Handler
+                0x00000000080159f8        0x2 /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+                0x00000000080159f8                RTC_Alarm_IRQHandler
+                0x00000000080159f8                HASH_RNG_IRQHandler
+                0x00000000080159f8                TIM8_CC_IRQHandler
+                0x00000000080159f8                DebugMon_Handler
+                0x00000000080159f8                TIM1_CC_IRQHandler
+                0x00000000080159f8                DMA2_Stream5_IRQHandler
+                0x00000000080159f8                HardFault_Handler
+                0x00000000080159f8                DMA1_Stream5_IRQHandler
+                0x00000000080159f8                PVD_IRQHandler
+                0x00000000080159f8                SDIO_IRQHandler
+                0x00000000080159f8                TAMP_STAMP_IRQHandler
+                0x00000000080159f8                PendSV_Handler
+                0x00000000080159f8                NMI_Handler
+                0x00000000080159f8                CAN2_RX1_IRQHandler
+                0x00000000080159f8                TIM8_TRG_COM_TIM14_IRQHandler
+                0x00000000080159f8                TIM1_UP_TIM10_IRQHandler
+                0x00000000080159f8                TIM8_UP_TIM13_IRQHandler
+                0x00000000080159f8                I2C3_ER_IRQHandler
+                0x00000000080159f8                I2C2_EV_IRQHandler
+                0x00000000080159f8                DMA1_Stream2_IRQHandler
+                0x00000000080159f8                CAN1_RX0_IRQHandler
+                0x00000000080159f8                FPU_IRQHandler
+                0x00000000080159f8                OTG_HS_WKUP_IRQHandler
+                0x00000000080159f8                UsageFault_Handler
+                0x00000000080159f8                CAN2_SCE_IRQHandler
+                0x00000000080159f8                DMA2_Stream2_IRQHandler
+                0x00000000080159f8                SPI1_IRQHandler
+                0x00000000080159f8                TIM6_DAC_IRQHandler
+                0x00000000080159f8                TIM1_BRK_TIM9_IRQHandler
+                0x00000000080159f8                DCMI_IRQHandler
+                0x00000000080159f8                CAN2_RX0_IRQHandler
+                0x00000000080159f8                DMA2_Stream3_IRQHandler
+                0x00000000080159f8                USART6_IRQHandler
+                0x00000000080159f8                CAN1_RX1_IRQHandler
+                0x00000000080159f8                UART5_IRQHandler
+                0x00000000080159f8                DMA2_Stream0_IRQHandler
+                0x00000000080159f8                TIM4_IRQHandler
+                0x00000000080159f8                I2C1_EV_IRQHandler
+                0x00000000080159f8                DMA1_Stream6_IRQHandler
+                0x00000000080159f8                DMA1_Stream1_IRQHandler
+                0x00000000080159f8                UART4_IRQHandler
+                0x00000000080159f8                TIM3_IRQHandler
+                0x00000000080159f8                RCC_IRQHandler
+                0x00000000080159f8                TIM8_BRK_TIM12_IRQHandler
+                0x00000000080159f8                Default_Handler
+                0x00000000080159f8                ADC_IRQHandler
+                0x00000000080159f8                DMA1_Stream7_IRQHandler
+                0x00000000080159f8                CAN2_TX_IRQHandler
+                0x00000000080159f8                TIM5_IRQHandler
+                0x00000000080159f8                DMA2_Stream7_IRQHandler
+                0x00000000080159f8                I2C3_EV_IRQHandler
+                0x00000000080159f8                RTC_WKUP_IRQHandler
+                0x00000000080159f8                ETH_WKUP_IRQHandler
+                0x00000000080159f8                SPI2_IRQHandler
+                0x00000000080159f8                OTG_HS_EP1_IN_IRQHandler
+                0x00000000080159f8                MemManage_Handler
+                0x00000000080159f8                DMA1_Stream0_IRQHandler
+                0x00000000080159f8                CAN1_TX_IRQHandler
+                0x00000000080159f8                SVC_Handler
+                0x00000000080159f8                FSMC_IRQHandler
+                0x00000000080159f8                OTG_HS_EP1_OUT_IRQHandler
+                0x00000000080159f8                WWDG_IRQHandler
+                0x00000000080159f8                TIM2_IRQHandler
+                0x00000000080159f8                OTG_FS_WKUP_IRQHandler
+                0x00000000080159f8                TIM1_TRG_COM_TIM11_IRQHandler
+                0x00000000080159f8                OTG_HS_IRQHandler
+                0x00000000080159f8                USART2_IRQHandler
+                0x00000000080159f8                I2C2_ER_IRQHandler
+                0x00000000080159f8                DMA2_Stream1_IRQHandler
+                0x00000000080159f8                CAN1_SCE_IRQHandler
+                0x00000000080159f8                FLASH_IRQHandler
+                0x00000000080159f8                DMA2_Stream4_IRQHandler
+                0x00000000080159f8                BusFault_Handler
+                0x00000000080159f8                USART1_IRQHandler
+                0x00000000080159f8                OTG_FS_IRQHandler
+                0x00000000080159f8                SPI3_IRQHandler
+                0x00000000080159f8                DMA1_Stream4_IRQHandler
+                0x00000000080159f8                I2C1_ER_IRQHandler
+                0x00000000080159f8                DMA2_Stream6_IRQHandler
+                0x00000000080159f8                DMA1_Stream3_IRQHandler
+ *(.rodata)
+ *fill*         0x00000000080159fa        0x2 
+ .rodata        0x00000000080159fc       0x10 /home/iev/prog/stm32f4/eth/build/obj/main.o
+ .rodata        0x0000000008015a0c       0x20 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .rodata        0x0000000008015a2c       0x38 /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .rodata        0x0000000008015a64       0x34 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .rodata        0x0000000008015a98       0x48 /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ .rodata        0x0000000008015ae0       0xd8 /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .rodata        0x0000000008015bb8      0x268 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .rodata        0x0000000008015e20       0x34 /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+ .rodata        0x0000000008015e54       0xec /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .rodata        0x0000000008015f40       0x94 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .rodata        0x0000000008015fd4       0x68 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .rodata        0x000000000801603c      0x120 /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .rodata        0x000000000801615c       0xbc /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .rodata        0x0000000008016218       0x70 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .rodata        0x0000000008016288       0x44 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .rodata        0x00000000080162cc       0x24 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .rodata        0x00000000080162f0       0x14 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .rodata        0x0000000008016304      0x108 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .rodata        0x000000000801640c        0x4 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .rodata        0x0000000008016410       0x10 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+                0x0000000008016410                APBAHBPrescTable
+ .rodata        0x0000000008016420        0x8 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .rodata        0x0000000008016428       0x54 /home/iev/prog/stm32f4/eth/build/obj/util.o
+ .rodata        0x000000000801647c       0x24 /home/iev/prog/stm32f4/eth/build/obj/version.o
+ *(.rodata*)
+ *(.glue_7)
+ .glue_7        0x00000000080164a0        0x0 linker stubs
+ *(.glue_7t)
+ .glue_7t       0x00000000080164a0        0x0 linker stubs
+ *(.eh_frame)
+ *(.init)
+ *(.fini)
+                0x00000000080164a0                . = ALIGN (0x4)
+                0x00000000080164a0                _etext = .
+                0x00000000080164a0                _exit = .
+
+.vfp11_veneer   0x00000000080164a0        0x0
+ .vfp11_veneer  0x00000000080164a0        0x0 linker stubs
+
+.v4_bx          0x00000000080164a0        0x0
+ .v4_bx         0x00000000080164a0        0x0 linker stubs
+
+.iplt           0x00000000080164a0        0x0
+ .iplt          0x00000000080164a0        0x0 /home/iev/prog/stm32f4/eth/build/obj/main.o
+
+.rel.dyn        0x00000000080164a0        0x0
+ .rel.iplt      0x00000000080164a0        0x0 /home/iev/prog/stm32f4/eth/build/obj/main.o
+
+.ARM.extab
+ *(.ARM.extab* .gnu.linkonce.armextab.*)
+
+.ARM            0x00000000080164a0        0x0
+                0x00000000080164a0                __exidx_start = .
+ *(.ARM.exidx*)
+                0x00000000080164a0                __exidx_end = .
+
+.preinit_array  0x00000000080164a0        0x0
+                [!provide]                        PROVIDE (__preinit_array_start, .)
+ *(.preinit_array*)
+                [!provide]                        PROVIDE (__preinit_array_end, .)
+
+.init_array     0x00000000080164a0        0x0
+                [!provide]                        PROVIDE (__init_array_start, .)
+ *(SORT(.init_array.*))
+ *(.init_array*)
+                [!provide]                        PROVIDE (__init_array_end, .)
+
+.fini_array     0x00000000080164a0        0x0
+                [!provide]                        PROVIDE (__fini_array_start, .)
+ *(.fini_array*)
+ *(SORT(.fini_array.*))
+                [!provide]                        PROVIDE (__fini_array_end, .)
+                0x00000000080164a0                _sidata = .
+
+.data           0x0000000020000000      0x1c4 load address 0x00000000080164a0
+                0x0000000020000000                . = ALIGN (0x4)
+                0x0000000020000000                _sdata = .
+ *(.data)
+ .data          0x0000000020000000        0x1 /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ *fill*         0x0000000020000001        0x3 
+ .data          0x0000000020000004        0x4 /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .data          0x0000000020000008        0xc /home/iev/prog/stm32f4/eth/build/obj/myip.o
+                0x0000000020000008                local_ipaddr
+                0x000000002000000c                local_macaddr
+ .data          0x0000000020000014       0x38 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .data          0x000000002000004c       0x14 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+                0x000000002000004c                SystemCoreClock
+                0x0000000020000050                AHBPrescTable
+ .data          0x0000000020000060        0x4 /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+ *(.data*)
+                0x0000000020000064                . = ALIGN (0x4)
+ *(.ramtext)
+ .ramtext       0x0000000020000064      0x160 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+                0x0000000020000064                sram_flash_copy10
+                0x00000000200001c4                . = ALIGN (0x4)
+                0x00000000200001c4                _edata = .
+
+.igot.plt       0x00000000200001c4        0x0 load address 0x0000000008016664
+ .igot.plt      0x00000000200001c4        0x0 /home/iev/prog/stm32f4/eth/build/obj/main.o
+                0x00000000200001c4                . = ALIGN (0x4)
+
+.bss            0x00000000200001c4     0x3d70 load address 0x0000000008016664
+                0x00000000200001c4                _sbss = .
+                0x00000000200001c4                __bss_start__ = _sbss
+ *(.bss)
+ .bss           0x00000000200001c4        0x1 /home/iev/prog/stm32f4/eth/build/obj/main.o
+                0x00000000200001c4                main_evt
+ *fill*         0x00000000200001c5        0x3 
+ .bss           0x00000000200001c8        0x4 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .bss           0x00000000200001cc        0x4 /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ .bss           0x00000000200001d0        0x8 /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .bss           0x00000000200001d8      0x22c /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+                0x00000000200001d8                pcl_interp
+ .bss           0x0000000020000404        0x8 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .bss           0x000000002000040c      0x110 /home/iev/prog/stm32f4/eth/build/obj/myip.o
+                0x000000002000040c                arp_table
+                0x0000000020000498                con_table
+                0x0000000020000510                arp_request_ipaddr
+ .bss           0x000000002000051c        0x8 /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+ .bss           0x0000000020000524        0x8 /home/iev/prog/stm32f4/eth/build/obj/util.o
+                0x0000000020000524                io_send_str_ptr
+                0x0000000020000528                io_recv_str_ptr
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x000000002000052c       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+                0x000000002000052c                pFlash
+ COMMON         0x000000002000054c      0x444 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+                0x000000002000054c                huart
+                0x000000002000058c                uart_rx_buf
+                0x000000002000078c                quart
+ COMMON         0x0000000020000990       0x7c /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+                0x0000000020000990                hvfdtim
+                0x00000000200009cc                hvfduart
+ COMMON         0x0000000020000a0c     0x30e8 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+                0x0000000020000a0c                DMATxDscrTab
+                0x0000000020000a8c                Rx_Buff
+                0x000000002000225c                DMARxDscrTab
+                0x00000000200022dc                heth
+                0x0000000020002324                Tx_Buff
+ COMMON         0x0000000020003af4       0x19 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+                0x0000000020003af4                tcp_con
+ *fill*         0x0000000020003b0d        0x3 
+ COMMON         0x0000000020003b10       0x16 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+                0x0000000020003b10                tfs
+ *fill*         0x0000000020003b26        0x2 
+ COMMON         0x0000000020003b28      0x408 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+                0x0000000020003b28                tds
+ COMMON         0x0000000020003f30        0x4 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+                0x0000000020003f30                uwTick
+                0x0000000020003f34                . = ALIGN (0x4)
+                0x0000000020003f34                _ebss = .
+                0x0000000020003f34                __bss_end__ = _ebss
+
+._user_heap_stack
+                0x0000000020003f34      0x400 load address 0x000000000801a3d4
+                0x0000000020003f34                . = ALIGN (0x4)
+                [!provide]                        PROVIDE (end, .)
+                [!provide]                        PROVIDE (_end, .)
+                0x0000000020003f34                . = (. + _Min_Heap_Size)
+                0x0000000020004334                . = (. + _Min_Stack_Size)
+ *fill*         0x0000000020003f34      0x400 
+                0x0000000020004334                . = ALIGN (0x4)
+
+.memory_b1_text
+ *(.mb1text)
+ *(.mb1text*)
+ *(.mb1rodata)
+ *(.mb1rodata*)
+
+/DISCARD/
+ libc.a(*)
+ libm.a(*)
+ libgcc.a(*)
+
+.ARM.attributes
+                0x0000000000000000       0x37
+ *(.ARM.attributes)
+ .ARM.attributes
+                0x0000000000000000       0x39 /home/iev/prog/stm32f4/eth/build/obj/main.o
+ .ARM.attributes
+                0x0000000000000039       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+ .ARM.attributes
+                0x0000000000000072       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+ .ARM.attributes
+                0x00000000000000ab       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+ .ARM.attributes
+                0x00000000000000e4       0x39 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .ARM.attributes
+                0x000000000000011d       0x39 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+ .ARM.attributes
+                0x0000000000000156       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+ .ARM.attributes
+                0x000000000000018f       0x39 /home/iev/prog/stm32f4/eth/build/obj/led.o
+ .ARM.attributes
+                0x00000000000001c8       0x39 /home/iev/prog/stm32f4/eth/build/obj/btn.o
+ .ARM.attributes
+                0x0000000000000201       0x39 /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .ARM.attributes
+                0x000000000000023a       0x39 /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+ .ARM.attributes
+                0x0000000000000273       0x39 /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+ .ARM.attributes
+                0x00000000000002ac       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+ .ARM.attributes
+                0x00000000000002e5       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+ .ARM.attributes
+                0x000000000000031e       0x39 /home/iev/prog/stm32f4/eth/build/obj/tim.o
+ .ARM.attributes
+                0x0000000000000357       0x39 /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+ .ARM.attributes
+                0x0000000000000390       0x39 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .ARM.attributes
+                0x00000000000003c9       0x39 /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+ .ARM.attributes
+                0x0000000000000402       0x39 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+ .ARM.attributes
+                0x000000000000043b       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+ .ARM.attributes
+                0x0000000000000474       0x39 /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ .ARM.attributes
+                0x00000000000004ad       0x39 /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .ARM.attributes
+                0x00000000000004e6       0x39 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .ARM.attributes
+                0x000000000000051f       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+ .ARM.attributes
+                0x0000000000000558       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .ARM.attributes
+                0x0000000000000591       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .ARM.attributes
+                0x00000000000005ca       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .ARM.attributes
+                0x0000000000000603       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .ARM.attributes
+                0x000000000000063c       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .ARM.attributes
+                0x0000000000000675       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .ARM.attributes
+                0x00000000000006ae       0x39 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .ARM.attributes
+                0x00000000000006e7       0x39 /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+ .ARM.attributes
+                0x0000000000000720       0x39 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .ARM.attributes
+                0x0000000000000759       0x39 /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+ .ARM.attributes
+                0x0000000000000792       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+ .ARM.attributes
+                0x00000000000007cb       0x39 /home/iev/prog/stm32f4/eth/build/obj/myip.o
+ .ARM.attributes
+                0x0000000000000804       0x39 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .ARM.attributes
+                0x000000000000083d       0x39 /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+ .ARM.attributes
+                0x0000000000000876       0x39 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+ .ARM.attributes
+                0x00000000000008af       0x39 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .ARM.attributes
+                0x00000000000008e8       0x39 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .ARM.attributes
+                0x0000000000000921       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+ .ARM.attributes
+                0x000000000000095a       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+ .ARM.attributes
+                0x0000000000000993       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+ .ARM.attributes
+                0x00000000000009cc       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .ARM.attributes
+                0x0000000000000a05       0x39 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+ .ARM.attributes
+                0x0000000000000a3e       0x39 /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+ .ARM.attributes
+                0x0000000000000a77       0x39 /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+ .ARM.attributes
+                0x0000000000000ab0       0x39 /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+ .ARM.attributes
+                0x0000000000000ae9       0x39 /home/iev/prog/stm32f4/eth/build/obj/queue.o
+ .ARM.attributes
+                0x0000000000000b22       0x39 /home/iev/prog/stm32f4/eth/build/obj/util.o
+ .ARM.attributes
+                0x0000000000000b5b       0x39 /home/iev/prog/stm32f4/eth/build/obj/version.o
+ .ARM.attributes
+                0x0000000000000b94       0x39 /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+ .ARM.attributes
+                0x0000000000000bcd       0x21 /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+OUTPUT(/home/iev/prog/stm32f4/eth/build/eth.elf elf32-littlearm)
+
+.debug_info     0x0000000000000000    0x184b6
+ .debug_info    0x0000000000000000      0x850 /home/iev/prog/stm32f4/eth/build/obj/main.o
+ .debug_info    0x0000000000000850      0x542 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+ .debug_info    0x0000000000000d92      0x6c3 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+ .debug_info    0x0000000000001455      0x37a /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+ .debug_info    0x00000000000017cf      0x82b /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .debug_info    0x0000000000001ffa      0x3e8 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+ .debug_info    0x00000000000023e2      0x6f8 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+ .debug_info    0x0000000000002ada      0x3fd /home/iev/prog/stm32f4/eth/build/obj/led.o
+ .debug_info    0x0000000000002ed7      0x430 /home/iev/prog/stm32f4/eth/build/obj/btn.o
+ .debug_info    0x0000000000003307      0x23f /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .debug_info    0x0000000000003546      0x12e /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+ .debug_info    0x0000000000003674       0xdb /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+ .debug_info    0x000000000000374f     0x2176 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+ .debug_info    0x00000000000058c5      0xf3c /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+ .debug_info    0x0000000000006801      0x2c4 /home/iev/prog/stm32f4/eth/build/obj/tim.o
+ .debug_info    0x0000000000006ac5      0x9cd /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+ .debug_info    0x0000000000007492      0x979 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .debug_info    0x0000000000007e0b      0x53e /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+ .debug_info    0x0000000000008349      0xa9d /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+ .debug_info    0x0000000000008de6      0xe7e /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+ .debug_info    0x0000000000009c64      0xce2 /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ .debug_info    0x000000000000a946      0x6da /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .debug_info    0x000000000000b020      0xde0 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .debug_info    0x000000000000be00      0x4a7 /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+ .debug_info    0x000000000000c2a7      0x665 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .debug_info    0x000000000000c90c      0x3f6 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .debug_info    0x000000000000cd02      0x4ef /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .debug_info    0x000000000000d1f1      0xa95 /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .debug_info    0x000000000000dc86      0x433 /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .debug_info    0x000000000000e0b9      0x2fb /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .debug_info    0x000000000000e3b4      0xa81 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .debug_info    0x000000000000ee35      0x77e /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+ .debug_info    0x000000000000f5b3      0xca3 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .debug_info    0x0000000000010256      0x7d9 /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+ .debug_info    0x0000000000010a2f     0x13bb /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+ .debug_info    0x0000000000011dea      0xa03 /home/iev/prog/stm32f4/eth/build/obj/myip.o
+ .debug_info    0x00000000000127ed      0x668 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .debug_info    0x0000000000012e55      0x502 /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+ .debug_info    0x0000000000013357      0x159 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+ .debug_info    0x00000000000134b0      0x60d /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .debug_info    0x0000000000013abd      0x256 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .debug_info    0x0000000000013d13      0x843 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+ .debug_info    0x0000000000014556      0xb11 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+ .debug_info    0x0000000000015067      0xd09 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+ .debug_info    0x0000000000015d70      0x6ea /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .debug_info    0x000000000001645a      0x4a5 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+ .debug_info    0x00000000000168ff      0x45b /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+ .debug_info    0x0000000000016d5a       0xb2 /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+ .debug_info    0x0000000000016e0c       0xee /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+ .debug_info    0x0000000000016efa      0x1cb /home/iev/prog/stm32f4/eth/build/obj/queue.o
+ .debug_info    0x00000000000170c5     0x1046 /home/iev/prog/stm32f4/eth/build/obj/util.o
+ .debug_info    0x000000000001810b      0x143 /home/iev/prog/stm32f4/eth/build/obj/version.o
+ .debug_info    0x000000000001824e      0x20d /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+ .debug_info    0x000000000001845b       0x5b /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+
+.debug_abbrev   0x0000000000000000     0x512e
+ .debug_abbrev  0x0000000000000000      0x1d3 /home/iev/prog/stm32f4/eth/build/obj/main.o
+ .debug_abbrev  0x00000000000001d3      0x1dd /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+ .debug_abbrev  0x00000000000003b0      0x257 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+ .debug_abbrev  0x0000000000000607      0x16c /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+ .debug_abbrev  0x0000000000000773      0x24d /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .debug_abbrev  0x00000000000009c0      0x115 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+ .debug_abbrev  0x0000000000000ad5      0x1aa /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+ .debug_abbrev  0x0000000000000c7f      0x12f /home/iev/prog/stm32f4/eth/build/obj/led.o
+ .debug_abbrev  0x0000000000000dae      0x12a /home/iev/prog/stm32f4/eth/build/obj/btn.o
+ .debug_abbrev  0x0000000000000ed8       0xf2 /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .debug_abbrev  0x0000000000000fca       0x67 /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+ .debug_abbrev  0x0000000000001031       0x78 /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+ .debug_abbrev  0x00000000000010a9      0x204 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+ .debug_abbrev  0x00000000000012ad      0x1fb /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+ .debug_abbrev  0x00000000000014a8      0x11e /home/iev/prog/stm32f4/eth/build/obj/tim.o
+ .debug_abbrev  0x00000000000015c6      0x162 /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+ .debug_abbrev  0x0000000000001728      0x1df /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .debug_abbrev  0x0000000000001907      0x111 /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+ .debug_abbrev  0x0000000000001a18      0x155 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+ .debug_abbrev  0x0000000000001b6d      0x215 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+ .debug_abbrev  0x0000000000001d82      0x214 /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ .debug_abbrev  0x0000000000001f96      0x1f4 /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .debug_abbrev  0x000000000000218a      0x22a /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .debug_abbrev  0x00000000000023b4      0x1c2 /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+ .debug_abbrev  0x0000000000002576      0x212 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .debug_abbrev  0x0000000000002788      0x158 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .debug_abbrev  0x00000000000028e0      0x177 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .debug_abbrev  0x0000000000002a57      0x211 /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .debug_abbrev  0x0000000000002c68      0x165 /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .debug_abbrev  0x0000000000002dcd      0x156 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .debug_abbrev  0x0000000000002f23      0x219 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .debug_abbrev  0x000000000000313c      0x104 /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+ .debug_abbrev  0x0000000000003240      0x161 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .debug_abbrev  0x00000000000033a1      0x126 /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+ .debug_abbrev  0x00000000000034c7      0x21d /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+ .debug_abbrev  0x00000000000036e4      0x226 /home/iev/prog/stm32f4/eth/build/obj/myip.o
+ .debug_abbrev  0x000000000000390a      0x1da /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .debug_abbrev  0x0000000000003ae4      0x1ad /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+ .debug_abbrev  0x0000000000003c91       0xa1 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+ .debug_abbrev  0x0000000000003d32      0x197 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .debug_abbrev  0x0000000000003ec9      0x151 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .debug_abbrev  0x000000000000401a      0x1f0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+ .debug_abbrev  0x000000000000420a      0x294 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+ .debug_abbrev  0x000000000000449e      0x2be /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+ .debug_abbrev  0x000000000000475c      0x204 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .debug_abbrev  0x0000000000004960      0x101 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+ .debug_abbrev  0x0000000000004a61      0x12f /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+ .debug_abbrev  0x0000000000004b90       0x67 /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+ .debug_abbrev  0x0000000000004bf7       0x81 /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+ .debug_abbrev  0x0000000000004c78      0x110 /home/iev/prog/stm32f4/eth/build/obj/queue.o
+ .debug_abbrev  0x0000000000004d88      0x1e9 /home/iev/prog/stm32f4/eth/build/obj/util.o
+ .debug_abbrev  0x0000000000004f71       0x85 /home/iev/prog/stm32f4/eth/build/obj/version.o
+ .debug_abbrev  0x0000000000004ff6      0x126 /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+ .debug_abbrev  0x000000000000511c       0x12 /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+
+.debug_aranges  0x0000000000000000      0x6d0
+ .debug_aranges
+                0x0000000000000000       0x20 /home/iev/prog/stm32f4/eth/build/obj/main.o
+ .debug_aranges
+                0x0000000000000020       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+ .debug_aranges
+                0x0000000000000040       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+ .debug_aranges
+                0x0000000000000060       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+ .debug_aranges
+                0x0000000000000080       0x28 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .debug_aranges
+                0x00000000000000a8       0x20 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+ .debug_aranges
+                0x00000000000000c8       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+ .debug_aranges
+                0x00000000000000e8       0x20 /home/iev/prog/stm32f4/eth/build/obj/led.o
+ .debug_aranges
+                0x0000000000000108       0x20 /home/iev/prog/stm32f4/eth/build/obj/btn.o
+ .debug_aranges
+                0x0000000000000128       0x20 /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .debug_aranges
+                0x0000000000000148       0x20 /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+ .debug_aranges
+                0x0000000000000168       0x20 /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+ .debug_aranges
+                0x0000000000000188       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+ .debug_aranges
+                0x00000000000001a8       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+ .debug_aranges
+                0x00000000000001c8       0x20 /home/iev/prog/stm32f4/eth/build/obj/tim.o
+ .debug_aranges
+                0x00000000000001e8       0x20 /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+ .debug_aranges
+                0x0000000000000208       0x20 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .debug_aranges
+                0x0000000000000228       0x20 /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+ .debug_aranges
+                0x0000000000000248       0x20 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+ .debug_aranges
+                0x0000000000000268       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+ .debug_aranges
+                0x0000000000000288       0x20 /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ .debug_aranges
+                0x00000000000002a8       0x20 /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .debug_aranges
+                0x00000000000002c8       0x20 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .debug_aranges
+                0x00000000000002e8       0x20 /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+ .debug_aranges
+                0x0000000000000308       0x20 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .debug_aranges
+                0x0000000000000328       0x20 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .debug_aranges
+                0x0000000000000348       0x20 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .debug_aranges
+                0x0000000000000368       0x20 /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .debug_aranges
+                0x0000000000000388       0x20 /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .debug_aranges
+                0x00000000000003a8       0x20 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .debug_aranges
+                0x00000000000003c8       0x20 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .debug_aranges
+                0x00000000000003e8       0x20 /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+ .debug_aranges
+                0x0000000000000408       0x20 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .debug_aranges
+                0x0000000000000428       0x20 /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+ .debug_aranges
+                0x0000000000000448       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+ .debug_aranges
+                0x0000000000000468       0x20 /home/iev/prog/stm32f4/eth/build/obj/myip.o
+ .debug_aranges
+                0x0000000000000488       0x20 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .debug_aranges
+                0x00000000000004a8       0x20 /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+ .debug_aranges
+                0x00000000000004c8       0x20 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+ .debug_aranges
+                0x00000000000004e8       0x20 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .debug_aranges
+                0x0000000000000508       0x20 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .debug_aranges
+                0x0000000000000528       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+ .debug_aranges
+                0x0000000000000548       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+ .debug_aranges
+                0x0000000000000568       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+ .debug_aranges
+                0x0000000000000588       0x20 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .debug_aranges
+                0x00000000000005a8       0x20 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+ .debug_aranges
+                0x00000000000005c8       0x20 /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+ .debug_aranges
+                0x00000000000005e8       0x20 /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+ .debug_aranges
+                0x0000000000000608       0x20 /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+ .debug_aranges
+                0x0000000000000628       0x20 /home/iev/prog/stm32f4/eth/build/obj/queue.o
+ .debug_aranges
+                0x0000000000000648       0x20 /home/iev/prog/stm32f4/eth/build/obj/util.o
+ .debug_aranges
+                0x0000000000000668       0x20 /home/iev/prog/stm32f4/eth/build/obj/version.o
+ .debug_aranges
+                0x0000000000000688       0x20 /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+ .debug_aranges
+                0x00000000000006a8       0x28 /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+
+.debug_line     0x0000000000000000     0x8ae0
+ .debug_line    0x0000000000000000      0x231 /home/iev/prog/stm32f4/eth/build/obj/main.o
+ .debug_line    0x0000000000000231      0x303 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+ .debug_line    0x0000000000000534      0x34a /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+ .debug_line    0x000000000000087e      0x281 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+ .debug_line    0x0000000000000aff      0x38f /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .debug_line    0x0000000000000e8e      0x1b6 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+ .debug_line    0x0000000000001044      0x397 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+ .debug_line    0x00000000000013db      0x1a3 /home/iev/prog/stm32f4/eth/build/obj/led.o
+ .debug_line    0x000000000000157e      0x1bc /home/iev/prog/stm32f4/eth/build/obj/btn.o
+ .debug_line    0x000000000000173a      0x157 /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .debug_line    0x0000000000001891       0xf1 /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+ .debug_line    0x0000000000001982       0xdd /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+ .debug_line    0x0000000000001a5f      0xe59 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+ .debug_line    0x00000000000028b8      0x61d /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+ .debug_line    0x0000000000002ed5      0x1dd /home/iev/prog/stm32f4/eth/build/obj/tim.o
+ .debug_line    0x00000000000030b2      0x1d7 /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+ .debug_line    0x0000000000003289      0x268 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .debug_line    0x00000000000034f1      0x1cb /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+ .debug_line    0x00000000000036bc      0x1f0 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+ .debug_line    0x00000000000038ac      0x6e2 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+ .debug_line    0x0000000000003f8e      0x28b /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ .debug_line    0x0000000000004219      0x1cb /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .debug_line    0x00000000000043e4      0x725 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .debug_line    0x0000000000004b09      0x13e /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+ .debug_line    0x0000000000004c47      0x1e5 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .debug_line    0x0000000000004e2c      0x1c9 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .debug_line    0x0000000000004ff5      0x1e3 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .debug_line    0x00000000000051d8      0x35f /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .debug_line    0x0000000000005537      0x17f /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .debug_line    0x00000000000056b6      0x178 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .debug_line    0x000000000000582e      0x240 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .debug_line    0x0000000000005a6e      0x1a8 /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+ .debug_line    0x0000000000005c16      0x1ea /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .debug_line    0x0000000000005e00      0x1ab /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+ .debug_line    0x0000000000005fab      0x735 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+ .debug_line    0x00000000000066e0      0x1ed /home/iev/prog/stm32f4/eth/build/obj/myip.o
+ .debug_line    0x00000000000068cd      0x1be /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .debug_line    0x0000000000006a8b      0x13a /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+ .debug_line    0x0000000000006bc5      0x107 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+ .debug_line    0x0000000000006ccc      0x1a6 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .debug_line    0x0000000000006e72      0x11f /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .debug_line    0x0000000000006f91      0x281 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+ .debug_line    0x0000000000007212      0x49c /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+ .debug_line    0x00000000000076ae      0x32d /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+ .debug_line    0x00000000000079db      0x35c /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .debug_line    0x0000000000007d37      0x166 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+ .debug_line    0x0000000000007e9d      0x1ea /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+ .debug_line    0x0000000000008087       0xdd /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+ .debug_line    0x0000000000008164       0xf8 /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+ .debug_line    0x000000000000825c       0xdd /home/iev/prog/stm32f4/eth/build/obj/queue.o
+ .debug_line    0x0000000000008339      0x562 /home/iev/prog/stm32f4/eth/build/obj/util.o
+ .debug_line    0x000000000000889b       0x9a /home/iev/prog/stm32f4/eth/build/obj/version.o
+ .debug_line    0x0000000000008935      0x130 /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+ .debug_line    0x0000000000008a65       0x7b /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
+
+.debug_str      0x0000000000000000     0x5bb2
+ .debug_str     0x0000000000000000      0x66c /home/iev/prog/stm32f4/eth/build/obj/main.o
+                                        0x729 (size before relaxing)
+ .debug_str     0x000000000000066c      0x316 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+                                        0x547 (size before relaxing)
+ .debug_str     0x0000000000000982      0x283 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+                                        0x5c7 (size before relaxing)
+ .debug_str     0x0000000000000c05      0x18b /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+                                        0x3d2 (size before relaxing)
+ .debug_str     0x0000000000000d90       0xf1 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+                                        0x4db (size before relaxing)
+ .debug_str     0x0000000000000e81       0xfd /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+                                        0x3d4 (size before relaxing)
+ .debug_str     0x0000000000000f7e      0x1ef /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+                                        0x514 (size before relaxing)
+ .debug_str     0x000000000000116d       0x30 /home/iev/prog/stm32f4/eth/build/obj/led.o
+                                        0x368 (size before relaxing)
+ .debug_str     0x000000000000119d      0x519 /home/iev/prog/stm32f4/eth/build/obj/btn.o
+                                        0x71d (size before relaxing)
+ .debug_str     0x00000000000016b6       0x3a /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+                                        0x217 (size before relaxing)
+ .debug_str     0x00000000000016f0       0x8f /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+                                        0x22c (size before relaxing)
+ .debug_str     0x000000000000177f       0x13 /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+                                        0x1c7 (size before relaxing)
+ .debug_str     0x0000000000001792      0xcfb /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+                                       0x13d3 (size before relaxing)
+ .debug_str     0x000000000000248d      0x55e /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+                                        0xc86 (size before relaxing)
+ .debug_str     0x00000000000029eb       0xaf /home/iev/prog/stm32f4/eth/build/obj/tim.o
+                                        0x29b (size before relaxing)
+ .debug_str     0x0000000000002a9a       0x11 /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+                                        0xc56 (size before relaxing)
+ .debug_str     0x0000000000002aab      0x2da /home/iev/prog/stm32f4/eth/build/obj/uart.o
+                                        0x792 (size before relaxing)
+ .debug_str     0x0000000000002d85       0x24 /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+                                        0x635 (size before relaxing)
+ .debug_str     0x0000000000002da9       0x24 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+                                        0xc8d (size before relaxing)
+ .debug_str     0x0000000000002dcd      0x37f /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+                                        0xa56 (size before relaxing)
+ .debug_str     0x000000000000314c       0xea /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+                                        0xa84 (size before relaxing)
+ .debug_str     0x0000000000003236      0x1ee /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+                                        0x3d9 (size before relaxing)
+ .debug_str     0x0000000000003424      0x305 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+                                        0x4e8 (size before relaxing)
+ .debug_str     0x0000000000003729       0x87 /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+                                        0x317 (size before relaxing)
+ .debug_str     0x00000000000037b0       0xa1 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+                                        0x349 (size before relaxing)
+ .debug_str     0x0000000000003851       0x5f /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+                                        0x281 (size before relaxing)
+ .debug_str     0x00000000000038b0       0x68 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+                                        0x2e0 (size before relaxing)
+ .debug_str     0x0000000000003918       0x6d /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+                                        0x7cf (size before relaxing)
+ .debug_str     0x0000000000003985       0x53 /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+                                        0x2d7 (size before relaxing)
+ .debug_str     0x00000000000039d8       0x28 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+                                        0x268 (size before relaxing)
+ .debug_str     0x0000000000003a00      0x4d3 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+                                        0x7dd (size before relaxing)
+ .debug_str     0x0000000000003ed3        0x9 /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+                                        0x6ae (size before relaxing)
+ .debug_str     0x0000000000003edc       0x32 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+                                        0x7fd (size before relaxing)
+ .debug_str     0x0000000000003f0e       0x1c /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+                                        0x6b2 (size before relaxing)
+ .debug_str     0x0000000000003f2a      0x6e4 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+                                        0xee1 (size before relaxing)
+ .debug_str     0x000000000000460e      0x288 /home/iev/prog/stm32f4/eth/build/obj/myip.o
+                                        0x4e3 (size before relaxing)
+ .debug_str     0x0000000000004896      0x127 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+                                        0x3f9 (size before relaxing)
+ .debug_str     0x00000000000049bd      0x11e /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+                                        0x38d (size before relaxing)
+ .debug_str     0x0000000000004adb       0x30 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+                                        0x1f8 (size before relaxing)
+ .debug_str     0x0000000000004b0b      0x193 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+                                        0x386 (size before relaxing)
+ .debug_str     0x0000000000004c9e       0x79 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+                                        0x24c (size before relaxing)
+ .debug_str     0x0000000000004d17      0x253 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+                                        0xa63 (size before relaxing)
+ .debug_str     0x0000000000004f6a      0x2a3 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+                                        0x6c8 (size before relaxing)
+ .debug_str     0x000000000000520d      0x396 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+                                        0xc0c (size before relaxing)
+ .debug_str     0x00000000000055a3      0x1ba /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+                                        0x67a (size before relaxing)
+ .debug_str     0x000000000000575d       0x46 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+                                        0x374 (size before relaxing)
+ .debug_str     0x00000000000057a3       0x38 /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+                                        0x42a (size before relaxing)
+ .debug_str     0x00000000000057db       0x24 /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+                                        0x1ad (size before relaxing)
+ .debug_str     0x00000000000057ff       0x2c /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+                                        0x1c9 (size before relaxing)
+ .debug_str     0x000000000000582b       0x31 /home/iev/prog/stm32f4/eth/build/obj/queue.o
+                                        0x1de (size before relaxing)
+ .debug_str     0x000000000000585c      0x2bb /home/iev/prog/stm32f4/eth/build/obj/util.o
+                                        0x502 (size before relaxing)
+ .debug_str     0x0000000000005b17       0x3f /home/iev/prog/stm32f4/eth/build/obj/version.o
+                                        0x1b4 (size before relaxing)
+ .debug_str     0x0000000000005b56       0x5c /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+                                        0x212 (size before relaxing)
+
+.comment        0x0000000000000000       0x38
+ .comment       0x0000000000000000       0x38 /home/iev/prog/stm32f4/eth/build/obj/main.o
+                                         0x39 (size before relaxing)
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/led.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/btn.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/tim.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/myip.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/queue.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/util.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/version.o
+ .comment       0x0000000000000038       0x39 /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+
+.debug_frame    0x0000000000000000     0x5bfc
+ .debug_frame   0x0000000000000000       0x68 /home/iev/prog/stm32f4/eth/build/obj/main.o
+ .debug_frame   0x0000000000000068      0x26c /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash.o
+ .debug_frame   0x00000000000002d4      0x250 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_flash_ex.o
+ .debug_frame   0x0000000000000524      0x120 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_crc.o
+ .debug_frame   0x0000000000000644      0x1f0 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .debug_frame   0x0000000000000834       0x60 /home/iev/prog/stm32f4/eth/build/obj/crc_msp.o
+ .debug_frame   0x0000000000000894      0x14c /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_gpio.o
+ .debug_frame   0x00000000000009e0       0x88 /home/iev/prog/stm32f4/eth/build/obj/led.o
+ .debug_frame   0x0000000000000a68       0x34 /home/iev/prog/stm32f4/eth/build/obj/btn.o
+ .debug_frame   0x0000000000000a9c       0x7c /home/iev/prog/stm32f4/eth/build/obj/gpio.o
+ .debug_frame   0x0000000000000b18       0xd4 /home/iev/prog/stm32f4/eth/build/obj/gpio_it.o
+ .debug_frame   0x0000000000000bec       0x34 /home/iev/prog/stm32f4/eth/build/obj/gpio_msp.o
+ .debug_frame   0x0000000000000c20      0xfd0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim.o
+ .debug_frame   0x0000000000001bf0      0x580 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_tim_ex.o
+ .debug_frame   0x0000000000002170       0x74 /home/iev/prog/stm32f4/eth/build/obj/tim.o
+ .debug_frame   0x00000000000021e4       0x84 /home/iev/prog/stm32f4/eth/build/obj/tim_msp.o
+ .debug_frame   0x0000000000002268      0x270 /home/iev/prog/stm32f4/eth/build/obj/uart.o
+ .debug_frame   0x00000000000024d8       0x2c /home/iev/prog/stm32f4/eth/build/obj/uart_it.o
+ .debug_frame   0x0000000000002504       0x34 /home/iev/prog/stm32f4/eth/build/obj/uart_msp.o
+ .debug_frame   0x0000000000002538      0x5ec /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_uart.o
+ .debug_frame   0x0000000000002b24      0x22c /home/iev/prog/stm32f4/eth/build/obj/vfd.o
+ .debug_frame   0x0000000000002d50      0x264 /home/iev/prog/stm32f4/eth/build/obj/vfd_menu.o
+ .debug_frame   0x0000000000002fb4      0x448 /home/iev/prog/stm32f4/eth/build/obj/picol.o
+ .debug_frame   0x00000000000033fc      0x12c /home/iev/prog/stm32f4/eth/build/obj/pcl.o
+ .debug_frame   0x0000000000003528      0x150 /home/iev/prog/stm32f4/eth/build/obj/pcl_eth.o
+ .debug_frame   0x0000000000003678       0xa4 /home/iev/prog/stm32f4/eth/build/obj/pcl_math.o
+ .debug_frame   0x000000000000371c       0xf0 /home/iev/prog/stm32f4/eth/build/obj/pcl_misc.o
+ .debug_frame   0x000000000000380c      0x118 /home/iev/prog/stm32f4/eth/build/obj/pcl_stm.o
+ .debug_frame   0x0000000000003924       0xcc /home/iev/prog/stm32f4/eth/build/obj/pcl_sys.o
+ .debug_frame   0x00000000000039f0       0x5c /home/iev/prog/stm32f4/eth/build/obj/pcl_vfd.o
+ .debug_frame   0x0000000000003a4c       0xf0 /home/iev/prog/stm32f4/eth/build/obj/eth.o
+ .debug_frame   0x0000000000003b3c       0x2c /home/iev/prog/stm32f4/eth/build/obj/eth_it.o
+ .debug_frame   0x0000000000003b68       0x5c /home/iev/prog/stm32f4/eth/build/obj/eth_msp.o
+ .debug_frame   0x0000000000003bc4       0x58 /home/iev/prog/stm32f4/eth/build/obj/mdio.o
+ .debug_frame   0x0000000000003c1c      0x4b4 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_eth.o
+ .debug_frame   0x00000000000040d0      0x25c /home/iev/prog/stm32f4/eth/build/obj/myip.o
+ .debug_frame   0x000000000000432c      0x130 /home/iev/prog/stm32f4/eth/build/obj/mytcp.o
+ .debug_frame   0x000000000000445c       0xc8 /home/iev/prog/stm32f4/eth/build/obj/icmp.o
+ .debug_frame   0x0000000000004524       0x38 /home/iev/prog/stm32f4/eth/build/obj/dbg.o
+ .debug_frame   0x000000000000455c      0x134 /home/iev/prog/stm32f4/eth/build/obj/tftpd.o
+ .debug_frame   0x0000000000004690       0x98 /home/iev/prog/stm32f4/eth/build/obj/telnetd.o
+ .debug_frame   0x0000000000004728      0x2c0 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal.o
+ .debug_frame   0x00000000000049e8      0x200 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_rcc.o
+ .debug_frame   0x0000000000004be8      0x450 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_cortex.o
+ .debug_frame   0x0000000000005038      0x1b4 /home/iev/prog/stm32f4/eth/build/obj/stm32f4xx_hal_dma.o
+ .debug_frame   0x00000000000051ec       0x58 /home/iev/prog/stm32f4/eth/build/obj/system_stm32f4xx.o
+ .debug_frame   0x0000000000005244       0x4c /home/iev/prog/stm32f4/eth/build/obj/system_clock.o
+ .debug_frame   0x0000000000005290       0x2c /home/iev/prog/stm32f4/eth/build/obj/system_it.o
+ .debug_frame   0x00000000000052bc       0x64 /home/iev/prog/stm32f4/eth/build/obj/system_msp.o
+ .debug_frame   0x0000000000005320       0x84 /home/iev/prog/stm32f4/eth/build/obj/queue.o
+ .debug_frame   0x00000000000053a4      0x6f4 /home/iev/prog/stm32f4/eth/build/obj/util.o
+ .debug_frame   0x0000000000005a98       0x9c /home/iev/prog/stm32f4/eth/build/obj/version.o
+ .debug_frame   0x0000000000005b34       0xc8 /home/iev/prog/stm32f4/eth/build/obj/heap1.o
+
+.debug_ranges   0x0000000000000000       0x38
+ .debug_ranges  0x0000000000000000       0x18 /home/iev/prog/stm32f4/eth/build/obj/flash.o
+ .debug_ranges  0x0000000000000018       0x20 /home/iev/prog/stm32f4/eth/build/obj/startup_stm32f407xx.o
