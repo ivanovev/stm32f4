@@ -4,6 +4,7 @@
 
 #include <main.h>
 
+#ifdef ADCn
 #if ADCn == 1
 #define ADCx                            ADC1
 #endif
@@ -14,7 +15,7 @@
 #define ADCx_FORCE_RESET                JOIN3(__HAL_RCC_ADC, ADCn, _CLK_FORCE_RESET)
 #define ADCx_RELEASE_RESET              JOIN3(__HAL_RCC_ADC, ADCn, _CLK_RELEASE_RESET)
 
-#if ADCn == 1
+#ifdef ADC_INn
 #if ADC_INn == 3
 #define ADCx_GPIO                       A
 #define ADCx_PIN                        3
@@ -55,9 +56,12 @@
 #define ADC_TIMx_FORCE_RESET            JOIN3(__HAL_RCC_TIM, ADC_TIMn, _FORCE_RESET)
 #define ADC_TIMx_RELEASE_RESET          JOIN3(__HAL_RCC_TIM, ADC_TIMn, _RELEASE_RESET)
 #endif
+#endif
 
 void            adc_init(void);
-void            adc_hadc_init(ADC_HandleTypeDef *phadc);
+void            adc_tim_config(uint32_t period);
+void            adc_data_init(void);
+uint32_t        adc_data_counter(void);
 void            adc_start(void);
 void            adc_start_sz(uint32_t sz);
 uint16_t        adc_get_data(uint8_t *out, uint16_t sz);

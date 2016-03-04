@@ -6,9 +6,7 @@
 #include "eth/myip/mytcp.h"
 #include "eth/myip/telnet/telnetd.h"
 #endif
-#ifdef ENABLE_FLASH
-#include "flash/flash.h"
-#endif
+#include "lnah/lnah.h"
 
 volatile uint8_t main_evt = 0;
 

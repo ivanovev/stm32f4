@@ -7,7 +7,9 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
 {
     GPIO_InitTypeDef          gpio_init;
 
+#ifdef ADC_INn
     GPIO_INIT(ADCx_GPIO, ADCx_PIN, GPIO_MODE_ANALOG, GPIO_NOPULL, 0, 0);
+#endif
     ADCx_CLK_ENABLE();
 #ifdef ADC_DMAn
     static DMA_HandleTypeDef  hdma_adc;

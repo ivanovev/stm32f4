@@ -162,6 +162,10 @@ COMMAND(adc) {
             adc_start_sz(str2int(argv[2]));
         return PICOL_OK;
     }
+    if(SUBCMD1("counter"))
+    {
+        return picolSetIntResult(i, adc_data_counter());
+    }
     if(SUBCMD1("stop"))
     {
         adc_stop();

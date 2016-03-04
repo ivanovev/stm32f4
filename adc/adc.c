@@ -4,7 +4,10 @@
 #include "util/util.h"
 
 #pragma message "ADC: ADC" STR(ADCn)
+
+#ifdef ADC_INn
 #pragma message "ADC_IN: ADC" STR(ADC_INn)
+#endif
 
 #ifdef ADC_DMAn
 #pragma message "ADC_TIM: TIM" STR(ADC_TIMn)
@@ -14,10 +17,14 @@
 #endif
 
 #define ADC_BUF_NB  2
+#ifndef ADC_BUF_SZ
 #define ADC_BUF_SZ  IO_BUF_SZ
+#endif
 
 __ALIGN_BEGIN uint8_t ADC_Buff[ADC_BUF_NB][ADC_BUF_SZ] __ALIGN_END;
 
+ADC_HandleTypeDef hadc;
+ADC_ChannelConfTypeDef scfg;
 struct adcdata_t
 {
     uint8_t *buf0;
@@ -27,55 +34,18 @@ struct adcdata_t
     volatile uint8_t convcplt;
 } adcd;
 
-ADC_HandleTypeDef hadc;
-static ADC_ChannelConfTypeDef scfg;
-
-#ifdef ADC_TIMn
-static void adc_tim_config(void);
-#endif
-
-void adc_init(void)
+__weak void adc_init(void)
 {
-#ifdef ADCn
-    adc_hadc_init(&hadc);
-    if(HAL_ADC_Init(&hadc) != HAL_OK)
-    {
-        Error_Handler();
-    }
-#endif
-#ifdef ADCx_CHANNEL
-    scfg.Channel = ADCx_CHANNEL;
-    scfg.Rank = 1;
-    scfg.SamplingTime = ADC_SAMPLETIME_15CYCLES;
-    scfg.Offset = 0;
-
-    if(HAL_ADC_ConfigChannel(&hadc, &scfg) != HAL_OK)
-    {
-        Error_Handler();
-    }
-#endif
-#ifdef ADC_TIMn
-    adc_tim_config();
-#endif
-}
-
-void adc_hadc_init(ADC_HandleTypeDef *phadc)
-{
-    phadc->Instance = ADCx;
-    phadc->Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-	phadc->Init.Resolution            = ADC_RESOLUTION_12B;
-    phadc->Init.ScanConvMode = DISABLE;
-	phadc->Init.ContinuousConvMode    = DISABLE;
-    phadc->Init.DiscontinuousConvMode = DISABLE;
-    phadc->Init.NbrOfConversion = 1;
-	phadc->Init.NbrOfDiscConversion   = 0;
+    adc_data_init();
+    hadc.Instance = ADCx;
+    hadc.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+	hadc.Init.Resolution            = ADC_RESOLUTION_12B;
+    hadc.Init.ScanConvMode = DISABLE;
+	hadc.Init.ContinuousConvMode    = DISABLE;
+    hadc.Init.DiscontinuousConvMode = DISABLE;
+    hadc.Init.NbrOfConversion = 1;
+	hadc.Init.NbrOfDiscConversion   = 0;
 #ifdef ADC_DMAn
-    adcd.buf0 = &(ADC_Buff[0][0]);
-    adcd.buf1 = &(ADC_Buff[1][0]);
-    mymemset(adcd.buf0, 0, ADC_BUF_SZ);
-    mymemset(adcd.buf1, 0, ADC_BUF_SZ);
-    adcd.counter = 0;
-    adcd.convcplt = 0;
 
     //hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
     //hadc.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
@@ -91,6 +61,41 @@ void adc_hadc_init(ADC_HandleTypeDef *phadc)
 	hadc.Init.DMAContinuousRequests = DISABLE;
 	hadc.Init.EOCSelection          = DISABLE;
 #endif
+    if(HAL_ADC_Init(&hadc) != HAL_OK)
+    {
+        Error_Handler();
+    }
+#ifdef ADCx_CHANNEL
+#ifdef ADC_INn
+    scfg.Channel = ADCx_CHANNEL;
+    scfg.Rank = 1;
+    scfg.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+    scfg.Offset = 0;
+
+    if(HAL_ADC_ConfigChannel(&hadc, &scfg) != HAL_OK)
+    {
+        Error_Handler();
+    }
+#endif
+#endif
+#ifdef ADC_TIMn
+    adc_tim_config(999);
+#endif
+}
+
+void adc_data_init(void)
+{
+    adcd.buf0 = &(ADC_Buff[0][0]);
+    adcd.buf1 = &(ADC_Buff[1][0]);
+    mymemset(adcd.buf0, 0, ADC_BUF_SZ);
+    mymemset(adcd.buf1, 0, ADC_BUF_SZ);
+    adcd.counter = 0;
+    adcd.convcplt = 0;
+}
+
+uint32_t adc_data_counter(void)
+{
+    return adcd.counter;
 }
 
 void adc_start(void)
@@ -121,9 +126,15 @@ uint16_t adc_get_data(uint8_t *out, uint16_t sz)
         uint16_t *ptr2 = (uint16_t*)out;
         sz = MIN(sz, ADC_BUF_SZ);
         uint16_t i;
+#if 0
         // copy to out and convert unsigned to signed
         for(i = 0; i < sz; i++)
             *ptr2++ = *ptr1++ + 0x8000;
+#else
+        // copy to out as is
+        for(i = 0; i < sz; i++)
+            *ptr2++ = *ptr1++;
+#endif
         //mymemcpy(out, ptr, sz);
         adcd.convcplt = 0;
         return sz;
@@ -132,13 +143,13 @@ uint16_t adc_get_data(uint8_t *out, uint16_t sz)
 }
 
 #ifdef ADC_TIMn
-static void adc_tim_config(void)
+void adc_tim_config(uint32_t period)
 {
     static TIM_HandleTypeDef  htim_adc;
     TIM_MasterConfigTypeDef smastercfg;
 
     htim_adc.Instance = ADC_TIMx;
-    htim_adc.Init.Period = 999;
+    htim_adc.Init.Period = period;
     htim_adc.Init.Prescaler = 0;
     htim_adc.Init.ClockDivision = 0;
     htim_adc.Init.CounterMode = TIM_COUNTERMODE_UP;
