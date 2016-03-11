@@ -118,28 +118,35 @@ void adc_stop(void)
     HAL_ADC_Stop_DMA(&hadc);
 }
 
-uint16_t adc_get_data(uint8_t *out, uint16_t sz)
+uint8_t* adc_get_data_ptr(void)
 {
     if(adcd.convcplt)
     {
-        uint16_t *ptr1 = (uint16_t*)((adcd.counter % 2) ? adcd.buf0 : adcd.buf1);
-        uint16_t *ptr2 = (uint16_t*)out;
-        sz = MIN(sz, ADC_BUF_SZ);
-        uint16_t i;
-#if 0
-        // copy to out and convert unsigned to signed
-        for(i = 0; i < sz; i++)
-            *ptr2++ = *ptr1++ + 0x8000;
-#else
-        // copy to out as is
-        for(i = 0; i < sz; i++)
-            *ptr2++ = *ptr1++;
-#endif
-        //mymemcpy(out, ptr, sz);
         adcd.convcplt = 0;
-        return sz;
+        return (adcd.counter % 2) ? adcd.buf0 : adcd.buf1;
     }
     return 0;
+}
+
+uint16_t adc_get_data(uint8_t *out, uint16_t sz)
+{
+    uint16_t *ptr1 = (uint16_t*)adc_get_data_ptr();
+    if(!ptr1)
+        return 0;
+    uint16_t *ptr2 = (uint16_t*)out;
+    sz = MIN(sz, ADC_BUF_SZ);
+    uint16_t i;
+#if 0
+    // copy to out and convert unsigned to signed
+    for(i = 0; i < sz; i++)
+        *ptr2++ = *ptr1++ + 0x8000;
+#else
+    // copy to out as is
+    for(i = 0; i < sz; i++)
+        *ptr2++ = *ptr1++;
+#endif
+    //mymemcpy(out, ptr, sz);
+    return sz;
 }
 
 #ifdef ADC_TIMn

@@ -18,12 +18,15 @@ int main(void)
     io_recv_str_ptr = telnetd_recv_str;
     io_send_str_ptr = telnetd_send_str;
 #endif
+#if 0
 #ifdef ENABLE_UART
     io_recv_str_ptr = uart_recv_str;
     io_send_str_ptr = uart_send_str;
 #endif
+#endif
     for (;;)
     {
+        lnah_data_upd();
 #ifdef ENABLE_PCL
         pcl_io();
 #endif

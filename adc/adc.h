@@ -64,6 +64,7 @@ void            adc_data_init(void);
 uint32_t        adc_data_counter(void);
 void            adc_start(void);
 void            adc_start_sz(uint32_t sz);
+uint8_t*        adc_get_data_ptr(void);
 uint16_t        adc_get_data(uint8_t *out, uint16_t sz);
 void            adc_stop(void);
 uint16_t		adc_read(void);
