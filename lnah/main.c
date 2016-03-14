@@ -60,7 +60,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim->Instance == VFD_TIMx)
     {
-        led_toggle();
+        //led_toggle();
         vfd_tim_upd();
     }
 }

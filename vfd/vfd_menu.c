@@ -230,7 +230,7 @@ void vfd_menu_line(char *buf, uint16_t num)
         if(num == 1)
         {
             buf[index++] = ' ';
-            if(vfd_menu_flag(pstate->sel, VFD_FLAG_EDIT_INT) == 1)
+            if((vfd_menu_flag(pstate->sel, VFD_FLAG_EDIT_INT) == 1) && (vfd_menu_flag(pstate->sel, VFD_FLAG_TIM_UPD) == 0))
                 index += mysnprintf(&buf[index], VFD_LINE_SZ, "%d", pstate->sel->edit->data.d_i.cur);
             else
                 index += vfd_menu_item_data_get(&buf[index], VFD_LINE_SZ, pstate->sel);
@@ -404,7 +404,7 @@ void vfd_menu_left(void)
     }
 }
 
-void vfd_menu_ok(void)
+__weak void vfd_menu_ok(void)
 {
 
 }

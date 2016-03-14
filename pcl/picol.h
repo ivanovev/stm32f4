@@ -55,7 +55,9 @@
 #define picolSetBoolResult(i,x) picolSetFmtResult(i,"%d",!!x)
 #define picolSetIntResult(i,x)  picolSetFmtResult(i,"%d",x)
 #define picolSetHexResult(i,x)  picolSetFmtResult(i,"%X",x)
+#define picolSetHex1Result(i,x)  picolSetFmtResult(i,"0x%2X",x)
 #define picolSetHex2Result(i,x)  picolSetFmtResult(i,"0x%4X",x)
+#define picolSetHex3Result(i,x)  picolSetFmtResult(i,"0x%6X",x)
 #define picolSetHex4Result(i,x)  picolSetFmtResult(i,"0x%8X",x)
 
 enum {PICOL_OK, PICOL_ERR, PICOL_WAIT};

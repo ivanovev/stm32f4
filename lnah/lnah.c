@@ -2,6 +2,12 @@
 #include <main.h>
 #include "lnah/lnah.h"
 
+#define LNAH_ALM_I      (1 << 0)
+#define LNAH_ALM_U1     (1 << 1)
+#define LNAH_ALM_U2     (1 << 2)
+#define LNAH_ALM_U3     (1 << 3)
+#define LNAH_ALM_U4     (1 << 4)
+
 #ifdef ENABLE_VFD
 #include "vfd/vfd_menu.h"
 
@@ -58,12 +64,15 @@ void adc_init(void)
 }
 
 #ifdef ENABLE_PCL
-static volatile uint32_t g_acci = 0, g_accu = 0, g_umi0 = 0, g_umu0 = 0, g_umi = 0, g_umu = 0, g_outen = 0;
+static volatile uint32_t g_acci = 0, g_accu = 0, g_umi = 0, g_umu = 0, g_outen = 0, g_thri = 12000, g_alarms = 0, g_umi0 = 0;
+static volatile uint32_t g_thru1 = 700, g_thru2 = 2300, g_thru3 = 2500, g_thru4 = 3600;
 
 COMMAND(outen) {
     if(argc > 1)
     {
         g_outen = str2int(argv[1]);
+        if(g_outen)
+            g_alarms = 0;
         HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), g_outen ? GPIO_PIN_SET : GPIO_PIN_RESET);
     }
     return picolSetIntResult(i, g_outen);
@@ -77,23 +86,53 @@ COMMAND(accu) {
     return picolSetIntResult(i, g_accu);
 }
 
-COMMAND(umi0) {
-    return picolSetIntResult(i, g_umi0);
-}
-
-COMMAND(umu0) {
-    return picolSetIntResult(i, g_umu0);
+COMMAND(alarms) {
+    return picolSetHex1Result(i, g_alarms);
 }
 
 COMMAND(umi) {
+    volatile uint32_t *ptr = 0;
+    if(SUBCMD0("umi") && (argc == 1))
+        ptr = &g_umi;
+    if(SUBCMD0("umi0"))
+        ptr = &g_umi0;
+    if(SUBCMD0("thri"))
+        ptr = &g_thri;
+    if(!ptr)
+        return PICOL_ERR;
+    if(argc >= 2)
+        *ptr = (uint32_t)(atof(argv[1])*10);
+    double f = (double)*ptr;
     char buf[16];
-    mysnprintf(buf, sizeof(buf), "%d.%d", g_umi/10, g_umi % 10);
+    double2str(buf, sizeof(buf), f/10, "1");
     return picolSetResult(i, buf);
 }
 
 COMMAND(umu) {
+    volatile uint32_t *ptr = 0;
+    if(SUBCMD0("umu") && (argc == 1))
+        ptr = &g_umu;
+    if(SUBCMD0("thru1"))
+        ptr = &g_thru1;
+    if(SUBCMD0("thru2"))
+        ptr = &g_thru2;
+    if(SUBCMD0("thru3"))
+        ptr = &g_thru3;
+    if(SUBCMD0("thru4"))
+        ptr = &g_thru4;
+    if(!ptr)
+        return PICOL_ERR;
+    if(argc >= 2)
+        *ptr = (uint32_t)(atof(argv[1])*100);
+    double f = (double)*ptr;
     char buf[16];
-    mysnprintf(buf, sizeof(buf), "%d.%d%d", g_umu/100, (g_umu % 100)/10, g_umu % 10);
+    double2str(buf, sizeof(buf), f/100, "2");
+    return picolSetResult(i, buf);
+}
+
+COMMAND(status) {
+    char buf[20];
+    mysnprintf(buf, sizeof(buf), "%d %d 0x%2X", g_umi/10, g_umu/100, g_alarms);
     return picolSetResult(i, buf);
 }
 
@@ -102,17 +141,27 @@ COMMAND(lnah) {
     return picolSetIntResult(i, lnah_counter);
 }
 
+#ifdef ENABLE_VFD
+extern vfd_menu_state_t *pstate;
+vfd_menu_item_t         *g_vfdouten = 0, *g_vfdstatus = 0;
+#endif
 
 extern struct picolInterp *pcl_interp;
 static void lnah_pcl_init(void)
 {
-    picolRegisterCmd(pcl_interp, "umi0", picol_umi0, 0);
-    picolRegisterCmd(pcl_interp, "umu0", picol_umu0, 0);
+    picolRegisterCmd(pcl_interp, "outen", picol_outen, 0);
+    picolRegisterCmd(pcl_interp, "umi", picol_umi, 0);
+    picolRegisterCmd(pcl_interp, "umi0", picol_umi, 0);
+    picolRegisterCmd(pcl_interp, "thri", picol_umi, 0);
+    picolRegisterCmd(pcl_interp, "umu", picol_umu, 0);
+    picolRegisterCmd(pcl_interp, "thru1", picol_umu, 0);
+    picolRegisterCmd(pcl_interp, "thru2", picol_umu, 0);
+    picolRegisterCmd(pcl_interp, "thru3", picol_umu, 0);
+    picolRegisterCmd(pcl_interp, "thru4", picol_umu, 0);
+    picolRegisterCmd(pcl_interp, "alarms", picol_alarms, 0);
+    picolRegisterCmd(pcl_interp, "status", picol_status, 0);
     picolRegisterCmd(pcl_interp, "acci", picol_acci, 0);
     picolRegisterCmd(pcl_interp, "accu", picol_accu, 0);
-    picolRegisterCmd(pcl_interp, "umi", picol_umi, 0);
-    picolRegisterCmd(pcl_interp, "umu", picol_umu, 0);
-    picolRegisterCmd(pcl_interp, "outen", picol_outen, 0);
     picolRegisterCmd(pcl_interp, "lnah", picol_lnah, 0);
 }
 #endif
@@ -127,12 +176,32 @@ void lnah_init()
     lnah_pcl_init();
 #endif
 
-    vfd_menu_item_t *item = vfd_menu_append_child(pmain, "Out Enable", "outen");
-    vfd_menu_make_edit_int(item, 0, 1, 1, VFD_FLAG_IMMEDIATE);
-    item = vfd_menu_append_child(pmain->next, "Current, mA", "umi");
+#ifdef ENABLE_VFD
+    g_vfdouten = vfd_menu_append_child(pmain, "Out Enable", "outen");
+    vfd_menu_make_edit_int(g_vfdouten, 0, 1, 1, VFD_FLAG_IMMEDIATE);
+    g_vfdouten->edit->flags |= VFD_FLAG_TIM_UPD;
+#if 0
+    item = vfd_menu_append_child(pmain, "I threshold, mA", "thri");
+    vfd_menu_make_edit_int(item, 500, 1700, 100, VFD_FLAG_IMMEDIATE);
+    item = vfd_menu_append_child(pmain, "U threshold1, V", "thru1");
+    vfd_menu_make_edit_int(item, 7, 36, 1, VFD_FLAG_IMMEDIATE);
+    item = vfd_menu_append_child(pmain, "U threshold2, V", "thru2");
+    vfd_menu_make_edit_int(item, 7, 36, 1, VFD_FLAG_IMMEDIATE);
+    item = vfd_menu_append_child(pmain, "U threshold3, V", "thru3");
+    vfd_menu_make_edit_int(item, 7, 36, 1, VFD_FLAG_IMMEDIATE);
+    item = vfd_menu_append_child(pmain, "U threshold4, V", "thru4");
+    vfd_menu_make_edit_int(item, 7, 36, 1, VFD_FLAG_IMMEDIATE);
+#endif
+    vfd_menu_item_t *item = vfd_menu_append_child(pmain->next, "Current, mA", "umi");
     item->edit->flags |= VFD_FLAG_TIM_UPD;
     item = vfd_menu_append_child(pmain->next, "Voltage, V", "umu");
     item->edit->flags |= VFD_FLAG_TIM_UPD;
+    item = vfd_menu_append_child(pmain->next, "Alarms", "alarms");
+    item->edit->flags |= VFD_FLAG_TIM_UPD;
+    g_vfdstatus = vfd_menu_append_child(pmain->next, "Status(I U Alm)", "status");
+    g_vfdstatus->edit->flags |= VFD_FLAG_TIM_UPD;
+    vfd_menu_ok();
+#endif
 
     adc_start();
 }
@@ -149,30 +218,97 @@ void lnah_data_upd(void)
     if(!ptr)
         return;
     static uint32_t acci = 0, accu = 0;
+    static uint32_t outen_counter = 0;
+    uint32_t acci0 = 0, accu0 = 0;
     static uint16_t j = 0;
     uint16_t k = 0;
     for(k = 0; k < ADC_BUF_SZ/sizeof(uint16_t); k++)
     {
-        if(k == 0)
-            g_umi0 = ptr[k];
-        if(k == 1)
-            g_umu0 = ptr[k];
         if(k % 2)
-            accu += ptr[k];
+            accu0 += ptr[k];
         else
-            acci += ptr[k];
+            acci0 += ptr[k];
     }
     j += k/2;
-    if(j >= 1024)
+    acci += acci0;
+    accu += accu0;
+    if(j >= 4096)
     {
         g_acci = acci;
         g_accu = accu;
-        g_umi = acci >> 8;
-        g_umu = accu >> 10;
+        g_umi = acci >> 10;
+        g_umu = accu >> 12;
         acci = 0;
         accu = 0;
         j = 0;
+        led_toggle();
+        lnah_counter++;
+        if(g_umi0 == 0)
+            g_umi0 = g_umi;
+        g_umi = (g_umi > g_umi0) ? (g_umi - g_umi0) : 0;
     }
-    lnah_counter++;
+    if((acci0 >> 5) >= (g_thri + g_umi0))
+    {
+        HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), GPIO_PIN_RESET);
+        g_outen = 0;
+        g_alarms |= LNAH_ALM_I;
+        return;
+    }
+    if(g_outen == 0)
+    {
+        outen_counter = 0;
+        return;
+    }
+    return;
+    if((accu0 >> 7) > g_thru4)
+    {
+        HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), GPIO_PIN_RESET);
+        g_outen = 0;
+        g_alarms |= LNAH_ALM_U4;
+        return;
+    }
+    if((accu0 >> 7) > g_thru3)
+    {
+        g_alarms |= LNAH_ALM_U3;
+        return;
+    }
+    else
+        g_alarms &= ~LNAH_ALM_U3;
+    if(outen_counter < 15)
+        outen_counter += 1;
+    if(outen_counter < 15)
+        return;
+    if((accu0 >> 7) < g_thru1)
+    {
+        HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), GPIO_PIN_RESET);
+        g_outen = 0;
+        g_alarms |= LNAH_ALM_U1;
+        return;
+    }
+    if((accu0 >> 7) < g_thru2)
+    {
+        g_alarms |= LNAH_ALM_U2;
+        return;
+    }
+    else
+        g_alarms &= ~LNAH_ALM_U2;
 }
+
+#ifdef ENABLE_VFD
+void vfd_menu_ok(void)
+{
+    if(pstate->sel == g_vfdouten)
+    {
+        pstate->sel = g_vfdstatus;
+        pstate->scroll = g_vfdstatus;
+    }
+    else
+    {
+        pstate->sel = g_vfdouten;
+        pstate->scroll = g_vfdouten;
+    }
+    pstate->sel->edit->flags |= VFD_FLAG_EDIT;
+    vfd_menu_draw();
+}
+#endif
 
