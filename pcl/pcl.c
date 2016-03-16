@@ -34,6 +34,20 @@ COMMAND(prefix) {
     return picolSetResult(i, pcl_prefix);
 }
 
+static volatile uint32_t g_timer_dt = 0;
+COMMAND(timer) {
+    if(argc == 1)
+        return picolSetIntResult(i, g_timer_dt);
+    if(argc == 2)
+        g_timer_dt = str2int(argv[1]);
+    return PICOL_OK;
+}
+
+
+__weak void pcl_extra_init(picolInterp *i)
+{
+}
+
 #ifdef ENABLE_FLASH
 extern uint16_t pcl_load(picolInterp *i, uint32_t addr);
 #endif
@@ -54,8 +68,10 @@ void pcl_init(void)
 #ifdef ENABLE_ETH
         pcl_eth_init(pcl_interp);
 #endif
+        pcl_extra_init(pcl_interp);
         picolRegisterCmd(pcl_interp, "clear", picol_clear, 0);
         picolRegisterCmd(pcl_interp, "prefix", picol_prefix, 0);
+        picolRegisterCmd(pcl_interp, "timer", picol_timer, 0);
         dbg_send_str3("pcl_init", 1);
         pcl_prefix[0] = 0;
     }
@@ -77,6 +93,19 @@ uint16_t pcl_exec(char *buf)
     if(retcode != PICOL_WAIT)
         mysnprintf(buf, IO_BUF_SZ, "[%d] %s", retcode, pcl_interp->result);
     return retcode;
+}
+
+void pcl_try_timer_cb(void)
+{
+    if(!g_timer_dt)
+        return;
+    uint32_t tnow = 0;
+    static uint32_t timestamp = 0;
+    tnow = uptime();
+    if((tnow >= timestamp) ? ((tnow - timestamp) < g_timer_dt) : (tnow < g_timer_dt))
+        return;
+    pcl_exec("timer_cb");
+    timestamp = tnow;
 }
 
 #define WAIT_TIMEOUT 1000
@@ -127,7 +156,10 @@ void pcl_io(void)
         }
     }
     else
+    {
+        pcl_try_timer_cb();
         return;
+    }
     picolVar *pv = picolGetVar2(pcl_interp, "DEV", 1);
     if(pv)
         dev = pv->val;

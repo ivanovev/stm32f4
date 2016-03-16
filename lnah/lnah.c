@@ -7,6 +7,7 @@
 #define LNAH_ALM_U2     (1 << 2)
 #define LNAH_ALM_U3     (1 << 3)
 #define LNAH_ALM_U4     (1 << 4)
+#define LNAH_ALM_CONN   (1 << 5)
 
 #ifdef ENABLE_VFD
 #include "vfd/vfd_menu.h"
@@ -90,6 +91,19 @@ COMMAND(alarms) {
     return picolSetHex1Result(i, g_alarms);
 }
 
+COMMAND(alarm) {
+    ARITY(argc >= 2, "alarm n 1|0");
+    uint32_t n = str2int(argv[1]);
+    if(n == 2)
+        return picolSetIntResult(i, (g_alarms & (1 << n)) ? 1 : 0);
+    uint32_t v = str2int(argv[2]);
+    if(v)
+        g_alarms |= (1 << n);
+    else
+        g_alarms &= ~(1 << n);
+    return picolSetIntResult(i, v);
+}
+
 COMMAND(umi) {
     volatile uint32_t *ptr = 0;
     if(SUBCMD0("umi") && (argc == 1))
@@ -146,6 +160,27 @@ extern vfd_menu_state_t *pstate;
 vfd_menu_item_t         *g_vfdouten = 0, *g_vfdstatus = 0;
 #endif
 
+void pcl_extra_init(picolInterp *i)
+{
+    picolRegisterCmd(i, "outen", picol_outen, 0);
+    picolRegisterCmd(i, "umi", picol_umi, 0);
+    picolRegisterCmd(i, "umi0", picol_umi, 0);
+    picolRegisterCmd(i, "thri", picol_umi, 0);
+    picolRegisterCmd(i, "umu", picol_umu, 0);
+    picolRegisterCmd(i, "thru1", picol_umu, 0);
+    picolRegisterCmd(i, "thru2", picol_umu, 0);
+    picolRegisterCmd(i, "thru3", picol_umu, 0);
+    picolRegisterCmd(i, "thru4", picol_umu, 0);
+    picolRegisterCmd(i, "alarm", picol_alarm, 0);
+    picolRegisterCmd(i, "alarms", picol_alarms, 0);
+    picolRegisterCmd(i, "status", picol_status, 0);
+    picolRegisterCmd(i, "acci", picol_acci, 0);
+    picolRegisterCmd(i, "accu", picol_accu, 0);
+    picolRegisterCmd(i, "lnah", picol_lnah, 0);
+}
+#endif
+
+#if 0
 extern struct picolInterp *pcl_interp;
 static void lnah_pcl_init(void)
 {
@@ -171,10 +206,6 @@ void lnah_init()
     GPIO_InitTypeDef gpio_init;
     GPIO_INIT(OUTEN_GPIO, OUTEN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
     HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), GPIO_PIN_RESET);
-
-#ifdef ENABLE_PCL
-    lnah_pcl_init();
-#endif
 
 #ifdef ENABLE_VFD
     g_vfdouten = vfd_menu_append_child(pmain, "Out Enable", "outen");

@@ -10,6 +10,8 @@ COMMAND(math2) {
     if(EQ(argv[0], "!=")) result = (arg1 != arg2);
     if(EQ(argv[0], "/")) result = (arg1 / arg2);
     if(EQ(argv[0], "%")) result = (arg1 % arg2);
+    if(EQ(argv[0], "<")) result = (arg1 < arg2);
+    if(EQ(argv[0], ">")) result = (arg1 > arg2);
     if(EQ(argv[0], "<<")) result = (arg1 << arg2);
     if(EQ(argv[0], ">>")) result = (arg1 >> arg2);
     return picolSetIntResult(i, result);
@@ -44,7 +46,7 @@ void pcl_math_init(picolInterp *i)
 {
     int j;
     char *name2[] =
-        {"==", "!=", "/", "%", "<<", ">>"};
+        {"==", "!=", "/", "%", "<", ">", "<<", ">>"};
     for (j = 0; j < (int)(sizeof(name2)/sizeof(char*)); j++)
         picolRegisterCmd(i, name2[j], picol_math2, 0);
     char *namen[] =

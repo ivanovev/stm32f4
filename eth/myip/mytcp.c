@@ -164,7 +164,6 @@ uint16_t myip_tcp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, eth
         return 0;
     if(flags == TCP_FIN)
     {
-        myip_new_tcp_con(tfrmo);
         tcp_con.ackn = HTONS_32(tcpi->seqn) + 1;
         tcp_con.seqn = HTONS_32(tcpi->ackn);
         myip_make_tcp_frame(tfrmo, 0);
@@ -173,6 +172,7 @@ uint16_t myip_tcp_frm_handler(ethfrm_t *in, uint16_t sz, uint16_t con_index, eth
         else
             tcpo->flags = TCP_FIN | TCP_ACK;
         tcp_con.state = TCP_CON_CLOSED;
+        myip_new_tcp_con(tfrmo);
         myip_tcp_init();
         return sz;
     }

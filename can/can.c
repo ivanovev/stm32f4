@@ -16,14 +16,14 @@ void can_init(void)
     hcan.Init.TTCM = DISABLE;
     hcan.Init.ABOM = DISABLE;
     hcan.Init.AWUM = DISABLE;
-    hcan.Init.NART = ENABLE;
+    hcan.Init.NART = DISABLE;
     hcan.Init.RFLM = DISABLE;
     hcan.Init.TXFP = DISABLE;
-    hcan.Init.Mode = CAN_MODE_LOOPBACK;
+    hcan.Init.Mode = CAN_MODE_NORMAL;
     hcan.Init.SJW = CAN_SJW_1TQ;
-    hcan.Init.BS1 = CAN_BS1_3TQ;
-    hcan.Init.BS2 = CAN_BS2_2TQ;
-    hcan.Init.Prescaler = 7;
+    hcan.Init.BS1 = CAN_BS1_6TQ;
+    hcan.Init.BS2 = CAN_BS2_8TQ;
+    hcan.Init.Prescaler = 2;
     if(HAL_CAN_Init(&hcan) != HAL_OK)
     {
         Error_Handler();
