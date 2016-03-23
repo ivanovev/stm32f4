@@ -138,7 +138,6 @@ COMMAND(gpio) {
 COMMAND(btn) {
     ARITY(argc >= 3, "btn [a n ...] ...");
     uint8_t j;
-    uint32_t pin;
     GPIO_TypeDef *gpiox = 0;
     for(j = 1; j < argc; j++)
     {
@@ -180,10 +179,40 @@ COMMAND(adc) {
 #endif
 
 #ifdef ENABLE_CAN
-extern uint32_t rxcounter;
+extern volatile uint32_t rxcounter;
+extern CAN_HandleTypeDef hcan;
 COMMAND(can) {
     ARITY((argc >= 2), "can cmd");
     uint32_t j = 0;
+    if(SUBCMD1("init"))
+    {
+        j = CAN_MODE_NORMAL;
+        if(SUBCMD2("loopback"))
+            j = CAN_MODE_LOOPBACK;
+        if(SUBCMD2("silent"))
+            j = CAN_MODE_SILENT;
+        can_reset(j);
+        return picolSetHex1Result(i, HAL_CAN_GetState(&hcan));
+    }
+    if(SUBCMD1("rx"))
+    {
+        can_rx_start();
+        return picolSetHex1Result(i, HAL_CAN_GetState(&hcan));
+    }
+    if(SUBCMD1("err"))
+    {
+        return picolSetHex4Result(i, HAL_CAN_GetError(&hcan));
+    }
+    if(SUBCMD1("stdid"))
+    {
+        if(argc >= 3)
+            j = str2int(argv[2]);
+        return picolSetHex4Result(i, can_msg_stdid(j));
+    }
+    if(SUBCMD1("status"))
+    {
+        return picolSetHex1Result(i, HAL_CAN_GetState(&hcan));
+    }
     if(SUBCMD1("test"))
     {
         j = can_send_data(0);
@@ -198,7 +227,7 @@ COMMAND(can) {
     {
         if(argc == 2)
             return picolSetHex4Result(i, *reg_ptr);
-        if(argc == 4)
+        if(argc == 3)
             *reg_ptr = str2int(argv[2]);
         return picolSetResult(i, argv[2]);
     }

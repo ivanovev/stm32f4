@@ -305,7 +305,8 @@ int double2str(char *buf, int len, double f, char *pr)
     if(!d2)
         return (ptr - buf);
     ptr += mysnprintf(ptr, len - (ptr - buf), ".");
-    ptr += mysnprintf(ptr, len - (ptr - buf), "%d", d2);
+    ptr += int2str(d2, ptr, 10, p);
+    //ptr += mysnprintf(ptr, len - (ptr - buf), "%d", d2);
     return (ptr - buf);
 }
 

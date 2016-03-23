@@ -14,6 +14,7 @@
 
 extern vfd_menu_state_t   *pstate;
 extern vfd_menu_item_t    *pmain;
+#endif
 
 extern ADC_HandleTypeDef hadc;
 extern ADC_ChannelConfTypeDef scfg;
@@ -61,13 +62,14 @@ void adc_init(void)
             Error_Handler();
         }
     }
-    adc_tim_config(9999);
+    adc_tim_config(600);
 }
 
-#ifdef ENABLE_PCL
 static volatile uint32_t g_acci = 0, g_accu = 0, g_umi = 0, g_umu = 0, g_outen = 0, g_thri = 12000, g_alarms = 0, g_umi0 = 0;
 static volatile uint32_t g_thru1 = 700, g_thru2 = 2300, g_thru3 = 2500, g_thru4 = 3600;
+static volatile float g_kmi = 1.01;
 
+#ifdef ENABLE_PCL
 COMMAND(outen) {
     if(argc > 1)
     {
@@ -122,6 +124,14 @@ COMMAND(umi) {
     return picolSetResult(i, buf);
 }
 
+COMMAND(kmi) {
+    if(argc == 2)
+        g_kmi = atof(argv[1]);
+    char buf[16];
+    double2str(buf, sizeof(buf), g_kmi, "6");
+    return picolSetResult(i, buf);
+}
+
 COMMAND(umu) {
     volatile uint32_t *ptr = 0;
     if(SUBCMD0("umu") && (argc == 1))
@@ -165,6 +175,7 @@ void pcl_extra_init(picolInterp *i)
     picolRegisterCmd(i, "outen", picol_outen, 0);
     picolRegisterCmd(i, "umi", picol_umi, 0);
     picolRegisterCmd(i, "umi0", picol_umi, 0);
+    picolRegisterCmd(i, "kmi", picol_kmi, 0);
     picolRegisterCmd(i, "thri", picol_umi, 0);
     picolRegisterCmd(i, "umu", picol_umu, 0);
     picolRegisterCmd(i, "thru1", picol_umu, 0);
@@ -237,12 +248,6 @@ void lnah_init()
     adc_start();
 }
 
-#else
-void lnah_init()
-{
-}
-#endif
-
 void lnah_data_upd(void)
 {
     uint16_t *ptr = (uint16_t*)adc_get_data_ptr();
@@ -251,7 +256,7 @@ void lnah_data_upd(void)
     static uint32_t acci = 0, accu = 0;
     static uint32_t outen_counter = 0;
     uint32_t acci0 = 0, accu0 = 0;
-    static uint16_t j = 0;
+    static uint32_t j = 0;
     uint16_t k = 0;
     for(k = 0; k < ADC_BUF_SZ/sizeof(uint16_t); k++)
     {
@@ -263,12 +268,12 @@ void lnah_data_upd(void)
     j += k/2;
     acci += acci0;
     accu += accu0;
-    if(j >= 4096)
+    if(j >= 65536)
     {
         g_acci = acci;
         g_accu = accu;
-        g_umi = acci >> 10;
-        g_umu = accu >> 12;
+        g_umi = acci >> 14;
+        g_umu = accu >> 16;
         acci = 0;
         accu = 0;
         j = 0;
@@ -277,6 +282,7 @@ void lnah_data_upd(void)
         if(g_umi0 == 0)
             g_umi0 = g_umi;
         g_umi = (g_umi > g_umi0) ? (g_umi - g_umi0) : 0;
+        g_umi = (uint32_t)(g_kmi*g_umi);
     }
     if((acci0 >> 5) >= (g_thri + g_umi0))
     {
@@ -290,7 +296,6 @@ void lnah_data_upd(void)
         outen_counter = 0;
         return;
     }
-    return;
     if((accu0 >> 7) > g_thru4)
     {
         HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), GPIO_PIN_RESET);
@@ -305,9 +310,9 @@ void lnah_data_upd(void)
     }
     else
         g_alarms &= ~LNAH_ALM_U3;
-    if(outen_counter < 15)
+    if(outen_counter < 500)
         outen_counter += 1;
-    if(outen_counter < 15)
+    if(outen_counter < 500)
         return;
     if((accu0 >> 7) < g_thru1)
     {

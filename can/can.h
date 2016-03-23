@@ -17,6 +17,7 @@
 #define CANx_RX_IRQHandler  JOIN3(CAN, CANn, _RX0_IRQHandler)
 #define CANx_TX_IRQn        JOIN3(CAN, CANn, _TX_IRQn)
 #define CANx_TX_IRQHandler  JOIN3(CAN, CANn, _TX_IRQHandler)
+
 #define CAN_TX_GPIO B
 #define CAN_RX_GPIO B
 #define CAN_TX_PIN 9
@@ -31,6 +32,9 @@
 #endif
 
 void                can_init(void);
+void                can_reset(uint32_t mode);
+void                can_rx_start(void);
+uint32_t            can_msg_stdid(uint32_t stdid);
 void                can_deinit(void);
 uint32_t            can_send_data(uint8_t data[]);
 volatile uint32_t*  can_get_reg_ptr(char *reg);

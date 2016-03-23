@@ -3,32 +3,13 @@
 
 CAN_HandleTypeDef hcan;
 extern void Error_Handler(void);
-uint32_t rxcounter = 0;
+volatile uint32_t rxcounter = 0;
 
 void can_init(void)
 {
-    CAN_FilterConfTypeDef filtercfg;
-    static CanTxMsgTypeDef cantxmsg;
-    static CanRxMsgTypeDef canrxmsg;
-    hcan.Instance = CANx;
-    hcan.pTxMsg = &cantxmsg;
-    hcan.pRxMsg = &canrxmsg;
-    hcan.Init.TTCM = DISABLE;
-    hcan.Init.ABOM = DISABLE;
-    hcan.Init.AWUM = DISABLE;
-    hcan.Init.NART = DISABLE;
-    hcan.Init.RFLM = DISABLE;
-    hcan.Init.TXFP = DISABLE;
-    hcan.Init.Mode = CAN_MODE_NORMAL;
-    hcan.Init.SJW = CAN_SJW_1TQ;
-    hcan.Init.BS1 = CAN_BS1_6TQ;
-    hcan.Init.BS2 = CAN_BS2_8TQ;
-    hcan.Init.Prescaler = 2;
-    if(HAL_CAN_Init(&hcan) != HAL_OK)
-    {
-        Error_Handler();
-    }
+    can_reset(CAN_MODE_LOOPBACK);
 
+    CAN_FilterConfTypeDef filtercfg;
     filtercfg.FilterNumber = 0;
     filtercfg.FilterMode = CAN_FILTERMODE_IDMASK;
     filtercfg.FilterScale = CAN_FILTERSCALE_32BIT;
@@ -50,12 +31,50 @@ void can_init(void)
     hcan.pTxMsg->IDE = CAN_ID_STD;
     hcan.pTxMsg->DLC = 8;
 
-#if 1
+    can_rx_start();
+}
+
+void can_reset(uint32_t mode)
+{
+    static CanTxMsgTypeDef cantxmsg;
+    static CanRxMsgTypeDef canrxmsg;
+    hcan.Instance = CANx;
+    hcan.pTxMsg = &cantxmsg;
+    hcan.pRxMsg = &canrxmsg;
+    hcan.Init.TTCM = DISABLE;
+    hcan.Init.ABOM = DISABLE;
+    hcan.Init.AWUM = DISABLE;
+    hcan.Init.NART = DISABLE;
+    hcan.Init.RFLM = DISABLE;
+    hcan.Init.TXFP = DISABLE;
+    hcan.Init.Mode = mode;
+    hcan.Init.SJW = CAN_SJW_1TQ;
+    hcan.Init.BS1 = CAN_BS1_11TQ;
+    hcan.Init.BS2 = CAN_BS2_2TQ;
+    hcan.Init.Prescaler = 3;
+    if(HAL_CAN_Init(&hcan) != HAL_OK)
+    {
+        Error_Handler();
+    }
+}
+
+void can_rx_start(void)
+{
+#if 0
     if(HAL_CAN_Receive_IT(&hcan, CAN_FIFO0) != HAL_OK)
     {
         Error_Handler();
     }
+#else
+    __HAL_CAN_ENABLE_IT(&hcan, CAN_IT_FMP0);
 #endif
+}
+
+uint32_t can_msg_stdid(uint32_t stdid)
+{
+    if(stdid)
+        hcan.pTxMsg->StdId = stdid;
+    return hcan.pTxMsg->StdId;
 }
 
 void can_deinit()
@@ -70,7 +89,7 @@ uint32_t can_send_data(uint8_t data[])
         hcan.pTxMsg->Data[i] = data ? data[i] : (uint8_t)i;
     for(i = 0; i < 1; i++)
     {
-        j = HAL_CAN_Transmit_IT(&hcan);
+        j = HAL_CAN_Transmit(&hcan, 10);
         if(j != HAL_OK)
         {
             break;
@@ -88,6 +107,8 @@ volatile uint32_t* can_get_reg_ptr(char *reg)
         return &(hcan.Instance->MSR);
     if(!mystrncmp(reg, "tsr", 3))
         return &(hcan.Instance->TSR);
+    if(!mystrncmp(reg, "ier", 3))
+        return &(hcan.Instance->IER);
     if(!mystrncmp(reg, "esr", 3))
         return &(hcan.Instance->ESR);
     if(!mystrncmp(reg, "btr", 3))
@@ -98,13 +119,21 @@ volatile uint32_t* can_get_reg_ptr(char *reg)
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *phcan)
 {
     led_toggle();
+    rxcounter += phcan->pRxMsg->DLC;
+#if 0
     if((phcan->pRxMsg->StdId == 0x321) && (phcan->pRxMsg->IDE == CAN_ID_STD))
     {
-        rxcounter += phcan->pRxMsg->DLC;
     }
+#endif
 
-#if 1
+#if 0
+    dbg_send_hex2("state1", hcan.State);
+    if(HAL_CAN_GetState(&hcan) == HAL_CAN_STATE_BUSY_RX)
+        hcan.State = HAL_CAN_STATE_READY;
     HAL_CAN_Receive_IT(&hcan, CAN_FIFO0);
+    dbg_send_hex2("state2", hcan.State);
+#else
+    __HAL_CAN_ENABLE_IT(&hcan, CAN_IT_FMP0);
 #endif
 }
 
