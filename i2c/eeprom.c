@@ -2,12 +2,15 @@
 #include "i2c/eeprom.h"
 
 extern I2C_HandleTypeDef hi2c;
+volatile g_eeprom_write_enable = 1;
 
 #define EEPROM_WRITE_ADDR 0xAE
 #define EEPROM_READ_ADDR 0xAF
 
 uint16_t eeprom_write_data(uint16_t addr, uint8_t *data, uint16_t sz)
 {
+    if(g_eeprom_write_enable == 0)
+        return;
     uint8_t buf[34];
     if(sz > 32)
         sz = 32;
@@ -23,6 +26,13 @@ uint16_t eeprom_write_data(uint16_t addr, uint8_t *data, uint16_t sz)
         }
     }
     return sz;
+}
+
+uint8_t eeprom_write_enable(uint8_t enable)
+{
+    if((enable == 0) || (enable == 1))
+        g_eeprom_write_enable = enable;
+    return g_eeprom_write_enable;
 }
 
 uint16_t eeprom_read_data(uint16_t addr, uint8_t *data, uint16_t sz)

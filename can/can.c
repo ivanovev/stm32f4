@@ -42,7 +42,7 @@ void can_reset(uint32_t mode)
     hcan.pTxMsg = &cantxmsg;
     hcan.pRxMsg = &canrxmsg;
     hcan.Init.TTCM = DISABLE;
-    hcan.Init.ABOM = DISABLE;
+    hcan.Init.ABOM = ENABLE;
     hcan.Init.AWUM = DISABLE;
     hcan.Init.NART = DISABLE;
     hcan.Init.RFLM = DISABLE;

@@ -96,7 +96,7 @@ COMMAND(eth) {
     else if(SUBCMD1("macaddr"))
     {
         uint8_t macaddr[6] = {MAC_ADDR0, MAC_ADDR1, MAC_ADDR2, MAC_ADDR3, MAC_ADDR4, MAC_ADDR5};
-        if(argc == 2)
+        if((argc == 2) || ((argc == 3) ? SUBCMD2("-") : 0))
         {
 #ifdef ENABLE_I2C
             eeprom_macaddr_read(macaddr);
@@ -110,16 +110,19 @@ COMMAND(eth) {
                 rng_macaddr(macaddr);
 #endif
             }
-            else
+            else if(mystrnlen(argv[2], 20) > 12)
             {
                 if(parse_eth_addr(argv[2], macaddr, ':', 6, 16) != 6)
                     return PICOL_ERR;
-            }
 #ifdef ENABLE_I2C
-            eeprom_macaddr_write(macaddr);
+                eeprom_macaddr_write(macaddr);
 #endif
+            }
         }
-        mysnprintf(buf, sizeof(buf), "%02X:%02X:%02X:%02X:%02X:%02X", macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
+        if(argc == 2)
+            mysnprintf(buf, sizeof(buf), "%02X:%02X:%02X:%02X:%02X:%02X", macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
+        else if(SUBCMD2("-"))
+            mysnprintf(buf, sizeof(buf), "%02X%02X%02X%02X%02X%02X", macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
         return picolSetResult(i, buf);
     }
     else if(SUBCMD1("init"))

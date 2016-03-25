@@ -2,12 +2,23 @@
 #include <main.h>
 #include "lnah/lnah.h"
 
-#define LNAH_ALM_I      (1 << 0)
-#define LNAH_ALM_U1     (1 << 1)
-#define LNAH_ALM_U2     (1 << 2)
-#define LNAH_ALM_U3     (1 << 3)
-#define LNAH_ALM_U4     (1 << 4)
-#define LNAH_ALM_CONN   (1 << 5)
+#define LNAH_ALM_U1         (1 << 1)
+#define LNAH_ALM_U2         (1 << 2)
+#define LNAH_ALM_U3         (1 << 3)
+#define LNAH_ALM_U4         (1 << 4)
+#define LNAH_ALM_I1         (1 << 5)
+#define LNAH_ALM_I2         (1 << 6)
+#define LNAH_ALM_I3         (1 << 0)
+
+#define EEPROM_U1_ADDR      0x100
+#define EEPROM_U2_ADDR      0x104
+#define EEPROM_U3_ADDR      0x108
+#define EEPROM_U4_ADDR      0x10C
+#define EEPROM_I1_ADDR      0x110
+#define EEPROM_I2_ADDR      0x114
+#define EEPROM_I3_ADDR      0x118
+#define EEPROM_KMI_ADDR     0x120
+#define EEPROM_UMI0_ADDR    0x124
 
 #ifdef ENABLE_VFD
 #include "vfd/vfd_menu.h"
@@ -65,9 +76,10 @@ void adc_init(void)
     adc_tim_config(600);
 }
 
-static volatile uint32_t g_acci = 0, g_accu = 0, g_umi = 0, g_umu = 0, g_outen = 0, g_thri = 12000, g_alarms = 0, g_umi0 = 0;
+static volatile uint32_t g_acci = 0, g_accu = 0, g_umi = 0, g_umu = 0, g_outen = 1, g_alarms = 0;
 static volatile uint32_t g_thru1 = 700, g_thru2 = 2300, g_thru3 = 2500, g_thru4 = 3600;
-static volatile float g_kmi = 1.01;
+static volatile uint32_t g_thri1 = 60, g_thri2 = 200, g_thri3 = 12000, g_umi0 = 0;
+static volatile float g_kmi = 1.000;
 
 #ifdef ENABLE_PCL
 COMMAND(outen) {
@@ -108,12 +120,29 @@ COMMAND(alarm) {
 
 COMMAND(umi) {
     volatile uint32_t *ptr = 0;
+    volatile uint16_t addr = 0;
     if(SUBCMD0("umi") && (argc == 1))
         ptr = &g_umi;
     if(SUBCMD0("umi0"))
+    {
         ptr = &g_umi0;
-    if(SUBCMD0("thri"))
-        ptr = &g_thri;
+        addr = EEPROM_UMI0_ADDR;
+    }
+    if(SUBCMD0("thri1"))
+    {
+        ptr = &g_thri1;
+        addr = EEPROM_I1_ADDR;
+    }
+    if(SUBCMD0("thri2"))
+    {
+        ptr = &g_thri2;
+        addr = EEPROM_I2_ADDR;
+    }
+    if(SUBCMD0("thri3"))
+    {
+        ptr = &g_thri3;
+        addr = EEPROM_I2_ADDR;
+    }
     if(!ptr)
         return PICOL_ERR;
     if(argc >= 2)
@@ -121,6 +150,10 @@ COMMAND(umi) {
     double f = (double)*ptr;
     char buf[16];
     double2str(buf, sizeof(buf), f/10, "1");
+#ifdef ENABLE_I2C
+    if(addr && (argc >= 2))
+        eeprom_write_data(addr, (uint8_t*)ptr, 4);
+#endif
     return picolSetResult(i, buf);
 }
 
@@ -129,21 +162,37 @@ COMMAND(kmi) {
         g_kmi = atof(argv[1]);
     char buf[16];
     double2str(buf, sizeof(buf), g_kmi, "6");
+#ifdef ENABLE_I2C
+    eeprom_write_data(EEPROM_KMI_ADDR, (uint8_t*)&g_kmi, 4);
+#endif
     return picolSetResult(i, buf);
 }
 
 COMMAND(umu) {
     volatile uint32_t *ptr = 0;
+    volatile uint16_t addr = 0;
     if(SUBCMD0("umu") && (argc == 1))
         ptr = &g_umu;
     if(SUBCMD0("thru1"))
+    {
         ptr = &g_thru1;
+        addr = EEPROM_U1_ADDR;
+    }
     if(SUBCMD0("thru2"))
+    {
         ptr = &g_thru2;
+        addr = EEPROM_U2_ADDR;
+    }
     if(SUBCMD0("thru3"))
+    {
         ptr = &g_thru3;
+        addr = EEPROM_U3_ADDR;
+    }
     if(SUBCMD0("thru4"))
+    {
         ptr = &g_thru4;
+        addr = EEPROM_U4_ADDR;
+    }
     if(!ptr)
         return PICOL_ERR;
     if(argc >= 2)
@@ -151,6 +200,10 @@ COMMAND(umu) {
     double f = (double)*ptr;
     char buf[16];
     double2str(buf, sizeof(buf), f/100, "2");
+#ifdef ENABLE_I2C
+    if(addr && (argc >= 2))
+        eeprom_write_data(addr, (uint8_t*)ptr, 4);
+#endif
     return picolSetResult(i, buf);
 }
 
@@ -175,8 +228,10 @@ void pcl_extra_init(picolInterp *i)
     picolRegisterCmd(i, "outen", picol_outen, 0);
     picolRegisterCmd(i, "umi", picol_umi, 0);
     picolRegisterCmd(i, "umi0", picol_umi, 0);
+    picolRegisterCmd(i, "thri1", picol_umi, 0);
+    picolRegisterCmd(i, "thri2", picol_umi, 0);
+    picolRegisterCmd(i, "thri3", picol_umi, 0);
     picolRegisterCmd(i, "kmi", picol_kmi, 0);
-    picolRegisterCmd(i, "thri", picol_umi, 0);
     picolRegisterCmd(i, "umu", picol_umu, 0);
     picolRegisterCmd(i, "thru1", picol_umu, 0);
     picolRegisterCmd(i, "thru2", picol_umu, 0);
@@ -212,6 +267,20 @@ static void lnah_pcl_init(void)
 }
 #endif
 
+#ifdef ENABLE_I2C
+static void lnah_read_iu(uint16_t addr, uint32_t *ptr)
+{
+    uint32_t tmp = 0;
+    if(eeprom_read_data(addr, (uint8_t*)&tmp, 4) == 4)
+    {
+        if(tmp != 0xFFFFFFFF)
+        {
+            *ptr = tmp;
+        }
+    }
+}
+#endif
+
 void lnah_init()
 {
     GPIO_InitTypeDef gpio_init;
@@ -244,6 +313,19 @@ void lnah_init()
     g_vfdstatus->edit->flags |= VFD_FLAG_TIM_UPD;
     vfd_menu_ok();
 #endif
+#ifdef ENABLE_I2C
+    lnah_read_iu(EEPROM_U1_ADDR,    (uint32_t*)&g_thru1);
+    lnah_read_iu(EEPROM_U2_ADDR,    (uint32_t*)&g_thru2);
+    lnah_read_iu(EEPROM_U3_ADDR,    (uint32_t*)&g_thru3);
+    lnah_read_iu(EEPROM_U4_ADDR,    (uint32_t*)&g_thru4);
+    lnah_read_iu(EEPROM_I1_ADDR,    (uint32_t*)&g_thri1);
+    lnah_read_iu(EEPROM_I2_ADDR,    (uint32_t*)&g_thri2);
+    lnah_read_iu(EEPROM_I3_ADDR,    (uint32_t*)&g_thri3);
+    lnah_read_iu(EEPROM_UMI0_ADDR,  (uint32_t*)&g_umi0);
+    lnah_read_iu(EEPROM_KMI_ADDR,   (uint32_t*)&g_kmi);
+#endif
+    if(g_outen)
+        HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), GPIO_PIN_SET);
 
     adc_start();
 }
@@ -276,56 +358,60 @@ void lnah_data_upd(void)
         g_umu = accu >> 16;
         acci = 0;
         accu = 0;
-        j = 0;
         led_toggle();
-        lnah_counter++;
+        j = 0;
+        //lnah_counter++;
         if(g_umi0 == 0)
             g_umi0 = g_umi;
-        g_umi = (g_umi > g_umi0) ? (g_umi - g_umi0) : 0;
         g_umi = (uint32_t)(g_kmi*g_umi);
+        g_umi = (g_umi > g_umi0) ? (g_umi - g_umi0) : 0;
     }
-    if((acci0 >> 5) >= (g_thri + g_umi0))
+    acci0 >>= 5;
+    if(acci0 >= (g_thri3 + g_umi0))
     {
         HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), GPIO_PIN_RESET);
         g_outen = 0;
-        g_alarms |= LNAH_ALM_I;
+        g_alarms = LNAH_ALM_I3;
         return;
     }
+    if((acci0 < (g_thri1 + g_umi0)) && (g_outen == 1))
+        g_alarms |= LNAH_ALM_I1;
+    else
+        g_alarms &= ~LNAH_ALM_I1;
+    if(acci0 > (g_thri2 + g_umi0))
+        g_alarms |= LNAH_ALM_I2;
+    else
+        g_alarms &= ~LNAH_ALM_I2;
     if(g_outen == 0)
     {
         outen_counter = 0;
         return;
     }
-    if((accu0 >> 7) > g_thru4)
+    accu0 >>= 7;
+    if(accu0 > g_thru4)
     {
         HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), GPIO_PIN_RESET);
         g_outen = 0;
-        g_alarms |= LNAH_ALM_U4;
+        g_alarms = LNAH_ALM_U4;
         return;
     }
-    if((accu0 >> 7) > g_thru3)
-    {
+    if(accu0 > g_thru3)
         g_alarms |= LNAH_ALM_U3;
-        return;
-    }
     else
         g_alarms &= ~LNAH_ALM_U3;
-    if(outen_counter < 500)
+    if(outen_counter < 5000)
         outen_counter += 1;
-    if(outen_counter < 500)
+    if(outen_counter < 5000)
         return;
-    if((accu0 >> 7) < g_thru1)
+    if(accu0 < g_thru1)
     {
         HAL_GPIO_WritePin(GPIO(OUTEN_GPIO), PIN(OUTEN_PIN), GPIO_PIN_RESET);
         g_outen = 0;
-        g_alarms |= LNAH_ALM_U1;
+        g_alarms = LNAH_ALM_U1;
         return;
     }
-    if((accu0 >> 7) < g_thru2)
-    {
+    if(accu0 < g_thru2)
         g_alarms |= LNAH_ALM_U2;
-        return;
-    }
     else
         g_alarms &= ~LNAH_ALM_U2;
 }
@@ -333,15 +419,15 @@ void lnah_data_upd(void)
 #ifdef ENABLE_VFD
 void vfd_menu_ok(void)
 {
-    if(pstate->sel == g_vfdouten)
-    {
-        pstate->sel = g_vfdstatus;
-        pstate->scroll = g_vfdstatus;
-    }
-    else
+    if(pstate->sel == g_vfdstatus)
     {
         pstate->sel = g_vfdouten;
         pstate->scroll = g_vfdouten;
+    }
+    else
+    {
+        pstate->sel = g_vfdstatus;
+        pstate->scroll = g_vfdstatus;
     }
     pstate->sel->edit->flags |= VFD_FLAG_EDIT;
     vfd_menu_draw();

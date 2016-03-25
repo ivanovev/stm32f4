@@ -154,8 +154,8 @@ void vfd_menu_init(void)
     psys = vfd_menu_append(pmain, "System", 0);
 #ifdef ENABLE_ETH
     pparent = vfd_menu_append_child(psys, "Ethernet", 0);
-    vfd_menu_append_child(pparent, "IP address", "sys ipaddr");
-    vfd_menu_append_child(pparent, "MAC address", "sys macaddr");
+    vfd_menu_append_child(pparent, "IP address", "eth ipaddr");
+    vfd_menu_append_child(pparent, "MAC address", "eth macaddr -");
 #ifdef ENABLE_PTP
     pparent = vfd_menu_append_child(psys, "PTP", 0);
     item = vfd_menu_append_child(pparent, "Time", "ptp time");
@@ -411,6 +411,7 @@ __weak void vfd_menu_ok(void)
 
 void vfd_menu_tim_upd(void)
 {
+    static uint16_t vfd_tim_counter = 0;
     if(pstate->sel->edit)
     {
         if(vfd_menu_flag(pstate->sel, VFD_FLAG_EDIT) == 1)
@@ -424,6 +425,12 @@ void vfd_menu_tim_upd(void)
                 vfd_str(buf);
             }
         }
+    }
+    vfd_tim_counter++;
+    if(vfd_tim_counter > 100)
+    {
+        vfd_brightness(2);
+        vfd_tim_counter = 0;
     }
 }
 

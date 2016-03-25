@@ -315,11 +315,12 @@ COMMAND(uart) {
 
 #ifdef ENABLE_I2C
 COMMAND(eeprom) {
-    ARITY(argc > 3, "eeprom read|write addr ...");
+    ARITY(argc >= 3, "eeprom read|write addr ...");
     uint16_t addr = str2int(argv[2]);
     uint8_t buf[MAXSTR];
     uint8_t buf1[32];
     uint16_t sz = 0, j, k;
+    uint32_t *tmpi = (uint32_t*)buf1;
     if(SUBCMD1("read")) {
         sz = str2int(argv[3]);
         if(eeprom_read_data(addr, buf1, sz) == 0)
@@ -334,12 +335,35 @@ COMMAND(eeprom) {
         return picolSetResult(i, (char*)buf);
     }
     if(SUBCMD1("write")) {
+        if(SUBCMD2("enable"))
+        {
+            uint8_t en = 0;
+            if(argc > 3)
+            {
+                en = (uint8_t)str2int(argv[3]);
+                eeprom_write_enable(en);
+            }
+            else
+                en = eeprom_write_enable(2);
+            return picolSetIntResult(i, en);
+        }
         sz = argc - 3;
         for(j = 0, k = 0; j < sz; j++)
             buf1[j] = str2int(argv[j + 3]);
         if(eeprom_write_data(addr, buf1, sz) == 0)
             return PICOL_ERR;
         return PICOL_OK;
+    }
+    if(SUBCMD1("readint")) {
+        if(eeprom_read_data(addr, buf1, 4) == 0)
+            return PICOL_ERR;
+        return picolSetIntResult(i, *tmpi);
+    }
+    if(SUBCMD1("writeint")) {
+        *tmpi = str2int(argv[3]);
+        if(eeprom_write_data(addr, buf1, 4) == 0)
+            return PICOL_ERR;
+        return picolSetResult(i, argv[3]);
     }
     return PICOL_ERR;
 }
