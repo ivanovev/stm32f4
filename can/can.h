@@ -34,9 +34,11 @@
 void                can_init(void);
 void                can_reset(uint32_t mode);
 void                can_rx_start(void);
+uint32_t            can_rx_counter(void);
 uint32_t            can_msg_stdid(uint32_t stdid);
+uint8_t             can_msg_dlc(uint8_t dlc);
 void                can_deinit(void);
-uint32_t            can_send_data(uint8_t data[]);
+uint32_t            can_send_test(uint32_t sz);
 volatile uint32_t*  can_get_reg_ptr(char *reg);
 
 #endif

@@ -183,7 +183,8 @@ extern volatile uint32_t rxcounter;
 extern CAN_HandleTypeDef hcan;
 COMMAND(can) {
     ARITY((argc >= 2), "can cmd");
-    uint32_t j = 0;
+    uint32_t j = 0, k = 0;
+    volatile uint32_t *reg_ptr = 0;
     if(SUBCMD1("init"))
     {
         j = CAN_MODE_NORMAL;
@@ -193,6 +194,17 @@ COMMAND(can) {
             j = CAN_MODE_SILENT;
         can_reset(j);
         return picolSetHex1Result(i, HAL_CAN_GetState(&hcan));
+    }
+    if(SUBCMD1("mode"))
+    {
+        reg_ptr = can_get_reg_ptr("btr");
+        if((*reg_ptr & CAN_MODE_SILENT_LOOPBACK) == CAN_MODE_SILENT_LOOPBACK)
+            return picolSetResult(i, "silent_loopback");
+        if(*reg_ptr & CAN_MODE_SILENT)
+            return picolSetResult(i, "silent");
+        if(*reg_ptr & CAN_MODE_LOOPBACK)
+            return picolSetResult(i, "loopback");
+        return picolSetResult(i, "normal");
     }
     if(SUBCMD1("rx"))
     {
@@ -209,20 +221,30 @@ COMMAND(can) {
             j = str2int(argv[2]);
         return picolSetHex4Result(i, can_msg_stdid(j));
     }
-    if(SUBCMD1("status"))
+    if(SUBCMD1("dlc"))
+    {
+        if(argc >= 3)
+            j = str2int(argv[2]);
+        return picolSetHex4Result(i, can_msg_dlc((uint8_t)j));
+    }
+    if(SUBCMD1("state"))
     {
         return picolSetHex1Result(i, HAL_CAN_GetState(&hcan));
     }
     if(SUBCMD1("test"))
     {
-        j = can_send_data(0);
+        k = can_msg_dlc(0);
+        if(argc == 3)
+            k = str2int(argv[2]);
+        if(can_send_test(k) != HAL_OK)
+            return PICOL_ERR;
         return picolSetIntResult(i, j);
     }
     if(SUBCMD1("rxcounter"))
     {
-        return picolSetIntResult(i, rxcounter);
+        return picolSetIntResult(i, can_rx_counter());
     }
-    volatile uint32_t *reg_ptr = can_get_reg_ptr(argv[1]);
+    reg_ptr = can_get_reg_ptr(argv[1]);
     if(reg_ptr)
     {
         if(argc == 2)

@@ -3,7 +3,7 @@
 
 CAN_HandleTypeDef hcan;
 extern void Error_Handler(void);
-volatile uint32_t rxcounter = 0;
+volatile uint32_t g_can_rxcounter = 0, g_can_txcounter = 0;
 
 void can_init(void)
 {
@@ -19,7 +19,7 @@ void can_init(void)
     filtercfg.FilterMaskIdLow = 0x0000;
     filtercfg.FilterFIFOAssignment = 0;
     filtercfg.FilterActivation = ENABLE;
-    filtercfg.BankNumber = 14;
+    filtercfg.BankNumber = 28;
     if(HAL_CAN_ConfigFilter(&hcan, &filtercfg) != HAL_OK)
     {
         Error_Handler();
@@ -29,7 +29,7 @@ void can_init(void)
     hcan.pTxMsg->ExtId = 0x01;
     hcan.pTxMsg->RTR = CAN_RTR_DATA;
     hcan.pTxMsg->IDE = CAN_ID_STD;
-    hcan.pTxMsg->DLC = 8;
+    hcan.pTxMsg->DLC = 1;
 
     can_rx_start();
 }
@@ -42,7 +42,7 @@ void can_reset(uint32_t mode)
     hcan.pTxMsg = &cantxmsg;
     hcan.pRxMsg = &canrxmsg;
     hcan.Init.TTCM = DISABLE;
-    hcan.Init.ABOM = ENABLE;
+    hcan.Init.ABOM = DISABLE;
     hcan.Init.AWUM = DISABLE;
     hcan.Init.NART = DISABLE;
     hcan.Init.RFLM = DISABLE;
@@ -60,7 +60,7 @@ void can_reset(uint32_t mode)
 
 void can_rx_start(void)
 {
-#if 0
+#if 1
     if(HAL_CAN_Receive_IT(&hcan, CAN_FIFO0) != HAL_OK)
     {
         Error_Handler();
@@ -70,6 +70,11 @@ void can_rx_start(void)
 #endif
 }
 
+uint32_t can_rx_counter(void)
+{
+    return g_can_rxcounter;
+}
+
 uint32_t can_msg_stdid(uint32_t stdid)
 {
     if(stdid)
@@ -77,26 +82,47 @@ uint32_t can_msg_stdid(uint32_t stdid)
     return hcan.pTxMsg->StdId;
 }
 
+uint8_t can_msg_dlc(uint8_t dlc)
+{
+    if((1 <= dlc) && (dlc <= 8))
+        hcan.pTxMsg->DLC = dlc;
+    return hcan.pTxMsg->DLC;
+}
+
 void can_deinit()
 {
     HAL_CAN_DeInit(&hcan);
 }
 
-uint32_t can_send_data(uint8_t data[])
+uint32_t can_send_test(uint32_t sz)
 {
-    uint32_t i, j;
-    for(i = 0; i < 8; i++)
-        hcan.pTxMsg->Data[i] = data ? data[i] : (uint8_t)i;
-    for(i = 0; i < 1; i++)
+    uint32_t i, j, k = 0;
+    __HAL_CAN_DISABLE_IT(&hcan, CAN_IT_TME);
+    if(sz < 8)
+        hcan.pTxMsg->DLC = sz;
+    else if(sz >= 8)
+        hcan.pTxMsg->DLC = 8;
+    for(i = 0; i < hcan.pTxMsg->DLC; i++)
+        hcan.pTxMsg->Data[i] = (uint8_t)i;
+
+    j = (sz > 8) ? sz/8 : 1;
+    if(j > 3)
+        j = 3;
+    for(i = 0; i < j; i++)
     {
-        j = HAL_CAN_Transmit(&hcan, 10);
-        if(j != HAL_OK)
+        k = HAL_CAN_Transmit_IT(&hcan);
+        if(k != HAL_OK)
         {
             break;
             //Error_Handler();
         }
     }
-    return j;
+    if(sz > 24)
+    {
+        g_can_txcounter = sz - 24;
+        __HAL_CAN_ENABLE_IT(&hcan, CAN_IT_TME);
+    }
+    return k;
 }
 
 volatile uint32_t* can_get_reg_ptr(char *reg)
@@ -113,13 +139,21 @@ volatile uint32_t* can_get_reg_ptr(char *reg)
         return &(hcan.Instance->ESR);
     if(!mystrncmp(reg, "btr", 3))
         return &(hcan.Instance->BTR);
+    if(!mystrncmp(reg, "fmr", 3))
+        return &(hcan.Instance->FMR);
+    if(!mystrncmp(reg, "fa1r", 4))
+        return &(hcan.Instance->FA1R);
+    if(!mystrncmp(reg, "fm1r", 4))
+        return &(hcan.Instance->FM1R);
+    if(!mystrncmp(reg, "fs1r", 4))
+        return &(hcan.Instance->FS1R);
     return 0;
 }
 
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *phcan)
 {
     led_toggle();
-    rxcounter += phcan->pRxMsg->DLC;
+    g_can_rxcounter += phcan->pRxMsg->DLC;
 #if 0
     if((phcan->pRxMsg->StdId == 0x321) && (phcan->pRxMsg->IDE == CAN_ID_STD))
     {
@@ -135,5 +169,15 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *phcan)
 #else
     __HAL_CAN_ENABLE_IT(&hcan, CAN_IT_FMP0);
 #endif
+}
+
+void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* phcan)
+{
+    if(g_can_txcounter == 0)
+        return;
+    if(g_can_txcounter < 8)
+        phcan->pTxMsg->DLC = g_can_txcounter;
+    HAL_CAN_Transmit_IT(phcan);
+    g_can_txcounter -= phcan->pTxMsg->DLC;
 }
 
