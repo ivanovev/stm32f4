@@ -17,8 +17,9 @@
 #define I2Cx_CLK_ENABLE JOIN3(__I2C, I2Cn, _CLK_ENABLE)
 #define GPIO_AF_I2Cx JOIN(GPIO_AF4_I2C, I2Cn)
 
-void i2c_init(void);
-void i2c_send1(void);
+void        i2c_init(void);
+void        i2c_send1(void);
+uint32_t    i2c_send(uint16_t addr, uint8_t *buf, uint16_t sz);
 
 #endif
 

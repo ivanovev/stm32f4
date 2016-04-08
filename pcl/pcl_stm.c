@@ -336,6 +336,14 @@ COMMAND(uart) {
 #endif
 
 #ifdef ENABLE_I2C
+COMMAND(i2c) {
+    ARITY(argc >= 3, "i2c addr data");
+    uint8_t buf[MAXSTR];
+    uint16_t addr = str2int(argv[1]);
+    uint16_t len = str2bytes(argv[2], buf, sizeof(buf));
+    uint32_t ret = i2c_send(addr, buf, len);
+    return picolSetIntResult(i, ret);
+}
 COMMAND(eeprom) {
     ARITY(argc >= 3, "eeprom read|write addr ...");
     uint16_t addr = str2int(argv[2]);
@@ -439,6 +447,7 @@ void pcl_stm_init(picolInterp *i)
     picolRegisterCmd(i, "flash", picol_flash, 0);
 #endif
 #ifdef ENABLE_I2C
+    picolRegisterCmd(i, "i2c", picol_i2c, 0);
     picolRegisterCmd(i, "eeprom", picol_eeprom, 0);
 #endif
 #ifdef ENABLE_SPI

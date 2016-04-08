@@ -48,3 +48,11 @@ void i2c_send1(void)
     }
 }
 
+uint32_t i2c_send(uint16_t addr, uint8_t *buf, uint16_t sz)
+{
+    uint32_t err = HAL_I2C_Master_Transmit(&hi2c, addr, buf, sz, 10000);
+    if(err)
+        err = HAL_I2C_GetError(&hi2c);
+    return err;
+}
+
