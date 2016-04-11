@@ -337,6 +337,17 @@ COMMAND(uart) {
 
 #ifdef ENABLE_I2C
 COMMAND(i2c) {
+    if(SUBCMD1("init"))
+    {
+        i2c_init();
+        return PICOL_OK;
+    }
+    if(SUBCMD1("send1"))
+    {
+        char buf1[2] = {0x12, 0x34};
+        i2c_send(0xAE, (uint8_t*)buf1, sizeof(buf1));
+        return PICOL_OK;
+    }
     ARITY(argc >= 3, "i2c addr data");
     uint8_t buf[MAXSTR];
     uint16_t addr = str2int(argv[1]);

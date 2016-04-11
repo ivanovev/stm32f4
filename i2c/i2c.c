@@ -11,19 +11,20 @@ void i2c_init(void)
     hi2c.Instance             = I2Cx;
 
     hi2c.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
-    hi2c.Init.ClockSpeed      = 100000;
+    hi2c.Init.ClockSpeed      = 10000;
     hi2c.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
     hi2c.Init.DutyCycle       = I2C_DUTYCYCLE_2;
     hi2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
     hi2c.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLED;
     hi2c.Init.OwnAddress1     = 0xAA;
     hi2c.Init.OwnAddress2     = 0x55;
+    hi2c.State  = HAL_I2C_STATE_RESET;
 
     if(HAL_I2C_Init(&hi2c) != HAL_OK)
     {
         /* Initialization Error */
         //Error_Handler();
-        led_on();
+        led_toggle();
     }
 }
 
@@ -50,7 +51,7 @@ void i2c_send1(void)
 
 uint32_t i2c_send(uint16_t addr, uint8_t *buf, uint16_t sz)
 {
-    uint32_t err = HAL_I2C_Master_Transmit(&hi2c, addr, buf, sz, 10000);
+    uint32_t err = HAL_I2C_Master_Transmit(&hi2c, addr, buf, sz, 3000);
     if(err)
         err = HAL_I2C_GetError(&hi2c);
     return err;
