@@ -35,12 +35,12 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
         HAL_NVIC_EnableIRQ(PTP_TIMx_IRQn);
     }
 #endif
-#ifdef VFD_TIMx
-    if(htim->Instance == VFD_TIMx)
+#ifdef DISP_TIMx
+    if(htim->Instance == DISP_TIMx)
     {
-        VFD_TIMx_CLK_ENABLE();
-        HAL_NVIC_SetPriority(VFD_TIMx_IRQn, 0xF, 0);
-        HAL_NVIC_EnableIRQ(VFD_TIMx_IRQn);
+        DISP_TIMx_CLK_ENABLE();
+        HAL_NVIC_SetPriority(DISP_TIMx_IRQn, 0xF, 0);
+        HAL_NVIC_EnableIRQ(DISP_TIMx_IRQn);
     }
 #endif
 #ifdef USB_TIMx
@@ -71,11 +71,11 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
         TIMx_RELEASE_RESET();
     }
 #endif
-#ifdef VFD_TIMn
-    if(htim->Instance == VFD_TIMx)
+#ifdef DISP_TIMn
+    if(htim->Instance == DISP_TIMx)
     {
-        VFD_TIMx_FORCE_RESET();
-        VFD_TIMx_RELEASE_RESET();
+        DISP_TIMx_FORCE_RESET();
+        DISP_TIMx_RELEASE_RESET();
     }
 #endif
 }

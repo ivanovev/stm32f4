@@ -40,8 +40,8 @@ int main(void)
             continue;
         }
 #endif
-#ifdef ENABLE_VFD
-        vfd_upd();
+#ifdef ENABLE_DISPLAY
+        display_upd();
 #endif
         eth_io();
 #ifdef ENABLE_TELNET
@@ -69,11 +69,11 @@ int main(void)
 #ifdef ENABLE_TIM
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-#ifdef ENABLE_VFD
-    if(htim->Instance == VFD_TIMx)
+#ifdef ENABLE_DISPLAY
+    if(htim->Instance == DISP_TIMx)
     {
-        led_toggle();
-        vfd_tim_upd();
+        //led_toggle();
+        display_tim_upd();
     }
 #endif
 }

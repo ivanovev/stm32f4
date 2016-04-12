@@ -10,7 +10,7 @@ include $(ROOT_DIR)/gpio/gpio.mk
 include $(ROOT_DIR)/tim/tim.mk
 include $(ROOT_DIR)/uart/uart.mk
 #include $(ROOT_DIR)/usb/usb.mk
-#include $(ROOT_DIR)/vfd/vfd.mk
+#include $(ROOT_DIR)/display/display.mk
 #include $(ROOT_DIR)/dsp/dsp.mk
 #include $(ROOT_DIR)/rng/rng.mk
 include $(ROOT_DIR)/pcl/pcl.mk

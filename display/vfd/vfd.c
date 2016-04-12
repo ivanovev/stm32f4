@@ -32,34 +32,6 @@ void vfd_init(void)
 
     GPIO_InitTypeDef gpio_init;
     GPIO_INIT(VFD_BUSY_GPIO, VFD_BUSY_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
-
-    //GPIO_INIT(VFD_RESETN_GPIO, VFD_RESETN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
-    //GPIO_INIT(VFD_RESETN_GPIO, VFD_RESETN_PIN, GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_LOW, 0);
-    //HAL_GPIO_WritePin(GPIO(VFD_RESETN_GPIO), PIN(VFD_RESETN_PIN), GPIO_PIN_SET);
-
-    btn_irq_init(GPIO(BTNL_GPIO), BTNL_PIN);
-    btn_irq_init(GPIO(BTNR_GPIO), BTNR_PIN);
-    btn_irq_init(GPIO(BTNU_GPIO), BTNU_PIN);
-    btn_irq_init(GPIO(BTND_GPIO), BTND_PIN);
-    btn_irq_init(GPIO(BTNO_GPIO), BTNO_PIN);
-
-    //vfd_reset();
-    vfd_menu_init();
-
-    hvfdtim.Instance = VFD_TIMx;
-    hvfdtim.Init.Period = 10*VFD_TIMx_INTERVAL - 1;
-    hvfdtim.Init.Prescaler = tim_get_prescaler(VFD_TIMx);
-    hvfdtim.Init.ClockDivision = 0;
-    hvfdtim.Init.CounterMode = TIM_COUNTERMODE_UP;
-    if(HAL_TIM_Base_Init(&hvfdtim) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    if(HAL_TIM_Base_Start_IT(&hvfdtim) != HAL_OK)
-    {
-        Error_Handler();
-    }
 }
 
 void vfd_deinit(void)

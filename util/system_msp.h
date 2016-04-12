@@ -54,8 +54,8 @@
 #include "sdio/sdio.h"
 #endif
 
-#ifdef ENABLE_VFD
-#include "vfd/vfd.h"
+#ifdef ENABLE_DISPLAY
+#include "display/display.h"
 #endif
 
 #ifdef ENABLE_RNG

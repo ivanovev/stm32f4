@@ -1,7 +1,7 @@
 
 include ../util/util1.mk
 C_SRCS += main.c
-include vfd.mk
+include display.mk
 include $(ROOT_DIR)/gpio/gpio.mk
 include $(ROOT_DIR)/uart/uart.mk
 include $(ROOT_DIR)/pcl/pcl.mk

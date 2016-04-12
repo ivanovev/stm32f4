@@ -5,6 +5,7 @@
 #include "pcl_math.h"
 #include "pcl_stm.h"
 #include "pcl_eth.h"
+#include "pcl_lcd.h"
 #include "pcl_vfd.h"
 #include "pcl_sys.h"
 #include "util/heap1.h"
@@ -62,6 +63,9 @@ void pcl_init(void)
         pcl_math_init(pcl_interp);
         pcl_stm_init(pcl_interp);
         pcl_sys_init(pcl_interp);
+#ifdef ENABLE_LCD
+        pcl_lcd_init(pcl_interp);
+#endif
 #ifdef ENABLE_VFD
         pcl_vfd_init(pcl_interp);
 #endif

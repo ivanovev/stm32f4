@@ -45,7 +45,7 @@ COMMAND(vfd) {
     if(SUBCMD1("line"))
     {
         ARITY(argc == 3, "vfd line index"); 
-        vfd_menu_line(tmp, str2int(argv[2]));
+        menu_line(tmp, str2int(argv[2]));
         bytes2str(tmp, buf, 16);
         return picolSetResult(i, buf);
     }

@@ -20,6 +20,7 @@
 void        i2c_init(void);
 void        i2c_send1(void);
 uint32_t    i2c_send(uint16_t addr, uint8_t *buf, uint16_t sz);
+uint32_t    i2c_send_hex(uint16_t addr, char *buf);
 
 #endif
 

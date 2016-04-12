@@ -1,0 +1,5 @@
+
+CFLAGS += -DENABLE_VFD
+
+C_SRCS += $(VFD_DIR)/vfd.c
+

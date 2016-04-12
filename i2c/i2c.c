@@ -57,3 +57,10 @@ uint32_t i2c_send(uint16_t addr, uint8_t *buf, uint16_t sz)
     return err;
 }
 
+uint32_t i2c_send_hex(uint16_t addr, char *buf)
+{
+    uint8_t data[MAXSTR];
+    uint16_t sz = str2bytes(buf, data, sizeof(data));
+    return i2c_send(addr, data, sz);
+}
+

@@ -97,9 +97,9 @@ void myinit(void)
     sdio_init();
 #endif
 
-#ifdef ENABLE_VFD
-#pragma message "vfd_init()"
-    vfd_init();
+#ifdef ENABLE_DISPLAY
+#pragma message "display_init()"
+    display_init();
 #endif
 
 #ifdef ENABLE_BR
@@ -121,9 +121,9 @@ void mydeinit(void)
     eth_deinit();
 #endif
 
-#ifdef ENABLE_VFD
-#pragma message "vfd_deinit()"
-    vfd_deinit();
+#ifdef ENABLE_DISPLAY
+#pragma message "display_deinit()"
+    display_deinit();
 #endif
 
 #ifdef ENABLE_RNG
