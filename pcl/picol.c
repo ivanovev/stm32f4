@@ -164,6 +164,12 @@ void picolListAppend(picolList *l, char *str, char *buf, char sep) {
     mysnprintf(l->table[l->size], mystrnlen(str, MAXSTR), "%s", str);
     l->size += 1;
 }
+char* picolList1(char* buf, int argc, char** argv) {
+    int a;
+    buf[0] = '\0'; /* caller responsible for supplying large enough buffer */
+    for(a=0; a<argc; a++) LAPPEND_X(buf,argv[a]);
+    return buf;
+}
 int picolSetResult(picolInterp *i, char *s) {
     mysnprintf(i->result, MAXSTR, "%s", s);
     return PICOL_OK;
@@ -350,7 +356,7 @@ int picolCallProc(picolInterp *i, int argc, char **argv)
         return PICOL_ERR;
     char **x=pd;
     char *alist=x[0], *body=x[1];
-    //char buf[MAXSTR];
+    char buf[MAXSTR];
     picolCallFrame *cf = mycalloc(1,sizeof(*cf));
     int a = 0, done = 0, errcode = PICOL_ERR;
 #ifndef __arm__
@@ -371,7 +377,7 @@ int picolCallProc(picolInterp *i, int argc, char **argv)
         if (*p == '\0') done=1; else *p = '\0';
         if(EQ(start,"args") && done) {
             dbg_send_hex2("eq", p - alist);
-            //picolSetVar(i,start,picolList(buf,argc-a-1,argv+a+1));
+            picolSetVar(i,start,picolList1(buf,argc-a-1,argv+a+1));
             a = argc-1;
             break;
         }
@@ -385,6 +391,8 @@ int picolCallProc(picolInterp *i, int argc, char **argv)
         errcode = picolEval(i,body);
     else
         errcode = picolErr1(i,"wrong # args for '%s'",argv[0]);
+    if (errcode == PICOL_RETURN)
+        errcode = PICOL_OK;
     i->callframe = cf->parent;
     myfree(cf);
     i->level--;
@@ -470,7 +478,7 @@ COMMAND(proc) {
 COMMAND(return) {
     ARITY(argc == 1 || argc == 2, "return [result]");
     picolSetResult(i, (argc == 2) ? argv[1] : "");
-    return PICOL_OK;
+    return PICOL_RETURN;
 }
 COMMAND(puts) {
 #ifndef __arm__

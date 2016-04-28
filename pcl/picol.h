@@ -33,7 +33,7 @@
                         APPEND(dst,src); if(needbraces) APPEND(dst,"}");}
 
 /* this is the unchecked version, for functions without access to 'i' */
-#define LAPPEND_X(dst,src) {int needbraces = (strchr(src,' ')!=NULL)||mystrnlen(src,MAXSTR)==0; \
+#define LAPPEND_X(dst,src) {int needbraces = (mystrchr(src,' ')!=NULL)||mystrnlen(src,MAXSTR)==0; \
                 if(*dst!='\0') mystrncat(dst," ",MAXSTR); if(needbraces) mystrncat(dst,"{",MAXSTR); \
                 mystrncat(dst,src,MAXSTR); if(needbraces) mystrncat(dst,"}",MAXSTR);}
 
@@ -60,7 +60,7 @@
 #define picolSetHex3Result(i,x)  picolSetFmtResult(i,"0x%6X",x)
 #define picolSetHex4Result(i,x)  picolSetFmtResult(i,"0x%8X",x)
 
-enum {PICOL_OK, PICOL_ERR, PICOL_WAIT};
+enum {PICOL_OK, PICOL_ERR, PICOL_RETURN, PICOL_WAIT};
 enum {PT_ESC,PT_STR,PT_CMD,PT_VAR,PT_SEP,PT_EOL,PT_EOF, PT_XPND};
         
 /* ------------------------------------------------------------------- types */
