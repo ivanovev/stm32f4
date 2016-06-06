@@ -29,11 +29,13 @@ void display_init(void)
 #endif
     GPIO_InitTypeDef gpio_init;
 
+#if 1
     btn_irq_init(GPIO(BTNL_GPIO), BTNL_PIN);
     btn_irq_init(GPIO(BTNR_GPIO), BTNR_PIN);
     btn_irq_init(GPIO(BTNU_GPIO), BTNU_PIN);
     btn_irq_init(GPIO(BTND_GPIO), BTND_PIN);
     btn_irq_init(GPIO(BTNO_GPIO), BTNO_PIN);
+#endif
 
     menu_init();
 
@@ -76,15 +78,15 @@ uint16_t display_btn_state(void)
 {
     uint16_t state = 0;
     if(HAL_GPIO_ReadPin(GPIO(BTNL_GPIO), PIN(BTNL_PIN)) == 0)
-        state |= DISPLAY_EVT_BTNL;
+        state |= EVT_BTNL;
     if(HAL_GPIO_ReadPin(GPIO(BTNR_GPIO), PIN(BTNR_PIN)) == 0)
-        state |= DISPLAY_EVT_BTNR;
+        state |= EVT_BTNR;
     if(HAL_GPIO_ReadPin(GPIO(BTNU_GPIO), PIN(BTNU_PIN)) == 0)
-        state |= DISPLAY_EVT_BTNU;
+        state |= EVT_BTNU;
     if(HAL_GPIO_ReadPin(GPIO(BTND_GPIO), PIN(BTND_PIN)) == 0)
-        state |= DISPLAY_EVT_BTND;
+        state |= EVT_BTND;
     if(HAL_GPIO_ReadPin(GPIO(BTNO_GPIO), PIN(BTNO_PIN)) == 0)
-        state |= DISPLAY_EVT_BTNO;
+        state |= EVT_BTNO;
     return state;
 }
 
@@ -148,7 +150,7 @@ uint16_t display_gpio_exti_cb(void)
     dbg_send_hex2("btn_state", btn_state);
     if(btn_state)
     {
-        //led_toggle();
+        led_toggle();
         display_state = btn_state;
         return display_state;
     }
@@ -160,17 +162,17 @@ void display_upd(void)
 {
     if(display_state)
     {
-        if(display_state & DISPLAY_EVT_BTNU)
+        if(display_state & EVT_BTNU)
             menu_up();
-        if(display_state & DISPLAY_EVT_BTND)
+        if(display_state & EVT_BTND)
             menu_down();
-        if(display_state & DISPLAY_EVT_BTNL)
+        if(display_state & EVT_BTNL)
             menu_left();
-        if(display_state & DISPLAY_EVT_BTNR)
+        if(display_state & EVT_BTNR)
             menu_right();
-        if(display_state & DISPLAY_EVT_BTNO)
+        if(display_state & EVT_BTNO)
             menu_ok();
-        if(display_state & DISPLAY_EVT_TIM_UPD)
+        if(display_state & EVT_TIM_UPD)
             menu_tim_upd();
         //led_toggle();
         display_state = 0;
@@ -179,6 +181,6 @@ void display_upd(void)
 
 void display_tim_upd(void)
 {
-    display_state |= DISPLAY_EVT_TIM_UPD;
+    display_state |= EVT_TIM_UPD;
 }
 

@@ -5,9 +5,9 @@ int main(void)
 {
     myinit();
     for (;;) {
-        HAL_Delay(1);
+        HAL_Delay(3000);
         led_off();
-        HAL_Delay(19);
+        HAL_Delay(3000);
         led_on();
     }
 }

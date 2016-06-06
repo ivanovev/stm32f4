@@ -50,6 +50,21 @@
 #define VFD_RESETN_GPIO D
 #define VFD_RESETN_PIN 4
 
+#define BTNL_GPIO E
+#define BTNL_PIN 3
+
+#define BTNR_GPIO E
+#define BTNR_PIN 0
+
+#define BTNU_GPIO D
+#define BTNU_PIN 7
+
+#define BTND_GPIO E
+#define BTND_PIN 4
+
+#define BTNO_GPIO E
+#define BTNO_PIN 2
+
 void        vfd_init(void);
 void        vfd_deinit(void);
 void        vfd_reset(void);

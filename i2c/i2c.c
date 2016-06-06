@@ -3,6 +3,7 @@
 #include "util/queue.h"
 
 #pragma message "I2C: I2C" STR(I2Cn)
+#pragma message "I2C_SPEED: " STR(I2C_SPEED)
 
 I2C_HandleTypeDef hi2c;
 
@@ -28,6 +29,7 @@ void i2c_init(void)
     }
 }
 
+#if 0
 void i2c_send1(void)
 {
     char buf[] = {0x00, 0x00};
@@ -48,6 +50,7 @@ void i2c_send1(void)
         }
     }
 }
+#endif
 
 uint32_t i2c_send(uint16_t addr, uint8_t *buf, uint16_t sz)
 {
@@ -56,6 +59,10 @@ uint32_t i2c_send(uint16_t addr, uint8_t *buf, uint16_t sz)
         err = HAL_I2C_GetError(&hi2c);
     return err;
 }
+
+#ifndef MAXSTR
+#define MAXSTR 128
+#endif
 
 uint32_t i2c_send_hex(uint16_t addr, char *buf)
 {

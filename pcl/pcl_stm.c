@@ -342,18 +342,20 @@ COMMAND(i2c) {
         i2c_init();
         return PICOL_OK;
     }
+#if 1
     if(SUBCMD1("send1"))
     {
         char buf1[2] = {0x12, 0x34};
         i2c_send(0xAE, (uint8_t*)buf1, sizeof(buf1));
         return PICOL_OK;
     }
+#endif
     ARITY(argc >= 3, "i2c addr data");
     uint8_t buf[MAXSTR];
     uint16_t addr = str2int(argv[1]);
     uint16_t len = str2bytes(argv[2], buf, sizeof(buf));
     uint32_t ret = i2c_send(addr, buf, len);
-    return picolSetIntResult(i, ret);
+    return picolSetHexResult(i, ret);
 }
 COMMAND(eeprom) {
     ARITY(argc >= 3, "eeprom read|write addr ...");
@@ -363,7 +365,10 @@ COMMAND(eeprom) {
     uint16_t sz = 0, j, k;
     uint32_t *tmpi = (uint32_t*)buf1;
     if(SUBCMD1("read")) {
-        sz = str2int(argv[3]);
+        if(argc > 3)
+            sz = str2int(argv[3]);
+        else
+            sz = 1;
         if(eeprom_read_data(addr, buf1, sz) == 0)
             return PICOL_ERR;
         for(j = 0, k = 0; j < sz; j++)
@@ -389,7 +394,7 @@ COMMAND(eeprom) {
             return picolSetIntResult(i, en);
         }
         sz = argc - 3;
-        for(j = 0, k = 0; j < sz; j++)
+        for(j = 0; j < sz; j++)
             buf1[j] = str2int(argv[j + 3]);
         if(eeprom_write_data(addr, buf1, sz) == 0)
             return PICOL_ERR;

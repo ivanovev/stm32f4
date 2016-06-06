@@ -6,10 +6,14 @@
 
 void btn_init(void)
 {
+#if 0
     GPIO_InitTypeDef gpio_init;
     GPIO_INIT(BTN_GPIO, BTN_PIN, GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_LOW, 0);
     HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+#else
+    //btn_irq_init(GPIO(BTN_GPIO), BTN_PIN);
+#endif
 }
 
 uint16_t btn_state(void)
@@ -29,6 +33,7 @@ void btn_irq_init(GPIO_TypeDef *gpiox, uint32_t pin)
     gpio_init.Speed = GPIO_SPEED_LOW;
     gpio_init.Alternate = 0;
     HAL_GPIO_Init(gpiox, &gpio_init);
+#if 1
     if(pin == 0)
         irqn = EXTI0_IRQn;
     else if(pin == 1)
@@ -43,8 +48,8 @@ void btn_irq_init(GPIO_TypeDef *gpiox, uint32_t pin)
         irqn = EXTI9_5_IRQn;
     else if((10 <= pin) && (pin <= 15))
         irqn = EXTI15_10_IRQn;
+#endif
     HAL_NVIC_SetPriority(irqn, 0xF, 0);
     HAL_NVIC_EnableIRQ(irqn);
-
 }
 

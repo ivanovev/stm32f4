@@ -325,6 +325,11 @@ int str2bytes(const char *in, uint8_t *out, int maxbytes)
     const char *tmp;
     if(!mystrncmp(in, "0x", 2))
         in += 2;
+    else if(mystrnlen(in, 2) <= 2)
+    {
+        out[0] = atoi(in);
+        return 1;
+    }
     tmp = in;
     len = mystrnlen(tmp, 2*maxbytes);
     if(maxbytes > len/2)

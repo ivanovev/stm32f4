@@ -174,7 +174,11 @@ void menu_init(void)
 
 #ifdef ENABLE_VFD
     item = menu_append_child(psys, "Brightness", "vfd brightness");
-    menu_make_edit_int(item, 1, 8, 1, VFD_FLAG_IMMEDIATE);
+    menu_make_edit_int(item, 1, 8, 1, DISPLAY_FLAG_IMMEDIATE);
+#endif
+#ifdef ENABLE_LCD
+    item = menu_append_child(psys, "Backlight", "lcd bl");
+    menu_make_edit_int(item, 0, 1, 1, DISPLAY_FLAG_IMMEDIATE);
 #endif
     item = menu_append_child(psys, "Uptime", "sys uptime");
     item->edit->flags |= DISPLAY_FLAG_TIM_UPD;

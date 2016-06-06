@@ -25,7 +25,7 @@ COMMAND(lcd) {
     }
     if(SUBCMD1("line"))
     {
-        ARITY(argc == 3, "vfd line index"); 
+        ARITY(argc == 3, "lcd line index"); 
         menu_line(tmp, str2int(argv[2]));
         bytes2str(tmp, buf, 16);
         return picolSetResult(i, buf);
@@ -54,6 +54,15 @@ COMMAND(lcd) {
     {
         menu_right();
         return PICOL_OK;
+    }
+    if(SUBCMD1("bl"))
+    {
+        if(argc > 2)
+        {
+            lcd_bl(argv[2]);
+            return picolSetResult(i, argv[2]);
+        }
+        return picolSetIntResult(i, 0);
     }
     return PICOL_ERR;
 }
