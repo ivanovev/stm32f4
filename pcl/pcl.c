@@ -12,7 +12,7 @@
 
 struct picolInterp *pcl_interp = 0;
 static char pcl_prefix[32];
-extern volatile uint8_t main_evt;
+volatile uint8_t main_evt;
 
 void pcl_clear(void)
 {

@@ -6,7 +6,9 @@
 #ifndef __PICOL_H__
 #define __PICOL_H__
 
+#ifndef MAXSTR
 #define MAXSTR 1024
+#endif
 
 #define MAXRECURSION 10
 

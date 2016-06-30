@@ -12,7 +12,7 @@ ifeq ($(BOARD), 'MY1')
     CFLAGS += -DBOARD_MY1
 endif
 
-CUBE_DIR=/home/$(USER)/src/STM32Cube_FW_F4_V1.11.0
+CUBE_DIR=/home/$(USER)/src/STM32Cube_FW_F4_V1.12.0
 HAL_DIR=$(CUBE_DIR)/Drivers/STM32F4xx_HAL_Driver
 CMSIS_DIR=$(CUBE_DIR)/Drivers/CMSIS
 USBD_DIR=$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library
@@ -21,11 +21,15 @@ USBD_DIR=$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library
 PWD = $(shell pwd)
 PROJ = $(shell basename $(PWD))
 
-ROOT_DIR = ..
+ifneq ("$(wildcard main.mk)","")
+	ROOT_DIR = $(PWD)
+else
+	ROOT_DIR = $(PWD)/..
+endif
 UTIL_DIR = $(ROOT_DIR)/util
 
-LDSCRIPT_RAM = $(UTIL_DIR)/stm32f4_ram.ld
-LDSCRIPT_FLASH = $(UTIL_DIR)/stm32f4_flash.ld
+LDSCRIPT_RAM = $(ROOT_DIR)/scripts/stm32f4_ram.ld
+LDSCRIPT_FLASH = $(ROOT_DIR)/scripts/stm32f4_flash.ld
 #LDSCRIPT = $(LDSCRIPT_RAM)
 LDSCRIPT = $(LDSCRIPT_FLASH)
 ifeq ($(LDSCRIPT), $(LDSCRIPT_RAM))

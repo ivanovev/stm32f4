@@ -11,7 +11,7 @@
 #include "flash/flash.h"
 #endif
 
-volatile uint8_t main_evt = 0;
+extern volatile uint8_t main_evt = 0;
 
 int main(void)
 {

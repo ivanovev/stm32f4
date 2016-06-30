@@ -18,6 +18,11 @@ unsigned char myheap1[HEAPSZ];
 #endif
 static size_t aligned_heap = (size_t)(_ebss);
 
+#ifndef MAXSTR
+#define MAXSTR 1024
+#pragma message "MAXSTR:" STR(MAXSTR)
+#endif
+
 void* mymalloc(size_t sz)
 {
     void *ptr = 0;
@@ -33,7 +38,6 @@ void* mymalloc(size_t sz)
     return ptr;
 }
 
-#ifdef MAXSTR
 char* mystrdup(char *str)
 {
     size_t len = mystrnlen(str, MAXSTR);
@@ -45,7 +49,6 @@ char* mystrdup(char *str)
     }
     return 0;
 }
-#endif
 
 void* mycalloc(size_t nmemb, size_t sz)
 {

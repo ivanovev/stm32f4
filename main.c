@@ -4,9 +4,10 @@
 int main(void)
 {
     myinit();
-    for (;;) {
+    for(;;)
+    {
         HAL_Delay(3000);
         led_toggle();
     }
+    return 0;
 }
-

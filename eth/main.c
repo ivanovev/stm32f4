@@ -9,7 +9,7 @@
 #include "core_cm4.h"
 #include "flash/flash.h"
 
-volatile uint8_t main_evt = 0;
+extern volatile uint8_t main_evt = 0;
 
 int main(void)
 {

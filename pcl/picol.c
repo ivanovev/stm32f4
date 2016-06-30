@@ -559,7 +559,7 @@ picolInterp* picolCreateInterp(void) {
 #include "stdio.h"
 int main(int argc, char **argv) {
     picolInterp *i = picolCreateInterp();
-    register_misc_cmds(i);
+    pcl_misc_init(i);
     printf("interpsz: %X\n", sizeof(picolInterp));
     printf("proc test1 {a} {puts $a}\n");
     printf("test1 345\n");

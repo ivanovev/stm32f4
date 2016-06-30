@@ -11,30 +11,18 @@ OBJCOPY=$(TRGT)objcopy
 READELF=$(TRGT)readelf
 GDB=$(TRGT)gdb
 
-C_SRCS += $(HAL_DIR)/stm32f4xx_hal.c
-C_SRCS += $(HAL_DIR)/stm32f4xx_hal_rcc.c
-C_SRCS += $(HAL_DIR)/stm32f4xx_hal_cortex.c
-C_SRCS += $(HAL_DIR)/stm32f4xx_hal_dma.c
-C_SRCS += $(UTIL_DIR)/system_stm32f4xx.c
-C_SRCS += $(UTIL_DIR)/system_clock.c
-C_SRCS += $(UTIL_DIR)/system_it.c
-C_SRCS += $(UTIL_DIR)/system_msp.c
-C_SRCS += $(UTIL_DIR)/queue.c
-C_SRCS += $(UTIL_DIR)/util.c
-C_SRCS += $(UTIL_DIR)/version.c
-C_SRCS += $(UTIL_DIR)/heap1.c
-#C_SRCS += $(UTIL_DIR)/startup_stm32f4xx.c
-#C_SRCS += $(UTIL_DIR)/syscalls.c
+include $(ROOT_DIR)/util/util.mk
 
-# add startup file to build
-#A_SRCS += $(UTIL_DIR)/startup_stm32f4xx.s
-A_SRCS += $(UTIL_DIR)/startup_stm32f407xx.s
+C_SRCS += $(HAL_DIR)/Src/stm32f4xx_hal.c
+C_SRCS += $(HAL_DIR)/Src/stm32f4xx_hal_rcc.c
+C_SRCS += $(HAL_DIR)/Src/stm32f4xx_hal_cortex.c
+C_SRCS += $(HAL_DIR)/Src/stm32f4xx_hal_dma.c
 
 INCDIR += $(HAL_DIR)/Inc
 INCDIR += $(CMSIS_DIR)/Device/ST/STM32F4xx/Include
 INCDIR += $(CMSIS_DIR)/Include
 INCDIR += $(ROOT_DIR)
-INCDIR += $(UTIL_DIR)
+INCDIR += $(ROOT_DIR)/util
 
 MCPU = -mcpu=cortex-m4
 MTHUMB = -mthumb
@@ -120,10 +108,9 @@ $(A_OBJS) : $(OBJDIR)/%.o : %.s Makefile
 	@$(CC) -c -o $@ $< ${CFLAGS}
 
 touch_version_c:
-	touch $(UTIL_DIR)/version.c
+	touch $(ROOT_DIR)/util/version.c
 
 clean:
-	@echo $(CFLAGS)
 	@rm -rf $(BUILDDIR)
 
 # Flash the STM32F4
