@@ -33,6 +33,7 @@ include main.mk
 #include $(ROOT_DIR)/display/display.mk
 #include $(ROOT_DIR)/dma/dma.mk
 #include $(ROOT_DIR)/dsp/dsp.mk
+include $(ROOT_DIR)/eth/eth.mk
 #include $(ROOT_DIR)/flash/flash.mk
 include $(ROOT_DIR)/gpio/gpio.mk
 #include $(ROOT_DIR)/i2c/i2c.mk

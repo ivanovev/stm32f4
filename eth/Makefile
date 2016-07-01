@@ -1,6 +1,7 @@
 
 include ../scripts/util1.mk
-C_SRCS += main.c
+C_SRCS = main.c
+include eth.mk
 include $(ROOT_DIR)/flash/flash.mk
 include $(ROOT_DIR)/gpio/gpio.mk
 #include $(ROOT_DIR)/adc/adc.mk
@@ -16,6 +17,5 @@ include $(ROOT_DIR)/display/display.mk
 #include $(ROOT_DIR)/dsp/dsp.mk
 #include $(ROOT_DIR)/rng/rng.mk
 include $(ROOT_DIR)/pcl/pcl.mk
-include eth.mk
-include $(ROOT_DIR)/scripts/util2.mk
+include ../scripts/util2.mk
 

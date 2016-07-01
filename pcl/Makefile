@@ -1,6 +1,6 @@
 
 include ../scripts/util1.mk
-C_SRCS += main.c
+C_SRCS = main.c
 include $(ROOT_DIR)/gpio/gpio.mk
 #include $(ROOT_DIR)/uart/uart.mk
 #include $(ROOT_DIR)/usb/usb.mk
