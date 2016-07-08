@@ -56,6 +56,7 @@ void menu_up(void);
 void menu_left(void);
 void menu_right(void);
 void menu_ok(void);
+void menu_home(uint8_t draw);
 void menu_tim_upd(void);
 void menu_line(char *buf, uint16_t num);
 

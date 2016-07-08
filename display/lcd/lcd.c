@@ -17,9 +17,9 @@ void lcd_deinit(void)
 {
 }
 
-void lcd_bytes(const char *bytes, uint16_t sz)
+void lcd_bytes(char *bytes, uint16_t sz)
 {
-    if(i2c_send(LCD_ADDR_DATA, bytes, sz))
+    if(i2c_send(LCD_ADDR_DATA, (uint8_t*)bytes, sz))
         led_on();
     HAL_Delay(sz*10);
 }
@@ -44,7 +44,7 @@ void lcd_crlf(void)
     HAL_Delay(50);
 }
 
-void lcd_bl(const char *bl)
+void lcd_bl(char *bl)
 {
     i2c_send_hex(LCD_ADDR_BL, bl);
     HAL_Delay(50);

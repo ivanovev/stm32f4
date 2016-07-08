@@ -7,6 +7,8 @@
 #include "usb/cdc/usb.h"
 #endif
 
+volatile uint8_t main_evt = 0;
+
 int main(void)
 {
     myinit();

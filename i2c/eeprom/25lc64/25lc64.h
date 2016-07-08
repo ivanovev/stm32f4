@@ -1,0 +1,10 @@
+
+#ifndef __EEPROM_25LC64_H__
+#define __EEPROM_25LC64_H__
+
+#define EEPROM_IPADDR_PAGE      0x1FFC
+#define EEPROM_MACADDR_PAGE     0x1FF6
+#define EEPROM_PTP_PORT_ID_PAGE 0x1FF4
+
+#endif
+

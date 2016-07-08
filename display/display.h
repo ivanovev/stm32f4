@@ -29,11 +29,16 @@
 #define DISP_TIMx_IRQHandler     JOIN3(TIM, DISP_TIMn, _IRQHandler)
 
 void        display_init(void);
+void        display_init_tim(void);
 void        display_deinit(void);
+void        display_deinit_tim(void);
 void        display_reset(void);
 void        display_crlf(void);
 void        display_cls(void);
 void        display_home(void);
+void        display_upd(void);
+void        display_tim_upd(void);
+uint16_t    display_gpio_exti_cb(void);
 
 void        display_str(const char *str);
 

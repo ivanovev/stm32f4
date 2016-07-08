@@ -7,6 +7,5 @@ C_SRCS += $(ROOT_DIR)/pcl/pcl_math.c
 C_SRCS += $(ROOT_DIR)/pcl/pcl_misc.c
 C_SRCS += $(ROOT_DIR)/pcl/pcl_stm.c
 C_SRCS += $(ROOT_DIR)/pcl/pcl_sys.c
-C_SRCS += $(ROOT_DIR)/pcl/pcl_lcd.c
-C_SRCS += $(ROOT_DIR)/pcl/pcl_vfd.c
+C_SRCS += $(ROOT_DIR)/pcl/pcl_display.c
 

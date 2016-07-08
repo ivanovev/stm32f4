@@ -1,6 +1,10 @@
 
 #include "eth/eth.h"
 #include "tftpd.h"
+#ifdef ENABLE_DISPLAY
+#include "display/display.h"
+#include "display/menu.h"
+#endif
 
 #ifdef ENABLE_FLASH
 #include "flash/flash.h"
@@ -121,7 +125,21 @@ uint16_t tftpd_data_in(uint8_t *in, uint16_t sz, uint8_t *out)
             {
                 if(crc && (crc == tfs.crc))
                 {
+#ifdef ENABLE_DISPLAY
+                    display_home();
+                    display_crlf();
+                    display_str("crc ok");
+#endif
                     main_evt = EVT_FWUPG;
+                }
+                else
+                {
+#ifdef ENABLE_DISPLAY
+                    display_home();
+                    display_crlf();
+                    display_str("crc error");
+                    display_init_tim();
+#endif
                 }
             }
             if(tfs.evt == EVT_PCLUPD)
@@ -174,6 +192,12 @@ uint16_t tftpd_wrq(uint8_t *in, uint16_t sz, uint8_t *out)
         }
         tfs.crc = htoi(name);
         tfs.evt = EVT_FWUPG;
+#ifdef ENABLE_DISPLAY
+        display_deinit_tim();
+        menu_home(0);
+        display_cls();
+        display_str("FW upgrade...");
+#endif
     }
     else if(!mystrncmp(name, "script.pcl", 10))
     {

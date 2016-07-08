@@ -401,8 +401,8 @@ int picolCallProc(picolInterp *i, int argc, char **argv)
 int picolCondition(picolInterp *i, char* str)
 {
     if(str) {
-        char buf[MAXSTR], buf2[MAXSTR], *argv[3], *cp;
-        int a = 0, rc;
+        char buf[MAXSTR], buf2[MAXSTR];
+        int rc;
         rc = picolSubst(i,str);
         if(rc != PICOL_OK) return rc;
         //mysnprintf(buf, MAXSTR, "Condi: (%s) ->(%s)\n",str,i->result);

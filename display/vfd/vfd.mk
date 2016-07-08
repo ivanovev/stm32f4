@@ -1,5 +1,9 @@
 
 CFLAGS += -DENABLE_VFD
 
-C_SRCS += $(VFD_DIR)/vfd.c
+ifndef ENABLE_UART
+include $(ROOT_DIR)/uart/uart.mk
+endif
+
+C_SRCS += $(ROOT_DIR)/display/vfd/vfd.c
 

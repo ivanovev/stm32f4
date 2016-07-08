@@ -255,6 +255,15 @@ void menu_line(char *buf, uint16_t num)
     //dbg_send_int2(buf, num);
 }
 
+void menu_home(uint8_t draw)
+{
+    dbg_send_str3("home", 1);
+    pstate->sel = pmain;
+    pstate->scroll = pmain;
+    if(draw)
+        menu_draw();
+}
+
 void menu_draw(void)
 {
 #if 0
@@ -421,7 +430,6 @@ __weak void menu_ok(void)
 
 void menu_tim_upd(void)
 {
-    static uint16_t display_tim_counter = 0;
     if(pstate->sel->edit)
     {
         if(menu_flag(pstate->sel, DISPLAY_FLAG_EDIT) == 1)
@@ -437,6 +445,7 @@ void menu_tim_upd(void)
         }
     }
 #ifdef ENABLE_VFD
+    static uint16_t display_tim_counter = 0;
     display_tim_counter++;
     if(vfd_tim_counter > 100)
     {

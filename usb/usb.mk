@@ -13,10 +13,7 @@ C_SRCS += $(USBD_DIR)/Core/Src/usbd_core.c
 C_SRCS += $(USBD_DIR)/Core/Src/usbd_ioreq.c
 C_SRCS += $(USBD_DIR)/Core/Src/usbd_ctlreq.c
 
-USB_CLASS = cdc
-CFLAGS += -I$(ROOT_DIR)/usb/$(USB_CLASS)
-
-include $(ROOT_DIR)/usb/$(USB_CLASS)/$(USB_CLASS).mk
-
+include $(ROOT_DIR)/usb/cdc/cdc.mk
+#include $(ROOT_DIR)/usb/hid/hid.mk
 include $(ROOT_DIR)/usb/usbd_conf/usbd_conf.mk
 

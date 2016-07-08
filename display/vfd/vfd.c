@@ -13,8 +13,6 @@ TIM_HandleTypeDef hvfdtim;
 
 extern void Error_Handler(void);
 
-static volatile uint32_t vfd_state = 0;
-
 void vfd_init(void)
 {
     hvfduart.Instance        = VFD_UARTx;
@@ -151,46 +149,5 @@ uint8_t vfd_brightness(int8_t newlvl)
     mysnprintf(buf, sizeof(buf), "0x1F58%02X", lvl);
     vfd_str(buf);
     return lvl;
-}
-
-uint16_t vfd_gpio_exti_cb(void)
-{
-#if 1
-    uint16_t btn_state = vfd_btn_state();
-    dbg_send_hex2("btn_state", btn_state);
-    if(btn_state)
-    {
-        //led_toggle();
-        vfd_state = btn_state;
-        return btn_state;
-    }
-#endif
-    return 0;
-}
-
-void vfd_upd(void)
-{
-    if(vfd_state)
-    {
-        if(vfd_state & VFD_EVT_BTNU)
-            vfd_menu_up();
-        if(vfd_state & VFD_EVT_BTND)
-            vfd_menu_down();
-        if(vfd_state & VFD_EVT_BTNL)
-            vfd_menu_left();
-        if(vfd_state & VFD_EVT_BTNR)
-            vfd_menu_right();
-        if(vfd_state & VFD_EVT_BTNO)
-            vfd_menu_ok();
-        if(vfd_state & VFD_EVT_TIM_UPD)
-            vfd_menu_tim_upd();
-        //led_toggle();
-        vfd_state = 0;
-    }
-}
-
-void vfd_tim_upd(void)
-{
-    vfd_state |= VFD_EVT_TIM_UPD;
 }
 

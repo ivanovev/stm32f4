@@ -4,6 +4,9 @@
 
 #include <main.h>
 
+#define EEPROM_WRITE_ADDR 0xAE
+#define EEPROM_READ_ADDR 0xAF
+
 uint16_t    eeprom_write_data(uint16_t addr, uint8_t *data, uint16_t sz);
 uint16_t    eeprom_read_data(uint16_t addr, uint8_t *data, uint16_t sz);
 uint8_t     eeprom_write_enable(uint8_t enable);

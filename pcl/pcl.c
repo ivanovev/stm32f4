@@ -5,14 +5,13 @@
 #include "pcl_math.h"
 #include "pcl_stm.h"
 #include "pcl_eth.h"
-#include "pcl_lcd.h"
-#include "pcl_vfd.h"
 #include "pcl_sys.h"
+#include "pcl_display.h"
 #include "util/heap1.h"
 
 struct picolInterp *pcl_interp = 0;
 static char pcl_prefix[32];
-volatile uint8_t main_evt;
+extern volatile uint8_t main_evt;
 
 void pcl_clear(void)
 {
@@ -63,11 +62,8 @@ void pcl_init(void)
         pcl_math_init(pcl_interp);
         pcl_stm_init(pcl_interp);
         pcl_sys_init(pcl_interp);
-#ifdef ENABLE_LCD
-        pcl_lcd_init(pcl_interp);
-#endif
-#ifdef ENABLE_VFD
-        pcl_vfd_init(pcl_interp);
+#ifdef ENABLE_DISPLAY
+        pcl_display_init(pcl_interp);
 #endif
 #ifdef ENABLE_ETH
         pcl_eth_init(pcl_interp);

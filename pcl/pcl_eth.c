@@ -5,8 +5,8 @@
 #include "eth/eth.h"
 #include "eth/mdio.h"
 
-#ifdef ENABLE_I2C
-#include "i2c/eeprom.h"
+#ifdef ENABLE_EEPROM
+#include "i2c/eeprom/eeprom.h"
 #endif
 
 #ifdef ENABLE_ICMP
@@ -78,7 +78,7 @@ COMMAND(eth) {
         uint8_t ipaddr[4] = {IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3};
         if(argc == 2)
         {
-#ifdef ENABLE_I2C
+#ifdef ENABLE_EEPROM
             eeprom_ipaddr_read(ipaddr);
 #endif
         }
@@ -86,7 +86,7 @@ COMMAND(eth) {
         {
             if(parse_eth_addr(argv[2], ipaddr, '.', 4, 10) != 4)
                 return PICOL_ERR;
-#ifdef ENABLE_I2C
+#ifdef ENABLE_EEPROM
             eeprom_ipaddr_write(ipaddr);
 #endif
         }
@@ -98,7 +98,7 @@ COMMAND(eth) {
         uint8_t macaddr[6] = {MAC_ADDR0, MAC_ADDR1, MAC_ADDR2, MAC_ADDR3, MAC_ADDR4, MAC_ADDR5};
         if((argc == 2) || ((argc == 3) ? SUBCMD2("-") : 0))
         {
-#ifdef ENABLE_I2C
+#ifdef ENABLE_EEPROM
             eeprom_macaddr_read(macaddr);
 #endif
         }
@@ -114,7 +114,7 @@ COMMAND(eth) {
             {
                 if(parse_eth_addr(argv[2], macaddr, ':', 6, 16) != 6)
                     return PICOL_ERR;
-#ifdef ENABLE_I2C
+#ifdef ENABLE_EEPROM
                 eeprom_macaddr_write(macaddr);
 #endif
             }

@@ -24,10 +24,9 @@ void        lcd_deinit(void);
 void        lcd_crlf(void);
 void        lcd_cls(void);
 void        lcd_home(void);
-void        lcd_bl(const char *bl);
+void        lcd_bl(char *bl);
 
-void        lcd_bytes(const char *str, uint16_t len);
-void        lcd_str(const char *str);
+void        lcd_bytes(char *str, uint16_t len);
 
 #endif
 

@@ -1,16 +1,19 @@
 
 #include <main.h>
+#include "display/display.h"
+
+volatile uint8_t main_evt = 0;
 
 int main(void)
 {
     myinit();
     //led_on();
-    vfd_cls();
+    display_cls();
     for (;;)
     {
         HAL_Delay(2000);
-        vfd_str("1");
-        vfd_upd();
+        display_str("1");
+        display_upd();
     }
 }
 
@@ -23,10 +26,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if(htim->Instance == VFD_TIMx)
+    if(htim->Instance == DISP_TIMx)
     {
         led_toggle();
-        vfd_tim_upd();
+        display_tim_upd();
     }
 }
 

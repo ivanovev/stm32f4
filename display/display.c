@@ -1,6 +1,7 @@
 
 #include <main.h>
 #include "display/display.h"
+#include "display/menu.h"
 
 #ifdef ENABLE_VFD
 #include "display/vfd/vfd.h"
@@ -27,7 +28,6 @@ void display_init(void)
 #ifdef ENABLE_LCD
     lcd_init();
 #endif
-    GPIO_InitTypeDef gpio_init;
 
 #if 1
     btn_irq_init(GPIO(BTNL_GPIO), BTNL_PIN);
@@ -39,6 +39,11 @@ void display_init(void)
 
     menu_init();
 
+    display_init_tim();
+}
+
+void display_init_tim(void)
+{
     hdisptim.Instance = DISP_TIMx;
     hdisptim.Init.Period = 10*DISP_TIMx_INTERVAL - 1;
     hdisptim.Init.Prescaler = tim_get_prescaler(DISP_TIMx);
@@ -63,6 +68,12 @@ void display_deinit(void)
 #ifdef ENABLE_LCD
     lcd_deinit();
 #endif
+    HAL_TIM_Base_DeInit(&hdisptim);
+}
+
+void display_deinit_tim(void)
+{
+    HAL_TIM_Base_DeInit(&hdisptim);
 }
 
 void DISP_TIMx_IRQHandler(void)
@@ -93,10 +104,10 @@ uint16_t display_btn_state(void)
 void display_bytes(const uint8_t *bytes, uint16_t sz)
 {
 #ifdef ENABLE_VFD
-    vfd_bytes(bytes, sz);
+    vfd_bytes((char*)bytes, sz);
 #endif
 #ifdef ENABLE_LCD
-    lcd_bytes(bytes, sz);
+    lcd_bytes((char*)bytes, sz);
 #endif
 }
 
@@ -107,10 +118,10 @@ void display_str(const char *str)
     if(!mystrncmp(str, "0x", 2))
     {
         len = str2bytes(str, tx, sizeof(tx));
-        display_bytes((char*)tx, len);
+        display_bytes(tx, len);
         return;
     }
-    display_bytes(str, mystrnlen(str, 32));
+    display_bytes((uint8_t*)str, mystrnlen(str, 32));
 }
 
 void display_home(void)

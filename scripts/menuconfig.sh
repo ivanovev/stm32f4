@@ -3,10 +3,12 @@
 function read_includes()
 {
     grep include $1 | grep ROOT_DIR | grep -v scripts | while IFS= read -r line; do
-        j=`echo "$line" | sed "s:\/: :g" | awk '{print $(NF-1)}'`;
-        status="on";
+        j=`echo "$line" | sed "s:\/: :g" | awk '{print $(NF-1)}'`
+        f=`echo "$line" | sed "s:\/: :g" | awk '{for (i=3; i<=NF; i++) print $i}'`
+        f=`echo $f | sed "s: :\/:g"`
+        status="on"
         if [ ${line:0:1} == "#" ]; then status="off"; fi
-        echo "$j $status"
+        echo "$j $f $status"
     done
 }
 
@@ -77,34 +79,32 @@ function get_selection_path()
 {
     fname=$1
     item=$2
-    i=`grep include $fname | grep $item`
-    echo $i
+    j=`grep include $fname | grep $item`
+    k=`echo "$j" | sed "s:\/: :g" | awk '{for (i=3; i<=NF; i++) print $i}'`
+    mk=`echo $k | sed "s: :\/:g"`
+    n=`read_includes $mk | wc -l`
+    if [ $n != "0" ]; then
+        echo $mk
+    fi
 }
 
 function edit_includes()
 {
-    a=`read_includes $1`
-    items=`echo "$a" | awk '{print $1, $1, $2}'`
-    items2=`echo "$a" | awk '{print $1}'`
+    items=`read_includes $1`
+    #items=`echo "$a" | awk '{print $1, $1, $2}'`
+    items2=`echo "$items" | awk '{print $1}'`
     N=`echo $items2 | wc -w`
 
     tempfile=`tempfile 2>/dev/null` || tempfile=/tmp/stmtmp$$
-    #trap "rm -f $tempfile" 0 1 2 5 15
-    result=$(dialog --trace $tempfile --ok-label Select --extra-button --extra-label Exit --cancel-label Save --checklist "$1" 30 50 23 $items 3>&1 1>&2 2>&3 3>&-);# 2> $tempfile || exit 0)
-    exitcode=$?;
+    trap "rm -f $tempfile" 0 1 2 5 15
+    result=$(dialog --trace $tempfile --ok-label Select --extra-button --extra-label Save --cancel-label Exit --checklist "$1" 30 50 23 $items 3>&1 1>&2 2>&3 3>&-)
+    exitcode=$?
 
-    #echo $result
     n=`get_selection $tempfile`
-    cp $tempfile /tmp/2
-    rm -rf $tempfile
 
     selection=`echo $items2 | cut -d " " -f $n`
 
-    tempfile=`tempfile 2>/dev/null` || tempfile=/tmp/stmtmp$$
-    write_includes $1 $result scripts > /tmp/1 #$tempfile
-    #cp $tempfile $1
-    #clear
-    echo $exitcode $selection $items2 $n $N
+    echo $exitcode $selection $result
 }
 
 mkf=Makefile
@@ -113,32 +113,31 @@ path="."
 while true
 do
     ret=`edit_includes $path/$mkf || exit 0`
+    items=`echo $ret | awk '{for (i=3; i<=NF; i++) print $i}'`
     ret=($ret)
 
     case "${ret[0]}" in
         0)
             echo Select
-            if [ $mkf == Makefile ]; then
-                if [ $path == "." ]; then
-                    path="${ret[1]}"
-                    echo $path
-                    read
-                else
-                    mkf="$(path).mk"
-                fi
+            if [ $path == "." ] && [ $mkf == Makefile ]; then
+                path="${ret[1]}"
             else
-                path="$path/${ret[1]}"
-                mkf="${ret[1]}.mk"
+                f=`get_selection_path $path/$mkf ${ret[1]}`
+                if [ -e "$f" ]; then
+                    path=`dirname $f`
+                    mkf=`basename $f`
+                fi
             fi
             ;;
-        1)
-            echo Save
-            ;;
         3)
+            echo Save
+            tempfile=`tempfile 2>/dev/null` || tempfile=/tmp/stmtmp$$
+            write_includes $path/$mkf $items scripts > $tempfile
+            mv $tempfile $path/$mkf
+            ;;
+        1)
             echo Exit
-            get_selection_path $path/$mkf ${ret[1]}
-            read
-            if [ $path == "." ] && [ $mkf == Makefile ]; then
+            if [ $mkf == Makefile ]; then
                 if [ $path == "." ]; then
                     clear
                     exit 0
@@ -146,8 +145,14 @@ do
                     path="."
                 fi
             else
-                path=`dirname $path`
-                mkf=`basename $path`.mk
+                echo $path
+                p=`dirname $path`
+                if [ $p == "." ]; then
+                    mkf=Makefile
+                else
+                    path=$p
+                    mkf=`basename $path`.mk
+                fi
             fi
             ;;
     esac

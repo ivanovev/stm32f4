@@ -1,6 +1,8 @@
 
 #include <main.h>
-#include "i2c/eeprom.h"
+#ifdef ENABLE_EEPROM
+#include "i2c/eeprom/eeprom.h"
+#endif
 
 int main(void)
 {

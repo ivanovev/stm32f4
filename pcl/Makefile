@@ -4,7 +4,7 @@ C_SRCS = main.c
 include $(ROOT_DIR)/gpio/gpio.mk
 #include $(ROOT_DIR)/uart/uart.mk
 #include $(ROOT_DIR)/usb/usb.mk
-include pcl.mk
+include $(ROOT_DIR)/pcl/pcl.mk
 include ../scripts/util2.mk
 
 test: $(BUILDDIR)
