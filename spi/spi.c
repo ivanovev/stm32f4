@@ -103,6 +103,27 @@ uint32_t spi_send(uint8_t nspi, GPIO_TypeDef *csgpiox, uint8_t csgpion, uint8_t 
     HAL_Delay(1);
     if(csgpiox)
         HAL_GPIO_WritePin(csgpiox, 1 << csgpion, GPIO_PIN_SET);
+    mymemcpy(txd, buf, len);
     return ret;
+}
+
+int32_t spi_cr1_bits(uint8_t nspi, uint8_t start, uint8_t stop, int32_t val)
+{
+    SPI_TypeDef* pspi = spi_get_instance(nspi);
+    if(!pspi)
+        return 0;
+    volatile uint32_t *ptr = &(pspi->CR1);
+    uint32_t mask = ((1 << (stop - start + 1)) - 1) << start;
+    uint32_t tmp = 0;
+    if(val == -1)
+        val = (*ptr & mask) >> start;
+    else
+    {
+        tmp = *ptr & ~mask;
+        tmp = tmp | ((val << start) & mask);
+        *ptr = tmp;
+        val = val & (mask >> stop);
+    }
+    return val;
 }
 

@@ -1,7 +1,5 @@
 
 #include "cdc.h"
-#include "tim/tim.h"
-#include "gpio/led.h"
 
 USBD_HandleTypeDef  USBD_Device;
 
@@ -19,6 +17,5 @@ void usb_cdc_init(void)
     /* Start Device Process */
     USBD_Start(&USBD_Device);
     while (!g_VCPInitialized) {}
-    led_on();
 }
 

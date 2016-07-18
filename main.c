@@ -53,7 +53,11 @@ int main(void)
 #endif
     }
     mydeinit();
+#ifdef ENABLE_DISPLAY
     HAL_Delay(DISP_TIMx_INTERVAL);
+#else
+    HAL_Delay(1000);
+#endif
     dbg_send_int2("reset", main_evt);
 
 #ifdef ENABLE_FLASH
@@ -66,7 +70,6 @@ int main(void)
     return 0;
 }
 
-#if 1
 #ifdef ENABLE_TIM
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -78,6 +81,5 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
 #endif
 }
-#endif
 #endif
 

@@ -51,7 +51,7 @@ uint16_t eeprom_read_data(uint16_t addr, uint8_t *data, uint16_t sz)
     {
         //if(HAL_I2C_GetError(&hi2c) != HAL_I2C_ERROR_AF)
         {
-            led_on();
+            //led_on();
             return 0;
         }
     }

@@ -28,9 +28,11 @@
 #include <main.h>
 
 void                spi_init(void);
+SPI_TypeDef*        spi_get_instance(uint8_t n);
 volatile uint32_t*  spi_get_reg_ptr(uint8_t nspi, const char *reg);
 uint32_t            spi_get_reg(uint8_t nspi, const char *reg);
 uint32_t            spi_set_reg(uint8_t nspi, const char *reg, uint32_t val);
+int32_t             spi_cr1_bits(uint8_t nspi, uint8_t start, uint8_t stop, int32_t val);
 uint32_t            spi_send(uint8_t nspi, GPIO_TypeDef *csgpiox, uint8_t csgpion, uint8_t *txd, int len);
 
 #endif

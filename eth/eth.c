@@ -30,13 +30,13 @@ extern uint8_t local_macaddr[6];
 
 void eth_init(void)
 {
+#ifdef ENABLE_EEPROM
 #if 0
-#ifdef ENABLE_I2C
     eeprom_ipaddr_read(local_ipaddr);
     eeprom_macaddr_read(local_macaddr);
 #endif
 #else
-#pragma message "ETH: I2C READ!!!"
+#pragma message "ETH: EEPROM READ!!!"
 #endif
 
 #ifdef ENABLE_ICMP

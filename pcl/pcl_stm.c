@@ -357,6 +357,7 @@ COMMAND(i2c) {
     uint32_t ret = i2c_send(addr, buf, len);
     return picolSetHexResult(i, ret);
 }
+#ifdef ENABLE_EEPROM
 COMMAND(eeprom) {
     ARITY(argc >= 3, "eeprom read|write addr ...");
     uint16_t addr = str2int(argv[2]);
@@ -414,6 +415,7 @@ COMMAND(eeprom) {
     return PICOL_ERR;
 }
 #endif
+#endif
 
 #ifdef ENABLE_SPI
 COMMAND(spi) {
@@ -422,7 +424,8 @@ COMMAND(spi) {
     if(argv[1][0] == '1') nspi = 1;
     if(argv[1][0] == '2') nspi = 2;
     if(argv[1][0] == '3') nspi = 3;
-    uint8_t buf[MAXSTR];
+    char buf[IO_BUF_SZ];
+    char buf2[IO_BUF_SZ];
     uint32_t tmp = 0;
     if(nspi && (argv[1][1] == '.') && (mystrnlen(argv[1], 8) >= 4))
     {
@@ -430,15 +433,32 @@ COMMAND(spi) {
         if(!csgpiox)
             return PICOL_ERR;
         uint8_t csgpion = str2int(&(argv[1][3]));
-        uint16_t len = str2bytes(argv[2], buf, MAXSTR);
-        tmp = spi_send(nspi, csgpiox, csgpion, buf, len);
-        return picolSetHex4Result(i, tmp);
-
+        uint16_t len = str2bytes(argv[2], (uint8_t*)buf, IO_BUF_SZ);
+        tmp = spi_send(nspi, csgpiox, csgpion, (uint8_t*)buf, len);
+        bytes2str(buf, buf2, len);
+        return picolSetResult(i, buf2);
     }
     if(nspi)
     {
-        tmp = spi_get_reg(nspi, argv[2]);
-        return picolSetHex4Result(i, tmp);
+        volatile uint32_t *preg = spi_get_reg_ptr(nspi, argv[2]);
+        if(preg)
+        {
+            if(argc == 4)
+                *preg = str2int(argv[3]);
+            return picolSetHex4Result(i, *preg);
+        }
+        if(SUBCMD2("cpha"))
+        {
+            ARITY(argc >= 3, "spi nspi cpha [0|1]");
+            tmp = (uint32_t)spi_cr1_bits(nspi, 0, 0, (argc >= 4) ? str2int(argv[3]) : -1);
+            return picolSetIntResult(i, tmp);
+        }
+        if(SUBCMD2("cpol"))
+        {
+            ARITY(argc >= 3, "spi nspi cpol [0|1]");
+            tmp = (uint32_t)spi_cr1_bits(nspi, 1, 1, (argc >= 4) ? str2int(argv[3]) : -1);
+            return picolSetIntResult(i, tmp);
+        }
     }
     return PICOL_ERR;
 }
@@ -464,7 +484,9 @@ void pcl_stm_init(picolInterp *i)
 #endif
 #ifdef ENABLE_I2C
     picolRegisterCmd(i, "i2c", picol_i2c, 0);
+#ifdef ENABLE_EEPROM
     picolRegisterCmd(i, "eeprom", picol_eeprom, 0);
+#endif
 #endif
 #ifdef ENABLE_SPI
     picolRegisterCmd(i, "spi", picol_spi, 0);
