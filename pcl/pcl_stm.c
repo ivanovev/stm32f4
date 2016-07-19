@@ -429,12 +429,29 @@ COMMAND(spi) {
     uint32_t tmp = 0;
     if(nspi && (argv[1][1] == '.') && (mystrnlen(argv[1], 8) >= 4))
     {
+        uint8_t cpha, cpha1, cpol, cpol1;
         GPIO_TypeDef *csgpiox = get_gpio_instance(&(argv[1][2]));
         if(!csgpiox)
             return PICOL_ERR;
         uint8_t csgpion = str2int(&(argv[1][3]));
         uint16_t len = str2bytes(argv[2], (uint8_t*)buf, IO_BUF_SZ);
+        cpha = spi_cr1_bits(nspi, 0, 0, -1);
+        cpol = spi_cr1_bits(nspi, 1, 1, -1);
+        cpha1 = cpha;
+        cpol1 = cpol;
+        if(argc >= 4)
+            cpha1 = (uint8_t)str2int(argv[3]);
+        if(argc >= 5)
+            cpol1 = (uint8_t)str2int(argv[4]);
+        if(cpha1 != cpha)
+            spi_cr1_bits(nspi, 0, 0, cpha1);
+        if(cpol1 != cpol)
+            spi_cr1_bits(nspi, 1, 1, cpol1);
         tmp = spi_send(nspi, csgpiox, csgpion, (uint8_t*)buf, len);
+        if(cpha1 != cpha)
+            spi_cr1_bits(nspi, 0, 0, cpha);
+        if(cpol1 != cpol)
+            spi_cr1_bits(nspi, 1, 1, cpol);
         bytes2str(buf, buf2, len);
         return picolSetResult(i, buf2);
     }
@@ -449,14 +466,17 @@ COMMAND(spi) {
         }
         if(SUBCMD2("cpha"))
         {
-            ARITY(argc >= 3, "spi nspi cpha [0|1]");
             tmp = (uint32_t)spi_cr1_bits(nspi, 0, 0, (argc >= 4) ? str2int(argv[3]) : -1);
             return picolSetIntResult(i, tmp);
         }
         if(SUBCMD2("cpol"))
         {
-            ARITY(argc >= 3, "spi nspi cpol [0|1]");
             tmp = (uint32_t)spi_cr1_bits(nspi, 1, 1, (argc >= 4) ? str2int(argv[3]) : -1);
+            return picolSetIntResult(i, tmp);
+        }
+        if(SUBCMD2("spe"))
+        {
+            tmp = (uint32_t)spi_cr1_bits(nspi, 6, 6, (argc >= 4) ? str2int(argv[3]) : -1);
             return picolSetIntResult(i, tmp);
         }
     }

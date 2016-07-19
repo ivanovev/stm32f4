@@ -38,14 +38,14 @@ void spi_get_handle(SPI_HandleTypeDef *phspi, uint8_t nspi, uint8_t state)
     phspi->Instance                 = spi_get_instance(nspi);
     phspi->Init.BaudRatePrescaler   = SPI_BAUDRATEPRESCALER_256;
     phspi->Init.Direction           = SPI_DIRECTION_2LINES;
-    phspi->Init.CLKPhase            = SPI_PHASE_1EDGE;
+    phspi->Init.CLKPhase            = SPI_PHASE_2EDGE;
     phspi->Init.CLKPolarity         = SPI_POLARITY_LOW;
     phspi->Init.DataSize            = SPI_DATASIZE_8BIT;
     phspi->Init.FirstBit            = SPI_FIRSTBIT_MSB;
     phspi->Init.TIMode              = SPI_TIMODE_DISABLE;
     phspi->Init.CRCCalculation      = SPI_CRCCALCULATION_DISABLE;
     phspi->Init.CRCPolynomial       = 7;
-    phspi->Init.NSS                 = SPI_NSS_SOFT;
+    phspi->Init.NSS                 = SPI_NSS_HARD_OUTPUT;
     phspi->Init.Mode                = SPI_MODE_MASTER;
     phspi->State                    = state;
 }
@@ -89,18 +89,31 @@ uint32_t spi_set_reg(uint8_t nspi, const char *reg, uint32_t val)
 
 uint32_t spi_send(uint8_t nspi, GPIO_TypeDef *csgpiox, uint8_t csgpion, uint8_t *txd, int len)
 {
+    if(csgpiox)
+    {
+        GPIO_InitTypeDef gpio_init;
+        gpio_init.Pin = 1 << csgpion;
+        gpio_init.Mode = GPIO_MODE_OUTPUT_PP;
+        gpio_init.Pull = GPIO_NOPULL;
+        gpio_init.Speed = GPIO_SPEED_LOW;
+        HAL_GPIO_Init(csgpiox, &gpio_init);
+        HAL_GPIO_WritePin(csgpiox, 1 << csgpion, GPIO_PIN_SET);
+        HAL_Delay(1);
+    }
     SPI_HandleTypeDef hspi;
     spi_get_handle(&hspi, SPIn, HAL_SPI_STATE_READY);
     if(csgpiox)
         HAL_GPIO_WritePin(csgpiox, 1 << csgpion, GPIO_PIN_RESET);
     uint8_t buf[MAXSTR];
+    mymemset(buf, 0, sizeof(buf));
+    HAL_Delay(1);
     if(HAL_SPI_TransmitReceive(&hspi, txd, buf, len, SPI_TIMEOUT_MAX) != HAL_OK)
     {
         Error_Handler();
     }
+    HAL_Delay(1);
     uint32_t ret = spi_get_reg(nspi, "sr");
     //while(__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_BSY) != RESET);
-    HAL_Delay(1);
     if(csgpiox)
         HAL_GPIO_WritePin(csgpiox, 1 << csgpion, GPIO_PIN_SET);
     mymemcpy(txd, buf, len);
@@ -112,6 +125,15 @@ int32_t spi_cr1_bits(uint8_t nspi, uint8_t start, uint8_t stop, int32_t val)
     SPI_TypeDef* pspi = spi_get_instance(nspi);
     if(!pspi)
         return 0;
+    int32_t spe = 0;
+    if(start == stop)
+    {
+        if((start == 0) || (start == 1))
+        {
+            spe = spi_cr1_bits(nspi, 6, 6, -1);
+            spi_cr1_bits(nspi, 6, 6, 0);
+        }
+    }
     volatile uint32_t *ptr = &(pspi->CR1);
     uint32_t mask = ((1 << (stop - start + 1)) - 1) << start;
     uint32_t tmp = 0;
@@ -123,6 +145,11 @@ int32_t spi_cr1_bits(uint8_t nspi, uint8_t start, uint8_t stop, int32_t val)
         tmp = tmp | ((val << start) & mask);
         *ptr = tmp;
         val = val & (mask >> stop);
+    }
+    if(spe && (start == stop))
+    {
+        if((start == 0) || (start == 1))
+            spi_cr1_bits(nspi, 6, 6, spe);
     }
     return val;
 }
