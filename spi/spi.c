@@ -6,6 +6,10 @@
 #define SPI_TIMEOUT_MAX           0x1000
 #endif
 
+#ifdef SPIn
+#pragma message "SPI: SPI" STR(SPIn)
+#endif
+
 void spi_get_handle(SPI_HandleTypeDef *phspi, uint8_t nspi, uint8_t state);
 
 void spi_init(void)
@@ -38,7 +42,7 @@ void spi_get_handle(SPI_HandleTypeDef *phspi, uint8_t nspi, uint8_t state)
     phspi->Instance                 = spi_get_instance(nspi);
     phspi->Init.BaudRatePrescaler   = SPI_BAUDRATEPRESCALER_256;
     phspi->Init.Direction           = SPI_DIRECTION_2LINES;
-    phspi->Init.CLKPhase            = SPI_PHASE_2EDGE;
+    phspi->Init.CLKPhase            = SPI_PHASE_1EDGE;
     phspi->Init.CLKPolarity         = SPI_POLARITY_LOW;
     phspi->Init.DataSize            = SPI_DATASIZE_8BIT;
     phspi->Init.FirstBit            = SPI_FIRSTBIT_MSB;
@@ -91,14 +95,17 @@ uint32_t spi_send(uint8_t nspi, GPIO_TypeDef *csgpiox, uint8_t csgpion, uint8_t 
 {
     if(csgpiox)
     {
-        GPIO_InitTypeDef gpio_init;
-        gpio_init.Pin = 1 << csgpion;
-        gpio_init.Mode = GPIO_MODE_OUTPUT_PP;
-        gpio_init.Pull = GPIO_NOPULL;
-        gpio_init.Speed = GPIO_SPEED_LOW;
-        HAL_GPIO_Init(csgpiox, &gpio_init);
-        HAL_GPIO_WritePin(csgpiox, 1 << csgpion, GPIO_PIN_SET);
-        HAL_Delay(1);
+        if(((csgpiox->MODER >> 2*csgpion) & 0x3) != 1)
+        {
+            GPIO_InitTypeDef gpio_init;
+            gpio_init.Pin = 1 << csgpion;
+            gpio_init.Mode = GPIO_MODE_OUTPUT_OD;
+            gpio_init.Pull = GPIO_PULLUP;
+            gpio_init.Speed = GPIO_SPEED_LOW;
+            HAL_GPIO_WritePin(csgpiox, 1 << csgpion, GPIO_PIN_SET);
+            HAL_GPIO_Init(csgpiox, &gpio_init);
+            HAL_Delay(1);
+        }
     }
     SPI_HandleTypeDef hspi;
     spi_get_handle(&hspi, SPIn, HAL_SPI_STATE_READY);

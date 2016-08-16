@@ -11,6 +11,6 @@ include $(ROOT_DIR)/eth/myip/icmp/icmp.mk
 #include $(ROOT_DIR)/eth/myip/dbg/dbg.mk
 #include $(ROOT_DIR)/eth/myip/ptp/ptp.mk
 include $(ROOT_DIR)/eth/myip/tftp/tftp.mk
-#include $(ROOT_DIR)/eth/myip/stream/stream.mk
+include $(ROOT_DIR)/eth/myip/stream/stream.mk
 include $(ROOT_DIR)/eth/myip/telnet/telnet.mk
 

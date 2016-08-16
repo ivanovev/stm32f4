@@ -63,11 +63,12 @@ uint16_t myip_stream_con_handler(uint8_t *in, uint16_t sz, uint8_t *out)
         return 0;
     if(st.dir == STREAM_OUT)
     {
+#ifdef ENABLE_SDIO
+        return sdio_get_data(out, IO_BUF_SZ);
+#else
 #ifdef ENABLE_ADC
         return adc_get_data(out, IO_BUF_SZ);
 #endif
-#ifdef ENABLE_SDIO
-        return sdio_get_data(out, IO_BUF_SZ);
 #endif
         return 0;
     }

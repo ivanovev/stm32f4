@@ -6,9 +6,11 @@
 
 extern UART_HandleTypeDef huart;
 
+#ifndef UART_RX_DISABLE
 void UARTx_IRQHandler(void)
 {
     HAL_UART_IRQHandler(&huart);
 }
+#endif
 #endif
 

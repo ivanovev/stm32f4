@@ -35,9 +35,10 @@ include $(ROOT_DIR)/gpio/gpio.mk
 #include $(ROOT_DIR)/i2c/i2c.mk
 #include $(ROOT_DIR)/rng/rng.mk
 include $(ROOT_DIR)/pcl/pcl.mk
+include $(ROOT_DIR)/sdio/sdio.mk
 include $(ROOT_DIR)/spi/spi.mk
 include $(ROOT_DIR)/tim/tim.mk
-#include $(ROOT_DIR)/uart/uart.mk
+include $(ROOT_DIR)/uart/uart.mk
 #include $(ROOT_DIR)/usb/usb.mk
 include scripts/util2.mk
 

@@ -284,7 +284,7 @@ COMMAND(uart) {
     ARITY((argc >= 2), "uart 1|2|3... str");
     char buf[IO_BUF_SZ];
     uint32_t value = 0, j = 0;
-    static uint32_t timeout = 500;
+    static uint32_t timeout = 100;
     if(SUBCMD1("timeout"))
     {
         if(argc == 3)
@@ -419,6 +419,11 @@ COMMAND(eeprom) {
 
 #ifdef ENABLE_SPI
 COMMAND(spi) {
+    if(SUBCMD1("init"))
+    {
+        spi_init();
+        return PICOL_OK;
+    }
     ARITY(argc >= 3, "spi nspi data ...");
     uint8_t nspi = 0;
     if(argv[1][0] == '1') nspi = 1;
@@ -427,13 +432,13 @@ COMMAND(spi) {
     char buf[IO_BUF_SZ];
     char buf2[IO_BUF_SZ];
     uint32_t tmp = 0;
-    if(nspi && (argv[1][1] == '.') && (mystrnlen(argv[1], 8) >= 4))
+    if(nspi)
     {
         uint8_t cpha, cpha1, cpol, cpol1;
         GPIO_TypeDef *csgpiox = get_gpio_instance(&(argv[1][2]));
-        if(!csgpiox)
-            return PICOL_ERR;
-        uint8_t csgpion = str2int(&(argv[1][3]));
+        uint8_t csgpion = 0;
+        if(csgpiox)
+            csgpion = str2int(&(argv[1][3]));
         uint16_t len = str2bytes(argv[2], (uint8_t*)buf, IO_BUF_SZ);
         cpha = spi_cr1_bits(nspi, 0, 0, -1);
         cpol = spi_cr1_bits(nspi, 1, 1, -1);

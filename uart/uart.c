@@ -41,9 +41,6 @@ void uart_init(void)
     {
         Error_Handler();
     }
-#if 0
-    HAL_UART_Transmit(&huart, "123", 3, 100);
-#endif
 #ifndef UART_RX_DISABLE
     if(HAL_UART_Receive_IT(&huart, uart_rx_buf, 1) != HAL_OK)
     {
@@ -157,7 +154,9 @@ void uart_get_handle(UART_HandleTypeDef *phuart, uint8_t n, uint8_t state)
     phuart->Init.Mode       = UART_MODE_TX_RX;
     phuart->Init.HwFlowCtl  = UART_HWCONTROL_NONE;
     phuart->ErrorCode       = HAL_UART_ERROR_NONE;
-    phuart->gState           = state;
+    phuart->Lock            = 0;
+    phuart->gState          = state;
+    phuart->RxState         = HAL_UART_STATE_READY;
 }
 
 volatile uint32_t* uart_get_reg_ptr(USART_TypeDef *uartx, const char *reg)

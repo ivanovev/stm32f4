@@ -69,7 +69,7 @@ void sdio_init(void)
     hsd.Init.BusWide = SDIO_BUS_WIDE_8B;
     hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
     //hsd.Init.ClockDiv = SDIO_INIT_CLK_DIV;
-    hsd.Init.ClockDiv = 0x10;
+    hsd.Init.ClockDiv = 0x02;
 
     if(HAL_SD_Init(&hsd, &SDCardInfo) != SD_OK)
     {

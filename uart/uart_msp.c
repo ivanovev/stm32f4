@@ -17,9 +17,10 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
     {
         UART_PINMUX(UART_TX_GPIO, UART_TX_PIN, UART_RX_GPIO, UART_RX_PIN, GPIO_AF_UARTx);
         UARTx_CLK_ENABLE();
-
+#ifndef UART_RX_DISABLE
         HAL_NVIC_SetPriority(UARTx_IRQn, 0, 1);
         HAL_NVIC_EnableIRQ(UARTx_IRQn);
+#endif
     }
 #endif
 #ifdef ENABLE_VFD
